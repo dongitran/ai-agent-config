@@ -1,5 +1,5 @@
 {
-  "name": "@dongitran/ai-agent-config",
+  "name": "ai-agent-config",
   "version": "1.0.0",
   "description": "Universal Global Skills & Workflows for AI Coding Assistants (Claude Code, Antigravity, Cursor)",
   "main": "index.js",

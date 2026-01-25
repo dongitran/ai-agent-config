@@ -2,7 +2,7 @@
 
 > Universal Global Skills & Workflows for AI Coding Assistants
 
-[![npm version](https://badge.fury.io/js/@dongitran%2Fai-agent-config.svg)](https://www.npmjs.com/package/@dongitran/ai-agent-config)
+[![npm version](https://badge.fury.io/js/ai-agent-config.svg)](https://www.npmjs.com/package/ai-agent-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 Install a curated collection of AI agent skills from [github.com/dongitran/ai-agent-config](https://github.com/dongitran/ai-agent-config) to your global configuration.
@@ -42,7 +42,7 @@ Install a curated collection of AI agent skills from [github.com/dongitran/ai-ag
 
 ```bash
 # Install the CLI globally
-npm install -g @dongitran/ai-agent-config
+npm install -g ai-agent-config
 
 # Sync skills from repository
 ai-agent sync

@@ -2,7 +2,7 @@
  * AI Agent Config
  * Universal Global Skills & Workflows for AI Coding Assistants
  *
- * @module @dongitran/ai-agent-config
+ * @module ai-agent-config
  */
 
 const platforms = require("./scripts/platforms");
