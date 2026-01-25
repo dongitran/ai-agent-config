@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Agent Config - Universal Skills for AI Coding Assistants</title>
+    <meta name="description" content="Universal Global Skills & Workflows for AI Coding Assistants. Install once, use everywhere.">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Stars background -->
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="stars3"></div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="container">
+            <div class="hero-badge">✨ Open Source</div>
+            <h1 class="hero-title">
+                <span class="gradient-text">AI Agent Config</span>
+            </h1>
+            <p class="hero-subtitle">Universal Global Skills & Workflows for AI Coding Assistants</p>
+            <p class="hero-tagline">🪐 One Universe of Skills - All AI Platforms</p>
+            
+            <div class="cta-buttons">
+                <a href="https://www.npmjs.com/package/ai-agent-config" class="btn btn-primary">
+                    📦 npm install
+                </a>
+                <a href="https://github.com/dongitran/ai-agent-config" class="btn btn-secondary">
+                    ⭐ GitHub
+                </a>
+            </div>
+
+            <div class="install-code">
+                <code>npm install -g ai-agent-config</code>
+                <button class="copy-btn" onclick="copyCode()">📋</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">🎯 Why AI Agent Config?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>One Source of Truth</h3>
+                    <p>Sync skills across all AI tools from a single repository</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Auto Install</h3>
+                    <p>NPM postinstall magic - just install and go</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Cross Platform</h3>
+                    <p>Works everywhere - Claude, Antigravity, Cursor & more</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platforms Section -->
+    <section class="platforms">
+        <div class="container">
+            <h2 class="section-title">🛸 Supported Platforms</h2>
+            <div class="platforms-grid">
+                <div class="platform-card">
+                    <span class="platform-emoji">🟣</span>
+                    <span class="platform-name">Claude Code</span>
+                    <code>~/.claude/skills/</code>
+                </div>
+                <div class="platform-card">
+                    <span class="platform-emoji">🔵</span>
+                    <span class="platform-name">Antigravity</span>
+                    <code>~/.gemini/antigravity/skills/</code>
+                </div>
+                <div class="platform-card">
+                    <span class="platform-emoji">🟢</span>
+                    <span class="platform-name">Cursor</span>
+                    <code>~/.cursor/skills/</code>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="skills">
+        <div class="container">
+            <h2 class="section-title">🧠 Included Skills</h2>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">🔍</span>
+                        <h3>code-review</h3>
+                    </div>
+                    <p>Security, performance & best practices checks</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-header">
+                        <span class="skill-icon">📝</span>
+                        <h3>git-commit</h3>
+                    </div>
+                    <p>Conventional commit standards</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CLI Section -->
+    <section class="cli">
+        <div class="container">
+            <h2 class="section-title">🚀 CLI Commands</h2>
+            <div class="cli-box">
+                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent install <span class="cli-comment"># Install to all platforms</span></div>
+                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent sync <span class="cli-comment"># Update from latest</span></div>
+                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent list <span class="cli-comment"># Show installed skills</span></div>
+                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent platforms <span class="cli-comment"># Show detected platforms</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>Made with 🤖 by <a href="https://github.com/dongitran">Dong Tran</a></p>
+            <p class="footer-tagline">Empowering the AI-assisted development universe 🌟</p>
+        </div>
+    </footer>
+
+    <script>
+        function copyCode() {
+            navigator.clipboard.writeText('npm install -g ai-agent-config');
+            const btn = document.querySelector('.copy-btn');
+            btn.textContent = '✅';
+            setTimeout(() => btn.textContent = '📋', 2000);
+        }
+    </script>
+</body>
+</html>
