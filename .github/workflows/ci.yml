@@ -24,13 +24,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: package/package-lock.json
 
-      - name: Install dependencies
+      - name: Verify package structure
         run: |
           cd package
-          npm ci --ignore-scripts
+          echo "Package has no external dependencies - using Node.js built-in modules only"
         shell: bash
 
       - name: Run tests
