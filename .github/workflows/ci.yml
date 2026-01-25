@@ -81,11 +81,6 @@ jobs:
         with:
           node-version: '20.x'
 
-      - name: Install dependencies
-        run: |
-          cd package
-          npm ci --ignore-scripts
-
       - name: Create tarball
         run: |
           cd package
