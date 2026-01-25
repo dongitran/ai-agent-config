@@ -90,7 +90,7 @@
                                 <span class="t-cmd">npm install -g ai-agent-config</span>
                             </div>
                             <div class="terminal-line t-output">
-                                <span>+ ai-agent-config@1.0.3</span>
+                                <span>+ ai-agent-config@1.0.6</span>
                             </div>
                             <div class="terminal-line">
                                 <span class="t-prompt">~</span>
@@ -127,9 +127,9 @@
             <div class="section-label">WHAT YOU GET</div>
             <h2 class="section-heading">Skills & Workflows</h2>
 
-            <!-- Skills Row -->
+            <!-- Main Skills Row -->
             <div class="category-row">
-                <div class="category-tag">Skills</div>
+                <div class="category-tag">Main Skills</div>
                 <div class="cards-row">
                     <article class="card card-skill">
                         <div class="card-icon">
@@ -154,6 +154,41 @@
                         <div class="card-tags">
                             <span>Git</span>
                             <span>Standards</span>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <!-- External Skills Row -->
+            <div class="category-row">
+                <div class="category-tag">External Skills <span style="font-size: 0.7em; opacity: 0.7;">• Auto-Synced</span></div>
+                <div class="cards-row">
+                    <article class="card card-skill card-featured">
+                        <div class="featured-label">Vercel Labs</div>
+                        <div class="card-icon">
+                            <span>⚛️</span>
+                            <div class="icon-ring"></div>
+                            <div class="icon-ring icon-ring-2"></div>
+                        </div>
+                        <h3 class="card-title">react-best-practices</h3>
+                        <p class="card-desc">57 React/Next.js optimization rules from Vercel Engineering</p>
+                        <div class="card-tags">
+                            <span>React</span>
+                            <span>Next.js</span>
+                            <span>Performance</span>
+                        </div>
+                    </article>
+
+                    <article class="card card-skill">
+                        <div class="card-icon">
+                            <span>🎨</span>
+                            <div class="icon-ring"></div>
+                        </div>
+                        <h3 class="card-title">web-design-guidelines</h3>
+                        <p class="card-desc">Web design best practices and patterns from Vercel</p>
+                        <div class="card-tags">
+                            <span>Design</span>
+                            <span>UX</span>
                         </div>
                     </article>
                 </div>
@@ -238,6 +273,13 @@
                             <p>Works with Claude, Cursor, Windsurf & more</p>
                         </div>
                     </div>
+                    <div class="feature-item">
+                        <div class="feature-num">04</div>
+                        <div class="feature-content">
+                            <h3>Auto-Sync External Skills</h3>
+                            <p>Weekly updates from Vercel Labs & other sources</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -253,7 +295,7 @@
                 <div class="cli-window">
                     <div class="cli-header">
                         <span class="cli-title">ai-agent</span>
-                        <span class="cli-badge">v1.0.3</span>
+                        <span class="cli-badge">v1.0.6</span>
                     </div>
                     <div class="cli-body">
                         <div class="cli-row">
@@ -262,15 +304,27 @@
                         </div>
                         <div class="cli-row">
                             <code class="cli-cmd">ai-agent sync</code>
-                            <span class="cli-desc">Update from latest</span>
+                            <span class="cli-desc">Sync from main repository</span>
+                        </div>
+                        <div class="cli-row" style="background: rgba(34, 211, 238, 0.05);">
+                            <code class="cli-cmd">ai-agent sync-external</code>
+                            <span class="cli-desc">Sync from external sources <span style="color: #22d3ee;">NEW</span></span>
                         </div>
                         <div class="cli-row">
                             <code class="cli-cmd">ai-agent list</code>
                             <span class="cli-desc">Show installed skills</span>
                         </div>
+                        <div class="cli-row" style="background: rgba(34, 211, 238, 0.05);">
+                            <code class="cli-cmd">ai-agent list-external</code>
+                            <span class="cli-desc">Show external skills <span style="color: #22d3ee;">NEW</span></span>
+                        </div>
                         <div class="cli-row">
                             <code class="cli-cmd">ai-agent platforms</code>
                             <span class="cli-desc">Show detected platforms</span>
+                        </div>
+                        <div class="cli-row" style="background: rgba(34, 211, 238, 0.05);">
+                            <code class="cli-cmd">ai-agent --version</code>
+                            <span class="cli-desc">Show version number <span style="color: #22d3ee;">NEW</span></span>
                         </div>
                         <div class="cli-row">
                             <code class="cli-cmd">ai-agent uninstall</code>
