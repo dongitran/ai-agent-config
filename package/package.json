@@ -1,6 +1,6 @@
 {
   "name": "ai-agent-config",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Universal Global Skills & Workflows for AI Coding Assistants (Claude Code, Antigravity, Cursor)",
   "main": "index.js",
   "bin": {
