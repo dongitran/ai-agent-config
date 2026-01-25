@@ -10,6 +10,7 @@ const path = require("path");
 
 const platforms = require("../scripts/platforms");
 const installer = require("../scripts/installer");
+const externalSync = require("../scripts/external-sync");
 
 // Read version from package.json
 const packageJson = require("../package.json");
@@ -19,7 +20,9 @@ const COMMANDS = {
   init: "Initialize config file in home directory",
   install: "Install skills to detected platforms",
   sync: "Sync skills from GitHub repository",
+  "sync-external": "Sync skills from external repositories",
   list: "List available skills and workflows",
+  "list-external": "List available external skills",
   platforms: "Show detected platforms",
   uninstall: "Remove installed skills",
   version: "Show version number",
@@ -280,6 +283,50 @@ function uninstall(args) {
   console.log("");
 }
 
+function syncExternal(args) {
+  console.log("\n🔄 Syncing external skills...\n");
+
+  const options = {
+    force: false,
+    source: null,
+    skill: null,
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--force") {
+      options.force = true;
+    } else if (args[i] === "--source" && args[i + 1]) {
+      options.source = args[++i];
+    } else if (args[i] === "--skill" && args[i + 1]) {
+      options.skill = args[++i];
+    }
+  }
+
+  try {
+    const result = externalSync.syncAll(options);
+
+    console.log(`\n✓ Synced ${result.synced} source(s)`);
+    console.log(`  Copied: ${result.copied} skill(s)`);
+    console.log(`  Skipped: ${result.skipped} skill(s)`);
+    if (result.failed > 0) {
+      console.log(`  Failed: ${result.failed} source(s)`);
+    }
+    console.log("");
+  } catch (error) {
+    console.error(`\n❌ Sync failed: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+function listExternal(args) {
+  try {
+    externalSync.list();
+  } catch (error) {
+    console.error(`\n❌ List failed: ${error.message}`);
+    process.exit(1);
+  }
+}
+
 // Main
 const args = process.argv.slice(2);
 const command = args[0];
@@ -294,8 +341,14 @@ switch (command) {
   case "sync":
     sync(args.slice(1));
     break;
+  case "sync-external":
+    syncExternal(args.slice(1));
+    break;
   case "list":
     listSkills();
+    break;
+  case "list-external":
+    listExternal(args.slice(1));
     break;
   case "platforms":
     showPlatforms();

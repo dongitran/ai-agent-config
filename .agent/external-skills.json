@@ -1,0 +1,21 @@
+{
+  "sources": [
+    {
+      "name": "vercel-labs",
+      "repo": "https://github.com/vercel-labs/agent-skills.git",
+      "branch": "main",
+      "skills": [
+        {
+          "path": "skills/react-best-practices",
+          "name": "react-best-practices"
+        },
+        {
+          "path": "skills/web-design-guidelines",
+          "name": "web-design-guidelines"
+        }
+      ],
+      "license": "MIT",
+      "attribution": "Skills from Vercel Labs (https://github.com/vercel-labs/agent-skills)"
+    }
+  ]
+}
