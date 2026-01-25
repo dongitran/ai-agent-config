@@ -290,6 +290,47 @@ section {
     border-radius: 6px;
 }
 
+/* ===== Skills & Workflows ===== */
+.skills-workflows {
+    background: var(--bg-secondary);
+}
+
+.category-label {
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent-purple);
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+    margin-top: 32px;
+}
+
+.category-label:first-of-type {
+    margin-top: 0;
+}
+
+.skills-grid-wide {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.skill-card.featured {
+    border-color: var(--accent-purple);
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
+}
+
+.badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    background: var(--accent-purple);
+    color: white;
+    border-radius: 12px;
+    font-weight: 600;
+    margin-left: auto;
+}
+
 /* ===== Skills ===== */
 .skills-grid {
     display: grid;
