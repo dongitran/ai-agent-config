@@ -108,6 +108,41 @@ function getAvailableWorkflows() {
 }
 
 /**
+ * Copy workflows as skills for Claude Code
+ * Claude Code doesn't support workflows directory, so we convert them to skills
+ */
+function copyWorkflowsAsSkills(skillsPath, force = false) {
+  const results = [];
+
+  if (!fs.existsSync(REPO_WORKFLOWS_DIR)) {
+    return results;
+  }
+
+  const workflowFiles = fs.readdirSync(REPO_WORKFLOWS_DIR).filter((f) => f.endsWith(".md"));
+
+  for (const wfFile of workflowFiles) {
+    const workflowName = wfFile.replace(".md", "");
+    const srcPath = path.join(REPO_WORKFLOWS_DIR, wfFile);
+    const destDir = path.join(skillsPath, workflowName);
+    const destPath = path.join(destDir, "SKILL.md");
+
+    // Create skill directory
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
+
+    if (fs.existsSync(destPath) && !force) {
+      results.push({ name: workflowName, skipped: 1, copied: 0 });
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+      results.push({ name: workflowName, skipped: 0, copied: 1 });
+    }
+  }
+
+  return results;
+}
+
+/**
  * Install skills and workflows to a specific platform
  */
 function installToPlatform(platform, options = {}) {
@@ -145,19 +180,27 @@ function installToPlatform(platform, options = {}) {
     });
   }
 
-  // Install workflows (if platform supports it)
-  if (workflowsPath && fs.existsSync(REPO_WORKFLOWS_DIR)) {
-    const workflowFiles = fs.readdirSync(REPO_WORKFLOWS_DIR).filter((f) => f.endsWith(".md"));
+  // Handle workflows based on platform
+  if (fs.existsSync(REPO_WORKFLOWS_DIR)) {
+    // Claude Code: Copy workflows as skills (workflows → skills/<name>/SKILL.md)
+    if (platform.name === "claude" && skillsPath) {
+      const workflowResults = copyWorkflowsAsSkills(skillsPath, force);
+      results.workflows = workflowResults;
+    }
+    // Other platforms (Antigravity): Copy workflows to workflows directory
+    else if (workflowsPath) {
+      const workflowFiles = fs.readdirSync(REPO_WORKFLOWS_DIR).filter((f) => f.endsWith(".md"));
 
-    for (const wfFile of workflowFiles) {
-      const srcPath = path.join(REPO_WORKFLOWS_DIR, wfFile);
-      const destPath = path.join(workflowsPath, wfFile);
+      for (const wfFile of workflowFiles) {
+        const srcPath = path.join(REPO_WORKFLOWS_DIR, wfFile);
+        const destPath = path.join(workflowsPath, wfFile);
 
-      if (fs.existsSync(destPath) && !force) {
-        results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 1, copied: 0 });
-      } else {
-        fs.copyFileSync(srcPath, destPath);
-        results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 0, copied: 1 });
+        if (fs.existsSync(destPath) && !force) {
+          results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 1, copied: 0 });
+        } else {
+          fs.copyFileSync(srcPath, destPath);
+          results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 0, copied: 1 });
+        }
       }
     }
   }
