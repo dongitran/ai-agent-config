@@ -7,7 +7,7 @@
 [![npm](https://img.shields.io/npm/v/ai-agent-config)](https://www.npmjs.com/package/ai-agent-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-*Một vũ trụ skills - Mọi AI platforms* 🪐
+*One Universe of Skills - All AI Platforms* 🪐
 
 </div>
 
@@ -15,7 +15,7 @@
 
 ## 🎯 What is this?
 
-**ai-agent-config** là NPM package cung cấp **global skills** cho các AI coding assistants. Cài một lần, dùng mọi nơi.
+**ai-agent-config** is an NPM package that provides **global skills** for AI coding assistants. Install once, use everywhere.
 
 ## 🛸 Supported Platforms
 
