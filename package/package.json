@@ -1,0 +1,44 @@
+{
+  "name": "@dongitran/ai-agent-config",
+  "version": "1.0.0",
+  "description": "Universal Global Skills & Workflows for AI Coding Assistants (Claude Code, Antigravity, Cursor)",
+  "main": "index.js",
+  "bin": {
+    "ai-agent": "./bin/cli.js"
+  },
+  "scripts": {
+    "postinstall": "node scripts/postinstall.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "claude-code",
+    "antigravity",
+    "cursor",
+    "windsurf",
+    "copilot",
+    "workflows",
+    "coding-assistant",
+    "global-skills"
+  ],
+  "author": "Dong Tran",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dongitran/ai-agent-config.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dongitran/ai-agent-config/issues"
+  },
+  "homepage": "https://github.com/dongitran/ai-agent-config#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "bin/",
+    "scripts/",
+    "index.js"
+  ]
+}

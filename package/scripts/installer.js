@@ -1,0 +1,280 @@
+/**
+ * Installer module for AI Agent Config
+ * Handles syncing from GitHub repo and copying skills to platform directories
+ */
+
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
+const platforms = require("./platforms");
+
+const REPO_URL = "https://github.com/dongitran/ai-agent-config.git";
+const CACHE_DIR = path.join(platforms.HOME, ".ai-agent-config-cache");
+const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agent", "skills");
+const REPO_WORKFLOWS_DIR = path.join(CACHE_DIR, ".agent", "workflows");
+
+/**
+ * Copy directory recursively
+ */
+function copyDir(src, dest, force = false) {
+  if (!fs.existsSync(src)) {
+    return { copied: 0, skipped: 0 };
+  }
+
+  if (!fs.existsSync(dest)) {
+    fs.mkdirSync(dest, { recursive: true });
+  }
+
+  let copied = 0;
+  let skipped = 0;
+
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+
+    if (entry.isDirectory()) {
+      const result = copyDir(srcPath, destPath, force);
+      copied += result.copied;
+      skipped += result.skipped;
+    } else {
+      if (fs.existsSync(destPath) && !force) {
+        skipped++;
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+        copied++;
+      }
+    }
+  }
+
+  return { copied, skipped };
+}
+
+/**
+ * Sync repository from GitHub
+ * @returns {boolean} Success status
+ */
+function syncRepo() {
+  try {
+    if (fs.existsSync(CACHE_DIR)) {
+      console.log("   Updating cached repository...");
+      execSync("git pull --quiet", { cwd: CACHE_DIR, stdio: "pipe" });
+    } else {
+      console.log("   Cloning repository...");
+      execSync(`git clone --quiet "${REPO_URL}" "${CACHE_DIR}"`, { stdio: "pipe" });
+    }
+    return true;
+  } catch (error) {
+    console.error(`   Failed to sync: ${error.message}`);
+    return false;
+  }
+}
+
+/**
+ * Check if repo is cached
+ */
+function isRepoCached() {
+  return fs.existsSync(CACHE_DIR) && fs.existsSync(REPO_SKILLS_DIR);
+}
+
+/**
+ * Get list of available skills from cached repo
+ */
+function getAvailableSkills() {
+  if (!fs.existsSync(REPO_SKILLS_DIR)) {
+    return [];
+  }
+
+  return fs.readdirSync(REPO_SKILLS_DIR).filter((name) => {
+    const skillPath = path.join(REPO_SKILLS_DIR, name);
+    const skillFile = path.join(skillPath, "SKILL.md");
+    return fs.statSync(skillPath).isDirectory() && fs.existsSync(skillFile);
+  });
+}
+
+/**
+ * Get list of available workflows from cached repo
+ */
+function getAvailableWorkflows() {
+  if (!fs.existsSync(REPO_WORKFLOWS_DIR)) {
+    return [];
+  }
+
+  return fs
+    .readdirSync(REPO_WORKFLOWS_DIR)
+    .filter((name) => name.endsWith(".md"))
+    .map((name) => name.replace(".md", ""));
+}
+
+/**
+ * Install skills to a specific platform
+ */
+function installToPlatform(platform, options = {}) {
+  const { force = false, skill = null } = options;
+
+  const skillsPath = platforms.ensureSkillsDir(platform);
+  const results = { platform: platform.name, path: skillsPath, skills: [] };
+
+  let skillsToInstall = getAvailableSkills();
+
+  if (skill) {
+    skillsToInstall = skillsToInstall.filter((s) => s === skill);
+    if (skillsToInstall.length === 0) {
+      throw new Error(`Skill "${skill}" not found in repository`);
+    }
+  }
+
+  for (const skillName of skillsToInstall) {
+    const srcPath = path.join(REPO_SKILLS_DIR, skillName);
+    const destPath = path.join(skillsPath, skillName);
+
+    const copyResult = copyDir(srcPath, destPath, force);
+    results.skills.push({
+      name: skillName,
+      ...copyResult,
+    });
+  }
+
+  return results;
+}
+
+/**
+ * Install skills to all detected platforms
+ */
+function install(options = {}) {
+  const { platform = null, force = false, skill = null, sync = true } = options;
+
+  // Sync repo first if needed
+  if (sync && !isRepoCached()) {
+    console.log("\n📦 Syncing skills from repository...");
+    if (!syncRepo()) {
+      throw new Error("Failed to sync repository. Check your internet connection.");
+    }
+  }
+
+  if (!isRepoCached()) {
+    console.log("\n⚠️  Skills repository not cached. Run 'ai-agent sync' first.");
+    return { skillsCount: 0, platformsCount: 0, details: [] };
+  }
+
+  let targetPlatforms;
+
+  if (platform) {
+    const platformObj = platforms.getByName(platform);
+    if (!platformObj) {
+      throw new Error(
+        `Unknown platform: ${platform}. Available: ${platforms.getAllNames().join(", ")}`
+      );
+    }
+    targetPlatforms = [platformObj];
+  } else {
+    targetPlatforms = platforms.detectAll().map((p) => platforms.getByName(p.name));
+  }
+
+  if (targetPlatforms.length === 0) {
+    console.log("\n⚠️  No AI coding platforms detected.");
+    console.log("   Supported platforms:", platforms.getAllNames().join(", "));
+    console.log("\n   Force install with: ai-agent install --platform <name>");
+    return { skillsCount: 0, platformsCount: 0, details: [] };
+  }
+
+  const details = [];
+  let totalSkills = 0;
+
+  for (const platformObj of targetPlatforms) {
+    try {
+      const result = installToPlatform(platformObj, { force, skill });
+      details.push(result);
+      totalSkills += result.skills.length;
+    } catch (error) {
+      console.error(`   Failed to install to ${platformObj.name}: ${error.message}`);
+    }
+  }
+
+  return {
+    skillsCount: totalSkills,
+    platformsCount: details.length,
+    details,
+  };
+}
+
+/**
+ * Uninstall skills from a platform
+ */
+function uninstallFromPlatform(platform, skill = null) {
+  const skillsPath = platform.skillsPath;
+
+  if (!fs.existsSync(skillsPath)) {
+    return { platform: platform.name, removed: 0 };
+  }
+
+  let removed = 0;
+  const ourSkills = getAvailableSkills();
+
+  if (skill) {
+    const skillPath = path.join(skillsPath, skill);
+    if (fs.existsSync(skillPath) && ourSkills.includes(skill)) {
+      fs.rmSync(skillPath, { recursive: true });
+      removed++;
+    }
+  } else {
+    for (const skillName of ourSkills) {
+      const skillPath = path.join(skillsPath, skillName);
+      if (fs.existsSync(skillPath)) {
+        fs.rmSync(skillPath, { recursive: true });
+        removed++;
+      }
+    }
+  }
+
+  return { platform: platform.name, removed };
+}
+
+/**
+ * Uninstall skills from all platforms
+ */
+function uninstall(options = {}) {
+  const { platform = null, skill = null } = options;
+
+  let targetPlatforms;
+
+  if (platform) {
+    const platformObj = platforms.getByName(platform);
+    if (!platformObj) {
+      throw new Error(`Unknown platform: ${platform}`);
+    }
+    targetPlatforms = [platformObj];
+  } else {
+    targetPlatforms = platforms.detectAll().map((p) => platforms.getByName(p.name));
+  }
+
+  const results = [];
+  let totalRemoved = 0;
+
+  for (const platformObj of targetPlatforms) {
+    const result = uninstallFromPlatform(platformObj, skill);
+    results.push(result);
+    totalRemoved += result.removed;
+  }
+
+  return {
+    totalRemoved,
+    platformsCount: results.length,
+    details: results,
+  };
+}
+
+module.exports = {
+  install,
+  uninstall,
+  syncRepo,
+  isRepoCached,
+  getAvailableSkills,
+  getAvailableWorkflows,
+  copyDir,
+  CACHE_DIR,
+  REPO_URL,
+  REPO_SKILLS_DIR,
+  REPO_WORKFLOWS_DIR,
+};
