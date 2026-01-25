@@ -2,7 +2,9 @@
 
 > Universal Global Skills & Workflows for AI Coding Assistants
 
+**Website:** https://dongitran.github.io/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
+**NPM:** https://www.npmjs.com/package/ai-agent-config
 
 ## Purpose
 
@@ -56,7 +58,7 @@ When reviewing code, follow these steps:
 
 ```bash
 # Install globally
-npm install -g @anthropic/ai-agent-config
+npm install -g ai-agent-config
 
 # This automatically installs skills to all detected platforms
 ```
@@ -155,11 +157,13 @@ Optional config file at `~/.ai-agent-config.json`:
 
 - [x] Define package structure
 - [x] Create CLI with basic commands
-- [ ] Implement platform detection
-- [ ] Create installation scripts
-- [ ] Add sample skills
-- [ ] Publish to npm
+- [x] Implement platform detection
+- [x] Create installation scripts
+- [x] Add sample skills
+- [x] Publish to npm
+- [x] Create landing page website
 - [ ] Add auto-update mechanism
+- [ ] Add more workflows
 
 ---
 
