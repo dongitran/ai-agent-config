@@ -11,6 +11,10 @@ const path = require("path");
 const platforms = require("../scripts/platforms");
 const installer = require("../scripts/installer");
 
+// Read version from package.json
+const packageJson = require("../package.json");
+const VERSION = packageJson.version;
+
 const COMMANDS = {
   init: "Initialize config file in home directory",
   install: "Install skills to detected platforms",
@@ -18,13 +22,14 @@ const COMMANDS = {
   list: "List available skills and workflows",
   platforms: "Show detected platforms",
   uninstall: "Remove installed skills",
+  version: "Show version number",
   help: "Show this help message",
 };
 
 function showHelp() {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
-║               AI Agent Config CLI                             ║
+║               AI Agent Config CLI v${VERSION.padEnd(27)}║
 ║   Universal Global Skills for AI Coding Assistants            ║
 ╚═══════════════════════════════════════════════════════════════╝
 
@@ -297,6 +302,11 @@ switch (command) {
     break;
   case "uninstall":
     uninstall(args.slice(1));
+    break;
+  case "version":
+  case "--version":
+  case "-v":
+    console.log(`v${VERSION}`);
     break;
   case "help":
   case "--help":
