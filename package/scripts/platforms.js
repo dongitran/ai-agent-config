@@ -165,6 +165,22 @@ function ensureSkillsDir(platform) {
 }
 
 /**
+ * Ensure workflows directory exists for a platform
+ * @param {Object} platform - Platform object
+ * @returns {string|null} Workflows path or null if not supported
+ */
+function ensureWorkflowsDir(platform) {
+  if (!platform.workflowsPath) {
+    return null;
+  }
+  const workflowsPath = platform.workflowsPath;
+  if (!fs.existsSync(workflowsPath)) {
+    fs.mkdirSync(workflowsPath, { recursive: true });
+  }
+  return workflowsPath;
+}
+
+/**
  * Get all supported platform names
  * @returns {Array} Array of platform names
  */
@@ -177,6 +193,7 @@ module.exports = {
   detectAll,
   getByName,
   ensureSkillsDir,
+  ensureWorkflowsDir,
   getAllNames,
   HOME,
 };

@@ -181,17 +181,31 @@ function install(args) {
   try {
     const result = installer.install(options);
 
-    if (result.skillsCount > 0) {
-      console.log(`\n✓ Installed ${result.skillsCount} skill(s) to ${result.platformsCount} platform(s)\n`);
+    if (result.skillsCount > 0 || result.workflowsCount > 0) {
+      const parts = [];
+      if (result.skillsCount > 0) parts.push(`${result.skillsCount} skill(s)`);
+      if (result.workflowsCount > 0) parts.push(`${result.workflowsCount} workflow(s)`);
+
+      console.log(`\n✓ Installed ${parts.join(", ")} to ${result.platformsCount} platform(s)\n`);
       result.details.forEach((d) => {
-        console.log(`  ${d.platform}: ${d.path}`);
-        d.skills.forEach((s) => {
-          const status = s.skipped > 0 ? `(${s.copied} new, ${s.skipped} skipped)` : "";
-          console.log(`    • ${s.name} ${status}`);
-        });
+        console.log(`  ${d.platform}:`);
+        if (d.skills.length > 0) {
+          console.log(`    Skills: ${d.skillsPath}`);
+          d.skills.forEach((s) => {
+            const status = s.skipped > 0 ? `(${s.copied} new, ${s.skipped} skipped)` : "";
+            console.log(`      • ${s.name} ${status}`);
+          });
+        }
+        if (d.workflows.length > 0) {
+          console.log(`    Workflows: ${d.workflowsPath}`);
+          d.workflows.forEach((w) => {
+            const status = w.skipped > 0 ? "(skipped)" : "";
+            console.log(`      • ${w.name} ${status}`);
+          });
+        }
       });
     } else {
-      console.log("\n⚠️  No skills installed.");
+      console.log("\n⚠️  No skills or workflows installed.");
     }
   } catch (error) {
     console.error(`\n❌ Installation failed: ${error.message}`);

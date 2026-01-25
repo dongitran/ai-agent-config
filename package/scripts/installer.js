@@ -108,14 +108,23 @@ function getAvailableWorkflows() {
 }
 
 /**
- * Install skills to a specific platform
+ * Install skills and workflows to a specific platform
  */
 function installToPlatform(platform, options = {}) {
   const { force = false, skill = null } = options;
 
   const skillsPath = platforms.ensureSkillsDir(platform);
-  const results = { platform: platform.name, path: skillsPath, skills: [] };
+  const workflowsPath = platforms.ensureWorkflowsDir(platform);
 
+  const results = {
+    platform: platform.name,
+    skillsPath: skillsPath,
+    workflowsPath: workflowsPath,
+    skills: [],
+    workflows: [],
+  };
+
+  // Install skills
   let skillsToInstall = getAvailableSkills();
 
   if (skill) {
@@ -134,6 +143,23 @@ function installToPlatform(platform, options = {}) {
       name: skillName,
       ...copyResult,
     });
+  }
+
+  // Install workflows (if platform supports it)
+  if (workflowsPath && fs.existsSync(REPO_WORKFLOWS_DIR)) {
+    const workflowFiles = fs.readdirSync(REPO_WORKFLOWS_DIR).filter((f) => f.endsWith(".md"));
+
+    for (const wfFile of workflowFiles) {
+      const srcPath = path.join(REPO_WORKFLOWS_DIR, wfFile);
+      const destPath = path.join(workflowsPath, wfFile);
+
+      if (fs.existsSync(destPath) && !force) {
+        results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 1, copied: 0 });
+      } else {
+        fs.copyFileSync(srcPath, destPath);
+        results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 0, copied: 1 });
+      }
+    }
   }
 
   return results;
@@ -181,12 +207,14 @@ function install(options = {}) {
 
   const details = [];
   let totalSkills = 0;
+  let totalWorkflows = 0;
 
   for (const platformObj of targetPlatforms) {
     try {
       const result = installToPlatform(platformObj, { force, skill });
       details.push(result);
       totalSkills += result.skills.length;
+      totalWorkflows += result.workflows.length;
     } catch (error) {
       console.error(`   Failed to install to ${platformObj.name}: ${error.message}`);
     }
@@ -194,6 +222,7 @@ function install(options = {}) {
 
   return {
     skillsCount: totalSkills,
+    workflowsCount: totalWorkflows,
     platformsCount: details.length,
     details,
   };
