@@ -247,6 +247,24 @@ What would suggest: Junior Dev? Senior Architect? End User? Security Expert? Com
 ### 4.9 Brainwriting (6-3-5)
 Write 3 ideas → pass/pause → build on them → combine/mutate best ones.
 
+### 4.10 Just-in-Time Research
+
+When stuck or need inspiration, do quick research:
+
+| Trigger | Research Action |
+|---------|-----------------|
+| **Stuck on ideas** | Search for similar solutions in other industries |
+| **Need inspiration** | Look up competitor approaches, case studies |
+| **Cross-domain thinking** | Research how nature/other fields solve this |
+| **Technical uncertainty** | Quick search for feasibility of specific approach |
+
+**Prompts:**
+- "How do [other companies] solve [similar problem]?"
+- "What are innovative approaches to [problem domain]?"
+- "Show me examples of [technique] applied to [context]"
+
+**Rule:** Time-box research to 5 min max. Don't let research kill creative momentum.
+
 ---
 
 ## Phase 5: Evaluate (Convergent)
@@ -286,6 +304,29 @@ Option: [Name]
 ❌ Cons:
 ⚠️ Risks → 🔧 Mitigations:
 ```
+
+### 5.6 Validation Research
+
+Before finalizing scores, validate assumptions with targeted research:
+
+| Uncertainty | Research Action |
+|-------------|-----------------|
+| **Feasibility unclear** | Search for technical constraints, limitations |
+| **Impact uncertain** | Look for benchmarks, case studies, metrics |
+| **Risk unknown** | Search for failure stories of similar approaches |
+| **Effort estimate** | Research implementation complexity, dependencies |
+
+**Validation Checklist:**
+- [ ] Top 3 ideas have been fact-checked for feasibility
+- [ ] Key assumptions are validated (not just gut feeling)
+- [ ] Risks are based on evidence, not fear
+
+**Prompts:**
+- "What are common pitfalls when implementing [idea]?"
+- "Has [similar approach] been tried before? What happened?"
+- "What's the typical effort/timeline for [solution type]?"
+
+**Rule:** Validate before committing. 5 min of validation can prevent weeks of wasted effort.
 
 ---
 
@@ -328,6 +369,8 @@ Use Mermaid, Excalidraw, or simple boxes/arrows.
 | Stuck in conventional thinking | Reverse Brainstorming, SCAMPER, Constraints |
 | Understand problem deeply | 5 Whys, Starbursting, Gap Analysis |
 | Diverse perspectives | Six Hats, Rolestorming, Cross-Domain |
+| Stuck during ideation | **4.10**: Just-in-Time Research |
+| Validate before deciding | **5.6**: Validation Research |
 | Evaluate options | Prioritization Matrix, Scoring, MoSCoW |
 
 ---
@@ -352,7 +395,13 @@ Use Mermaid, Excalidraw, or simple boxes/arrows.
 - "What could go wrong with [idea]?"
 - "Give 5 variations of [idea] with different trade-offs"
 
-**Tips:** Research before confirming. Confirm before ideating. Use AI as partner, not decision maker. Iterate prompts. Challenge outputs. Combine with human judgment.
+**Just-in-time research prompts (Phase 4 & 5):**
+- "How do competitors solve [similar problem]? Search for examples."
+- "Is [specific idea] technically feasible? What are the constraints?"
+- "Find case studies of [approach] - what worked and what failed?"
+- "What's the typical effort to implement [solution type]?"
+
+**Tips:** Research before confirming. Confirm before ideating. Validate before deciding. Use AI as partner, not decision maker. Iterate prompts. Challenge outputs. Combine with human judgment.
 
 ---
 
