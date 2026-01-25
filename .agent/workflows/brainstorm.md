@@ -107,7 +107,15 @@ Before moving to Confirm phase, ensure you have:
 
 **Goal:** Ensure alignment before investing time in brainstorming. This step prevents wasted effort from misunderstood requirements.
 
-### Clarifying Questions Checklist
+### Step 2.1: Review Research Findings
+
+Summarize key findings from Phase 1:
+- Domain/industry context discovered
+- Existing solutions found
+- Technical constraints identified
+- Stakeholder concerns
+
+### Step 2.2: Identify Clarifying Questions
 
 Ask these questions to surface hidden assumptions:
 
@@ -120,9 +128,9 @@ Ask these questions to surface hidden assumptions:
 | **Timeline** | Any deadlines? Dependencies on other work? |
 | **Resources** | Budget? Team size? Tech stack limitations? |
 
-### Confirm Statement
+### Step 2.3: State Your Understanding
 
-Before proceeding, state your understanding and get explicit confirmation:
+Format your understanding clearly:
 
 ```
 "Let me confirm my understanding:
@@ -136,15 +144,36 @@ Success looks like: [MEASURABLE CRITERIA]
 Is this correct? Anything to add or change?"
 ```
 
-### Decision Gate
+### Step 2.4: 🚨 MANDATORY PAUSE - WAIT FOR USER CONFIRMATION 🚨
 
-| Response | Action |
-|----------|--------|
-| ✅ "Yes, correct" | Proceed to Phase 3 |
-| ⚠️ "Almost, but..." | Update understanding, re-confirm |
-| ❌ "No, actually..." | Reset and re-clarify from scratch |
+**⛔ STOP HERE - DO NOT PROCEED TO PHASE 3 IN THE SAME RESPONSE ⛔**
 
-**Rule:** Do NOT proceed until you get explicit "Yes" confirmation.
+After stating your understanding in Step 2.3, you MUST:
+
+1. **Use the `AskUserQuestion` tool** to get explicit confirmation
+2. **Ask:** "Is my understanding of your request correct?"
+3. **Provide options:**
+   - ✅ "Yes, this is correct - proceed to Phase 3"
+   - ⚠️ "Almost correct, but needs adjustments"
+   - ❌ "No, let me clarify the requirements"
+4. **WAIT for user to select an option**
+5. **DO NOT continue to Phase 3 until user explicitly confirms**
+
+**Why this pause is critical:**
+- Prevents wasting time on wrong assumptions
+- Ensures alignment before deep work
+- Allows user to correct misunderstandings early
+- Saves hours of rework
+
+### Decision Gate (After User Response)
+
+| User Response | Your Action |
+|--------------|-------------|
+| ✅ "Yes, correct" | Proceed to Phase 3: Clarify |
+| ⚠️ "Almost, but..." | Update understanding based on feedback, then re-confirm (loop back to Step 2.3) |
+| ❌ "No, actually..." | Reset and ask user to re-explain requirements, then start Phase 2 from Step 2.1 |
+
+**Rule:** NEVER proceed to Phase 3 without explicit user confirmation. If you skip this pause, you risk building the wrong solution.
 
 ---
 
