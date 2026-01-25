@@ -6,6 +6,7 @@
 
 [![npm](https://img.shields.io/npm/v/ai-agent-config)](https://www.npmjs.com/package/ai-agent-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Website](https://img.shields.io/badge/Website-ai--agent--config.pages.dev-8b5cf6)](https://ai-agent-config.pages.dev)
 
 *One Universe of Skills - All AI Platforms* 🪐
 
