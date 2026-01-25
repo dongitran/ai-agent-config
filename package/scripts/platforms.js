@@ -18,12 +18,16 @@ const SUPPORTED = [
     displayName: "Claude Code",
     configDir: ".claude",
     skillsDir: "skills",
+    workflowsDir: "workflows",
     commandsDir: "commands",
     get configPath() {
       return path.join(HOME, this.configDir);
     },
     get skillsPath() {
       return path.join(HOME, this.configDir, this.skillsDir);
+    },
+    get workflowsPath() {
+      return path.join(HOME, this.configDir, this.workflowsDir);
     },
     get commandsPath() {
       return path.join(HOME, this.configDir, this.commandsDir);
