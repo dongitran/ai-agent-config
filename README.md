@@ -86,8 +86,6 @@ ai-agent --version            # Show version
 | ⚛️ **react-best-practices** | Vercel Labs | 57 React/Next.js optimization rules from Vercel Engineering |
 | 🎨 **web-design-guidelines** | Vercel Labs | Web design best practices and patterns |
 
-*External skills are automatically synced weekly via GitHub Actions*
-
 ## 🔄 Included Workflows
 
 | Workflow | Description | Available As |
@@ -168,47 +166,6 @@ ai-agent list-external
 - 📚 **Curated sources** - Hand-picked skills from industry leaders (Vercel, etc.)
 - ✅ **Tested** - Comprehensive test suite with CI/CD
 - 🎯 **Slash commands** - Workflows available as `/commands` in Claude Code
-
-## 📂 Project Structure
-
-```
-📦 ai-agent-config
-├── 🤖 package/
-│   ├── bin/cli.js              # CLI entry point
-│   ├── scripts/
-│   │   ├── installer.js        # Main installation logic
-│   │   ├── platforms.js        # Platform detection & config
-│   │   └── external-sync.js    # External skills sync (NEW!)
-│   └── test/                   # Test suite (NEW!)
-├── 🎯 .agent/
-│   ├── skills/                 # Main + External skills
-│   │   ├── code-review/
-│   │   ├── git-commit/
-│   │   ├── react-best-practices/    # From Vercel Labs
-│   │   └── web-design-guidelines/   # From Vercel Labs
-│   ├── workflows/              # Shared workflows
-│   │   ├── brainstorm.md
-│   │   ├── create-pr.md
-│   │   └── update-skills.md
-│   └── external-skills.json    # External sources config (NEW!)
-├── 🔧 .github/workflows/
-│   ├── ci.yml                  # Test & build (NEW!)
-│   └── sync-external.yml       # Auto-sync external skills (NEW!)
-└── 📖 docs/                    # Landing page
-```
-
-## 🧪 Testing
-
-```bash
-# Run tests
-cd package && npm test
-
-# Test output
-✓ 32 tests passed
-  - 8 CLI tests
-  - 6 Installer tests
-  - 18 Platform tests
-```
 
 ## 🤝 Contributing
 
