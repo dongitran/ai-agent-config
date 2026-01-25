@@ -6,147 +6,335 @@
     <title>AI Agent Config - Universal Skills for AI Coding Assistants</title>
     <meta name="description" content="Universal Global Skills & Workflows for AI Coding Assistants. Install once, use everywhere.">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Stars background -->
-    <div class="stars"></div>
-    <div class="stars2"></div>
-    <div class="stars3"></div>
+    <!-- Grain Overlay -->
+    <div class="grain-overlay"></div>
 
-    <!-- Hero Section -->
-    <header class="hero">
+    <!-- Animated Gradient Mesh -->
+    <div class="gradient-mesh">
+        <div class="mesh-blob mesh-1"></div>
+        <div class="mesh-blob mesh-2"></div>
+        <div class="mesh-blob mesh-3"></div>
+        <div class="mesh-blob mesh-4"></div>
+    </div>
+
+    <!-- Geometric Decorations -->
+    <div class="geo-decorations">
+        <div class="geo geo-1"></div>
+        <div class="geo geo-2"></div>
+        <div class="geo geo-3"></div>
+        <div class="geo geo-4"></div>
+        <div class="geo geo-5"></div>
+    </div>
+
+    <!-- Stars -->
+    <div class="stars-container">
+        <div class="stars"></div>
+        <div class="stars stars-2"></div>
+    </div>
+
+    <!-- Neural Network Canvas -->
+    <canvas id="neuralCanvas"></canvas>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+
+    <!-- Hero Section - Asymmetric Layout -->
+    <header class="hero" id="hero">
         <div class="container">
-            <div class="hero-badge">✨ Open Source</div>
-            <h1 class="hero-title">
-                <span class="gradient-text">AI Agent Config</span>
-            </h1>
-            <p class="hero-subtitle">Universal Global Skills & Workflows for AI Coding Assistants</p>
-            <p class="hero-tagline">🪐 One Universe of Skills - All AI Platforms</p>
+            <div class="hero-layout">
+                <!-- Left Side - Main Content -->
+                <div class="hero-main">
+                    <div class="hero-badge">
+                        <span class="badge-dot"></span>
+                        <span>Open Source</span>
+                    </div>
 
-            <div class="cta-buttons">
-                <a href="https://www.npmjs.com/package/ai-agent-config" class="btn btn-primary">
-                    📦 npm install
-                </a>
-                <a href="https://github.com/dongitran/ai-agent-config" class="btn btn-secondary">
-                    ⭐ GitHub
-                </a>
+                    <h1 class="hero-title">
+                        <span class="title-word title-word-1">AI</span>
+                        <span class="title-word title-word-2">AGENT</span>
+                        <span class="title-word title-word-3">CONFIG</span>
+                    </h1>
+
+                    <p class="hero-desc">
+                        Universal Global Skills & Workflows<br>
+                        for AI Coding Assistants
+                    </p>
+
+                    <div class="hero-cta">
+                        <a href="https://www.npmjs.com/package/ai-agent-config" class="btn-main">
+                            <span class="btn-text">Get Started</span>
+                            <span class="btn-arrow">→</span>
+                        </a>
+                        <a href="https://github.com/dongitran/ai-agent-config" class="btn-ghost">
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Right Side - Terminal -->
+                <div class="hero-terminal">
+                    <div class="terminal">
+                        <div class="terminal-bar">
+                            <div class="terminal-dots">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <span class="terminal-title">zsh</span>
+                        </div>
+                        <div class="terminal-content">
+                            <div class="terminal-line">
+                                <span class="t-prompt">~</span>
+                                <span class="t-cmd">npm install -g ai-agent-config</span>
+                            </div>
+                            <div class="terminal-line t-output">
+                                <span>+ ai-agent-config@1.0.3</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="t-prompt">~</span>
+                                <span class="t-cmd">ai-agent install</span>
+                            </div>
+                            <div class="terminal-line t-output t-success">
+                                <span>✓ Installed to all platforms</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="t-prompt">~</span>
+                                <span class="t-cursor"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="terminal-glow"></div>
+                </div>
             </div>
 
-            <div class="install-code">
-                <code>npm install -g ai-agent-config</code>
-                <button class="copy-btn" onclick="copyCode()">📋</button>
+            <!-- Floating Tag -->
+            <div class="floating-tag">
+                One Universe of Skills — All AI Platforms
             </div>
+        </div>
+
+        <!-- Scroll Hint -->
+        <div class="scroll-hint">
+            <div class="scroll-line"></div>
         </div>
     </header>
 
-    <!-- Skills & Workflows Section (MAIN VALUE - moved up) -->
-    <section class="skills-workflows">
+    <!-- Skills & Workflows Section -->
+    <section class="section-skills" id="skills">
         <div class="container">
-            <h2 class="section-title">🎁 What You Get</h2>
+            <div class="section-label">WHAT YOU GET</div>
+            <h2 class="section-heading">Skills & Workflows</h2>
 
-            <div class="category-label">Skills</div>
-            <div class="skills-grid-wide">
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon">🔍</span>
-                        <h3>code-review</h3>
-                    </div>
-                    <p>Security, performance & best practices checks</p>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon">📝</span>
-                        <h3>git-commit</h3>
-                    </div>
-                    <p>Conventional commit standards</p>
+            <!-- Skills Row -->
+            <div class="category-row">
+                <div class="category-tag">Skills</div>
+                <div class="cards-row">
+                    <article class="card card-skill">
+                        <div class="card-icon">
+                            <span>🔍</span>
+                            <div class="icon-ring"></div>
+                        </div>
+                        <h3 class="card-title">code-review</h3>
+                        <p class="card-desc">Security, performance & best practices checks</p>
+                        <div class="card-tags">
+                            <span>Security</span>
+                            <span>Performance</span>
+                        </div>
+                    </article>
+
+                    <article class="card card-skill">
+                        <div class="card-icon">
+                            <span>📝</span>
+                            <div class="icon-ring"></div>
+                        </div>
+                        <h3 class="card-title">git-commit</h3>
+                        <p class="card-desc">Conventional commit standards & best practices</p>
+                        <div class="card-tags">
+                            <span>Git</span>
+                            <span>Standards</span>
+                        </div>
+                    </article>
                 </div>
             </div>
 
-            <div class="category-label">Workflows</div>
-            <div class="skills-grid-wide">
-                <div class="skill-card featured">
-                    <div class="skill-header">
-                        <span class="skill-icon">🧠</span>
-                        <h3>brainstorm</h3>
-                        <span class="badge">20+ techniques</span>
-                    </div>
-                    <p>6-phase creative problem-solving: SCAMPER, Six Hats, Mind Mapping, 5 Whys & more</p>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon">🔀</span>
-                        <h3>create-pr</h3>
-                    </div>
-                    <p>Streamlined GitHub Pull Request creation with gh CLI</p>
-                </div>
-                <div class="skill-card">
-                    <div class="skill-header">
-                        <span class="skill-icon">🔄</span>
-                        <h3>update-skills</h3>
-                    </div>
-                    <p>Sync & install latest skills from central repository</p>
+            <!-- Workflows Row -->
+            <div class="category-row">
+                <div class="category-tag">Workflows</div>
+                <div class="cards-row cards-row-3">
+                    <article class="card card-workflow card-featured">
+                        <div class="featured-label">Featured</div>
+                        <div class="card-icon card-icon-lg">
+                            <span>🧠</span>
+                            <div class="icon-ring"></div>
+                            <div class="icon-ring icon-ring-2"></div>
+                        </div>
+                        <h3 class="card-title">brainstorm</h3>
+                        <div class="workflow-meta">20+ techniques</div>
+                        <p class="card-desc">7-phase creative problem-solving with SCAMPER, Six Hats, Mind Mapping & more</p>
+                        <div class="workflow-flow">
+                            <span>Research</span><span>→</span>
+                            <span>Confirm</span><span>→</span>
+                            <span>Clarify</span><span>→</span>
+                            <span>Ideate</span><span>→</span>
+                            <span>Evaluate</span><span>→</span>
+                            <span>Visualize</span><span>→</span>
+                            <span>Decide</span>
+                        </div>
+                    </article>
+
+                    <article class="card card-workflow">
+                        <div class="card-icon">
+                            <span>🚀</span>
+                            <div class="icon-ring"></div>
+                        </div>
+                        <h3 class="card-title">create-pr</h3>
+                        <p class="card-desc">Streamlined GitHub Pull Request creation with gh CLI</p>
+                    </article>
+
+                    <article class="card card-workflow">
+                        <div class="card-icon">
+                            <span>🔄</span>
+                            <div class="icon-ring"></div>
+                        </div>
+                        <h3 class="card-title">update-skills</h3>
+                        <p class="card-desc">Sync & install latest skills from central repository</p>
+                    </article>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="features">
+    <!-- Why Section -->
+    <section class="section-why" id="why">
         <div class="container">
-            <h2 class="section-title">🎯 Why AI Agent Config?</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔗</div>
-                    <h3>One Source of Truth</h3>
-                    <p>Sync skills across all AI tools from a single repository</p>
+            <div class="why-grid">
+                <div class="why-content">
+                    <div class="section-label">WHY USE IT</div>
+                    <h2 class="section-heading">One Command.<br>All Platforms.</h2>
+                    <p class="why-desc">Stop copying configuration files manually. Install once, and your AI assistants are supercharged everywhere.</p>
                 </div>
-                <div class="feature-card">
-                    <div class="feature-icon">⚡</div>
-                    <h3>Auto Install</h3>
-                    <p>NPM postinstall magic - just install and go</p>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">🌍</div>
-                    <h3>Cross Platform</h3>
-                    <p>Works everywhere - Claude, Antigravity, Cursor & more</p>
+
+                <div class="why-features">
+                    <div class="feature-item">
+                        <div class="feature-num">01</div>
+                        <div class="feature-content">
+                            <h3>Single Source of Truth</h3>
+                            <p>Sync skills across all AI tools from one repository</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-num">02</div>
+                        <div class="feature-content">
+                            <h3>Auto Install</h3>
+                            <p>NPM postinstall magic — just install and go</p>
+                        </div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-num">03</div>
+                        <div class="feature-content">
+                            <h3>Cross Platform</h3>
+                            <p>Works with Claude, Cursor, Windsurf & more</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- CLI Section -->
-    <section class="cli">
+    <section class="section-cli" id="cli">
         <div class="container">
-            <h2 class="section-title">🚀 CLI Commands</h2>
-            <div class="cli-box">
-                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent install <span class="cli-comment"># Install to all platforms</span></div>
-                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent sync <span class="cli-comment"># Update from latest</span></div>
-                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent list <span class="cli-comment"># Show installed skills</span></div>
-                <div class="cli-line"><span class="cli-prompt">$</span> ai-agent platforms <span class="cli-comment"># Show detected platforms</span></div>
+            <div class="section-label">COMMANDS</div>
+            <h2 class="section-heading">Simple CLI</h2>
+
+            <div class="cli-showcase">
+                <div class="cli-window">
+                    <div class="cli-header">
+                        <span class="cli-title">ai-agent</span>
+                        <span class="cli-badge">v1.0.3</span>
+                    </div>
+                    <div class="cli-body">
+                        <div class="cli-row">
+                            <code class="cli-cmd">ai-agent install</code>
+                            <span class="cli-desc">Install to all platforms</span>
+                        </div>
+                        <div class="cli-row">
+                            <code class="cli-cmd">ai-agent sync</code>
+                            <span class="cli-desc">Update from latest</span>
+                        </div>
+                        <div class="cli-row">
+                            <code class="cli-cmd">ai-agent list</code>
+                            <span class="cli-desc">Show installed skills</span>
+                        </div>
+                        <div class="cli-row">
+                            <code class="cli-cmd">ai-agent platforms</code>
+                            <span class="cli-desc">Show detected platforms</span>
+                        </div>
+                        <div class="cli-row">
+                            <code class="cli-cmd">ai-agent uninstall</code>
+                            <span class="cli-desc">Remove installed skills</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- Platforms Section -->
-    <section class="platforms">
+    <section class="section-platforms" id="platforms">
         <div class="container">
-            <h2 class="section-title">🛸 Supported Platforms</h2>
+            <div class="section-label">COMPATIBILITY</div>
+            <h2 class="section-heading">Supported Platforms</h2>
+
             <div class="platforms-grid">
-                <div class="platform-card">
-                    <span class="platform-emoji">🟣</span>
-                    <span class="platform-name">Claude Code</span>
-                    <code>~/.claude/skills/</code>
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #a855f7;">🟣</div>
+                    <div class="platform-info">
+                        <h3>Claude Code</h3>
+                        <code>~/.claude/skills/</code>
+                    </div>
                 </div>
-                <div class="platform-card">
-                    <span class="platform-emoji">🔵</span>
-                    <span class="platform-name">Antigravity</span>
-                    <code>~/.gemini/antigravity/skills/</code>
+
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #3b82f6;">🔵</div>
+                    <div class="platform-info">
+                        <h3>Antigravity</h3>
+                        <code>~/.gemini/antigravity/skills/</code>
+                    </div>
                 </div>
-                <div class="platform-card">
-                    <span class="platform-emoji">🟢</span>
-                    <span class="platform-name">Cursor</span>
-                    <code>~/.cursor/skills/</code>
+
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #10b981;">🟢</div>
+                    <div class="platform-info">
+                        <h3>Cursor</h3>
+                        <code>~/.cursor/skills/</code>
+                    </div>
+                </div>
+
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #06b6d4;">🌊</div>
+                    <div class="platform-info">
+                        <h3>Windsurf</h3>
+                        <code>~/.windsurf/skills/</code>
+                    </div>
+                </div>
+
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #f59e0b;">⚡</div>
+                    <div class="platform-info">
+                        <h3>Codex CLI</h3>
+                        <code>~/.codex/skills/</code>
+                    </div>
+                </div>
+
+                <div class="platform-item">
+                    <div class="platform-icon" style="--accent: #ec4899;">🐙</div>
+                    <div class="platform-info">
+                        <h3>GitHub Copilot</h3>
+                        <code>~/.github/copilot-instructions.md</code>
+                    </div>
                 </div>
             </div>
         </div>
@@ -155,18 +343,124 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>Made with 🤖 by <a href="https://github.com/dongitran">Dong Tran</a></p>
-            <p class="footer-tagline">Empowering the AI-assisted development universe 🌟</p>
+            <div class="footer-content">
+                <div class="footer-brand">AI AGENT CONFIG</div>
+                <p class="footer-credit">
+                    Made with 🤖 by <a href="https://github.com/dongitran">Dong Tran</a>
+                </p>
+                <p class="footer-tagline">Empowering the AI-assisted development universe</p>
+            </div>
         </div>
     </footer>
 
     <script>
-        function copyCode() {
-            navigator.clipboard.writeText('npm install -g ai-agent-config');
-            const btn = document.querySelector('.copy-btn');
-            btn.textContent = '✅';
-            setTimeout(() => btn.textContent = '📋', 2000);
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorRing = document.querySelector('.cursor-ring');
+
+        let mouseX = 0, mouseY = 0;
+        let ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursorDot.style.left = mouseX + 'px';
+            cursorDot.style.top = mouseY + 'px';
+        });
+
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.15;
+            ringY += (mouseY - ringY) * 0.15;
+            cursorRing.style.left = ringX + 'px';
+            cursorRing.style.top = ringY + 'px';
+            requestAnimationFrame(animateCursor);
         }
+        animateCursor();
+
+        // Cursor hover effects
+        document.querySelectorAll('a, button, .card').forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                cursorRing.style.borderColor = '#22d3ee';
+            });
+            el.addEventListener('mouseleave', () => {
+                cursorRing.style.transform = 'translate(-50%, -50%) scale(1)';
+                cursorRing.style.borderColor = 'rgba(255,255,255,0.5)';
+            });
+        });
+
+        // Neural Network
+        const canvas = document.getElementById('neuralCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener('resize', resize);
+
+        const nodes = [];
+        for (let i = 0; i < 40; i++) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 0.4,
+                vy: (Math.random() - 0.5) * 0.4
+            });
+        }
+
+        function drawNetwork() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+                if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+            });
+
+            // Draw connections
+            nodes.forEach((n1, i) => {
+                nodes.slice(i + 1).forEach(n2 => {
+                    const dx = n1.x - n2.x;
+                    const dy = n1.y - n2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 180) {
+                        ctx.beginPath();
+                        ctx.moveTo(n1.x, n1.y);
+                        ctx.lineTo(n2.x, n2.y);
+                        ctx.strokeStyle = `rgba(34, 211, 238, ${0.12 * (1 - dist / 180)})`;
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                });
+            });
+
+            // Draw nodes
+            nodes.forEach(node => {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, 2, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(34, 211, 238, 0.5)';
+                ctx.fill();
+            });
+
+            requestAnimationFrame(drawNetwork);
+        }
+        drawNetwork();
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card, .feature-item, .platform-item, .section-heading, .section-label').forEach(el => {
+            observer.observe(el);
+        });
     </script>
 </body>
 </html>
