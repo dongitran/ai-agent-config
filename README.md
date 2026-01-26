@@ -90,6 +90,7 @@ ai-agent --version            # Show version
 
 | Workflow | Description | Available As |
 |----------|-------------|--------------|
+| 📋 **release-notes** | Generate comprehensive release notes with migration guides & diagrams | `/release-notes` in Claude Code |
 | 💡 **brainstorm** | 7-phase creative ideation process | `/brainstorm` in Claude Code |
 | 🚀 **create-pr** | GitHub Pull Request creation workflow | `/create-pr` in Claude Code |
 | 🔄 **update-skills** | Sync & install latest skills | `/update-skills` in Claude Code |
