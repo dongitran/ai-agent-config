@@ -22,11 +22,11 @@
 ## ✨ Features
 
 - 🔗 **Cross-Platform** - Works with Claude Code, Antigravity, Cursor, Windsurf, and more
-- 🔄 **Auto-Sync** - Automatically sync skills from external repositories (Vercel Labs, etc.)
+- 🔄 **Auto-Sync** - Automatically sync skills from external repositories (Vercel Labs, Everything Claude Code, etc.)
 - 🤖 **GitHub Actions** - Weekly auto-updates with PR creation
-- 📦 **Universal Skills** - Share skills across all AI coding assistants
+- 📦 **25 Production Skills** - 2 core + 2 Vercel + 11 Everything Claude Code + 4 workflows
 - ✅ **Tested** - Comprehensive test suite with CI/CD pipeline
-- 🎨 **Curated** - Hand-picked skills from industry leaders
+- 🎨 **Curated** - Hand-picked skills from industry leaders and hackathon winners
 
 ## 🚀 Quick Start
 
@@ -81,10 +81,26 @@ ai-agent --version            # Show version
 
 ### External Skills (Auto-Synced)
 
-| Skill | Source | Description |
-|-------|--------|-------------|
-| ⚛️ **react-best-practices** | Vercel Labs | 57 React/Next.js optimization rules from Vercel Engineering |
-| 🎨 **web-design-guidelines** | Vercel Labs | Web design best practices and patterns |
+#### From Vercel Labs
+| Skill | Description |
+|-------|-------------|
+| ⚛️ **react-best-practices** | 57 React/Next.js optimization rules from Vercel Engineering |
+| 🎨 **web-design-guidelines** | Web design best practices and patterns |
+
+#### From Everything Claude Code (Anthropic Hackathon Winner)
+| Skill | Description |
+|-------|-------------|
+| 🔧 **backend-patterns** | API design, caching strategies, database optimization |
+| 🐘 **postgres-patterns** | PostgreSQL optimization, indexing, query patterns |
+| 💎 **frontend-patterns** | Component architecture, state management, rendering optimization |
+| 📐 **project-guidelines-example** | Project structure templates and organizational patterns |
+| 📋 **coding-standards** | Language-specific best practices and style guides |
+| 🛡️ **security-review** | Security checklist and vulnerability analysis |
+| 🧪 **tdd-workflow** | Test-driven development methodology |
+| 🎓 **continuous-learning** | Auto-extract patterns from sessions into reusable skills |
+| ⚡ **eval-harness** | Evaluation framework with pass@k metrics |
+| 🔄 **verification-loop** | Continuous verification with checkpoint system |
+| 📦 **strategic-compact** | Context optimization and compaction strategies |
 
 ## 🔄 Included Workflows
 
@@ -186,6 +202,7 @@ MIT License - see [LICENSE](LICENSE) file
 - Main skills: Created by [@dongitran](https://github.com/dongitran)
 - External skills:
   - `react-best-practices`, `web-design-guidelines`: From [Vercel Labs](https://github.com/vercel-labs/agent-skills) (MIT License)
+  - `backend-patterns`, `postgres-patterns`, `frontend-patterns`, `coding-standards`, `security-review`, `tdd-workflow`, `continuous-learning`, `eval-harness`, `verification-loop`, `strategic-compact`, `project-guidelines-example`: From [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa (MIT License)
 
 ## 🔗 Links
 
