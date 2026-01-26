@@ -1,7 +1,3 @@
----
-source: external
-attribution: Skills from Vercel Labs (https://github.com/vercel-labs/agent-skills)
----
 
 ---
 name: web-design-guidelines

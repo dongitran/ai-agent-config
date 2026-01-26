@@ -16,6 +16,59 @@
       ],
       "license": "MIT",
       "attribution": "Skills from Vercel Labs (https://github.com/vercel-labs/agent-skills)"
+    },
+    {
+      "name": "everything-claude-code",
+      "repo": "https://github.com/affaan-m/everything-claude-code.git",
+      "branch": "main",
+      "skills": [
+        {
+          "path": "skills/backend-patterns",
+          "name": "backend-patterns"
+        },
+        {
+          "path": "skills/coding-standards",
+          "name": "coding-standards"
+        },
+        {
+          "path": "skills/continuous-learning",
+          "name": "continuous-learning"
+        },
+        {
+          "path": "skills/eval-harness",
+          "name": "eval-harness"
+        },
+        {
+          "path": "skills/frontend-patterns",
+          "name": "frontend-patterns"
+        },
+        {
+          "path": "skills/postgres-patterns",
+          "name": "postgres-patterns"
+        },
+        {
+          "path": "skills/project-guidelines-example",
+          "name": "project-guidelines-example"
+        },
+        {
+          "path": "skills/security-review",
+          "name": "security-review"
+        },
+        {
+          "path": "skills/strategic-compact",
+          "name": "strategic-compact"
+        },
+        {
+          "path": "skills/tdd-workflow",
+          "name": "tdd-workflow"
+        },
+        {
+          "path": "skills/verification-loop",
+          "name": "verification-loop"
+        }
+      ],
+      "license": "MIT",
+      "attribution": "Skills from Everything Claude Code by Affaan Mustafa (https://github.com/affaan-m/everything-claude-code)"
     }
   ]
 }

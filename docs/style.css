@@ -569,8 +569,25 @@ section {
 }
 
 /* ===== Skills Section ===== */
+.skills-intro {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 80px;
+    max-width: 700px;
+}
+
 .category-row {
     margin-bottom: 64px;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .category-tag {
@@ -584,7 +601,13 @@ section {
     padding: 6px 12px;
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 4px;
-    margin-bottom: 24px;
+}
+
+.category-meta {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    opacity: 0.6;
 }
 
 .cards-row {
@@ -617,6 +640,15 @@ section {
     background: rgba(255,255,255,0.04);
     border-color: rgba(34, 211, 238, 0.3);
     transform: translateY(-4px);
+}
+
+.card-ecc {
+    border-color: rgba(168, 85, 247, 0.15);
+}
+
+.card-ecc:hover {
+    border-color: rgba(168, 85, 247, 0.4);
+    background: rgba(168, 85, 247, 0.03);
 }
 
 .card-featured {
@@ -670,6 +702,10 @@ section {
     border: 1px solid rgba(34, 211, 238, 0.2);
     border-radius: 50%;
     animation: ring-spin 12s linear infinite;
+}
+
+.icon-ring-ecc {
+    border-color: rgba(168, 85, 247, 0.25);
 }
 
 .icon-ring-2 {
@@ -960,6 +996,21 @@ section {
 }
 
 .footer-credit a:hover {
+    text-decoration: underline;
+}
+
+.footer-note {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+.footer-note a {
+    color: var(--cyan);
+    text-decoration: none;
+}
+
+.footer-note a:hover {
     text-decoration: underline;
 }
 

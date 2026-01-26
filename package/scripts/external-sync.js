@@ -178,8 +178,8 @@ function syncAll(options = {}) {
       const result = copySkill(sourcePath, targetPath, force);
 
       if (result.copied) {
-        // Add attribution
-        addAttribution(targetPath, src.attribution);
+        // Skip attribution to save tokens - attribution is already in external-skills.json
+        // addAttribution(targetPath, src.attribution);
         console.log(`   ✓ ${skillDef.name}`);
         results.copied++;
       } else {
