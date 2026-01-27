@@ -620,6 +620,10 @@ section {
     grid-template-columns: repeat(3, 1fr);
 }
 
+.cards-row-4 {
+    grid-template-columns: repeat(4, 1fr);
+}
+
 .card {
     position: relative;
     padding: 32px;
