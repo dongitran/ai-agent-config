@@ -12,6 +12,7 @@ const REPO_URL = "https://github.com/dongitran/ai-agent-config.git";
 const CACHE_DIR = path.join(platforms.HOME, ".ai-agent-config-cache");
 const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agent", "skills");
 const REPO_WORKFLOWS_DIR = path.join(CACHE_DIR, ".agent", "workflows");
+const PACKAGE_SKILLS_DIR = path.join(__dirname, "..", "skills");
 
 /**
  * Copy directory recursively
@@ -82,15 +83,31 @@ function isRepoCached() {
  * Get list of available skills from cached repo
  */
 function getAvailableSkills() {
-  if (!fs.existsSync(REPO_SKILLS_DIR)) {
-    return [];
+  const skills = new Set();
+
+  // Get skills from repo cache
+  if (fs.existsSync(REPO_SKILLS_DIR)) {
+    fs.readdirSync(REPO_SKILLS_DIR).forEach((name) => {
+      const skillPath = path.join(REPO_SKILLS_DIR, name);
+      const skillFile = path.join(skillPath, "SKILL.md");
+      if (fs.statSync(skillPath).isDirectory() && fs.existsSync(skillFile)) {
+        skills.add(name);
+      }
+    });
   }
 
-  return fs.readdirSync(REPO_SKILLS_DIR).filter((name) => {
-    const skillPath = path.join(REPO_SKILLS_DIR, name);
-    const skillFile = path.join(skillPath, "SKILL.md");
-    return fs.statSync(skillPath).isDirectory() && fs.existsSync(skillFile);
-  });
+  // Get skills from package (config-manager, skill-updater)
+  if (fs.existsSync(PACKAGE_SKILLS_DIR)) {
+    fs.readdirSync(PACKAGE_SKILLS_DIR).forEach((name) => {
+      const skillPath = path.join(PACKAGE_SKILLS_DIR, name);
+      const skillFile = path.join(skillPath, "SKILL.md");
+      if (fs.statSync(skillPath).isDirectory() && fs.existsSync(skillFile)) {
+        skills.add(name);
+      }
+    });
+  }
+
+  return Array.from(skills);
 }
 
 /**
@@ -170,9 +187,13 @@ function installToPlatform(platform, options = {}) {
   }
 
   for (const skillName of skillsToInstall) {
-    const srcPath = path.join(REPO_SKILLS_DIR, skillName);
-    const destPath = path.join(skillsPath, skillName);
+    // Try package skills first, then repo cache
+    let srcPath = path.join(PACKAGE_SKILLS_DIR, skillName);
+    if (!fs.existsSync(srcPath)) {
+      srcPath = path.join(REPO_SKILLS_DIR, skillName);
+    }
 
+    const destPath = path.join(skillsPath, skillName);
     const copyResult = copyDir(srcPath, destPath, force);
     results.skills.push({
       name: skillName,
@@ -349,4 +370,5 @@ module.exports = {
   REPO_URL,
   REPO_SKILLS_DIR,
   REPO_WORKFLOWS_DIR,
+  PACKAGE_SKILLS_DIR,
 };
