@@ -24,7 +24,7 @@
 - 🔗 **Cross-Platform** - Works with Claude Code, Antigravity, Cursor, Windsurf, and more
 - 🔄 **Auto-Sync** - Automatically sync skills from external repositories (Vercel Labs, Everything Claude Code, etc.)
 - 🤖 **GitHub Actions** - Weekly auto-updates with PR creation
-- 📦 **25 Production Skills** - 2 core + 2 Vercel + 11 Everything Claude Code + 4 workflows
+- 📦 **26+ Production Skills** - 2 core + 2 Vercel + 11 Everything Claude Code + 1 NestJS + 1 Playwright + 4 workflows
 - ✅ **Tested** - Comprehensive test suite with CI/CD pipeline
 - 🎨 **Curated** - Hand-picked skills from industry leaders and hackathon winners
 
@@ -101,6 +101,16 @@ ai-agent --version            # Show version
 | ⚡ **eval-harness** | Evaluation framework with pass@k metrics |
 | 🔄 **verification-loop** | Continuous verification with checkpoint system |
 | 📦 **strategic-compact** | Context optimization and compaction strategies |
+
+#### From Kadajett (NestJS Expert)
+| Skill | Description |
+|-------|-------------|
+| 🏗️ **nestjs-best-practices** | 40 production-ready NestJS patterns: modules, DI, security, performance, microservices |
+
+#### From Testing Tools
+| Skill | Description |
+|-------|-------------|
+| 🎭 **playwright** | End-to-end testing automation with Playwright |
 
 ## 🔄 Included Workflows
 
@@ -203,6 +213,8 @@ MIT License - see [LICENSE](LICENSE) file
 - External skills:
   - `react-best-practices`, `web-design-guidelines`: From [Vercel Labs](https://github.com/vercel-labs/agent-skills) (MIT License)
   - `backend-patterns`, `postgres-patterns`, `frontend-patterns`, `coding-standards`, `security-review`, `tdd-workflow`, `continuous-learning`, `eval-harness`, `verification-loop`, `strategic-compact`, `project-guidelines-example`: From [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa (MIT License)
+  - `nestjs-best-practices`: From [agent-nestjs-skills](https://github.com/Kadajett/agent-nestjs-skills) by Kadajett (MIT License)
+  - `playwright`: From [playwright-skill](https://github.com/lackeyjb/playwright-skill) by lackeyjb (MIT License)
 
 ## 🔗 Links
 

@@ -82,6 +82,20 @@
       ],
       "license": "MIT",
       "attribution": "Playwright skill from lackeyjb (https://github.com/lackeyjb/playwright-skill)"
+    },
+    {
+      "name": "agent-nestjs-skills",
+      "repo": "https://github.com/Kadajett/agent-nestjs-skills.git",
+      "branch": "main",
+      "skills": [
+        {
+          "path": ".",
+          "name": "nestjs-best-practices",
+          "excludePaths": [".git", ".github", "README.md", "scripts", "website"]
+        }
+      ],
+      "license": "MIT",
+      "attribution": "NestJS Best Practices from Kadajett (https://github.com/Kadajett/agent-nestjs-skills)"
     }
   ]
 }

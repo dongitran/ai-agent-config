@@ -651,6 +651,103 @@ section {
     background: rgba(168, 85, 247, 0.03);
 }
 
+/* NestJS Card - Distinctive Red Theme */
+.card-nestjs {
+    position: relative;
+    border-color: rgba(224, 36, 94, 0.2);
+    background: linear-gradient(135deg, rgba(224, 36, 94, 0.03) 0%, rgba(0, 0, 0, 0.02) 100%);
+    overflow: hidden;
+}
+
+.card-nestjs::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #e0245e 0%, #ea384d 50%, #e0245e 100%);
+    opacity: 0.6;
+    transition: opacity 0.4s;
+}
+
+.card-nestjs::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 80% 20%, rgba(224, 36, 94, 0.08) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+
+.card-nestjs:hover {
+    border-color: rgba(224, 36, 94, 0.5);
+    background: linear-gradient(135deg, rgba(224, 36, 94, 0.06) 0%, rgba(0, 0, 0, 0.03) 100%);
+    box-shadow: 0 8px 32px rgba(224, 36, 94, 0.15);
+}
+
+.card-nestjs:hover::before {
+    opacity: 1;
+}
+
+.card-nestjs:hover::after {
+    opacity: 1;
+}
+
+.icon-ring-nestjs {
+    background: rgba(224, 36, 94, 0.1);
+    border: 2px solid rgba(224, 36, 94, 0.3);
+}
+
+.card-nestjs:hover .icon-ring-nestjs {
+    background: rgba(224, 36, 94, 0.15);
+    border-color: rgba(224, 36, 94, 0.5);
+    box-shadow: 0 0 20px rgba(224, 36, 94, 0.3);
+}
+
+.card-nestjs .card-title {
+    color: var(--text-primary);
+    position: relative;
+}
+
+.card-nestjs .card-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 16px;
+    padding: 6px 12px;
+    background: rgba(224, 36, 94, 0.1);
+    border: 1px solid rgba(224, 36, 94, 0.2);
+    border-radius: 20px;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #ff6b9d;
+    transition: all 0.3s;
+}
+
+.card-nestjs:hover .card-badge {
+    background: rgba(224, 36, 94, 0.15);
+    border-color: rgba(224, 36, 94, 0.4);
+    transform: translateX(4px);
+}
+
+.card-nestjs .badge-icon {
+    font-size: 0.9rem;
+    animation: pulse-star 2s ease-in-out infinite;
+}
+
+@keyframes pulse-star {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
 .card-featured {
     background: linear-gradient(135deg, rgba(34, 211, 238, 0.05), rgba(16, 185, 129, 0.03));
     border-color: rgba(34, 211, 238, 0.2);

@@ -52,7 +52,7 @@ function syncRepo(source) {
 /**
  * Copy a skill from cache to target directory
  */
-function copySkill(sourcePath, targetPath, force = false) {
+function copySkill(sourcePath, targetPath, force = false, excludePaths = []) {
   if (!fs.existsSync(sourcePath)) {
     return { copied: false, reason: "source not found" };
   }
@@ -69,8 +69,8 @@ function copySkill(sourcePath, targetPath, force = false) {
   // Create target directory
   fs.mkdirSync(targetPath, { recursive: true });
 
-  // Copy all files recursively
-  copyDirRecursive(sourcePath, targetPath);
+  // Copy all files recursively, excluding specified paths
+  copyDirRecursive(sourcePath, targetPath, excludePaths);
 
   return { copied: true };
 }
@@ -78,10 +78,15 @@ function copySkill(sourcePath, targetPath, force = false) {
 /**
  * Recursively copy directory
  */
-function copyDirRecursive(src, dest) {
+function copyDirRecursive(src, dest, excludePaths = []) {
   const entries = fs.readdirSync(src, { withFileTypes: true });
 
   for (const entry of entries) {
+    // Check if this entry should be excluded
+    if (excludePaths.includes(entry.name)) {
+      continue;
+    }
+
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
 
@@ -89,7 +94,7 @@ function copyDirRecursive(src, dest) {
       if (!fs.existsSync(destPath)) {
         fs.mkdirSync(destPath, { recursive: true });
       }
-      copyDirRecursive(srcPath, destPath);
+      copyDirRecursive(srcPath, destPath, excludePaths);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -174,8 +179,9 @@ function syncAll(options = {}) {
     for (const skillDef of skills) {
       const sourcePath = path.join(repoDir, skillDef.path);
       const targetPath = path.join(TARGET_DIR, skillDef.name);
+      const excludePaths = skillDef.excludePaths || [];
 
-      const result = copySkill(sourcePath, targetPath, force);
+      const result = copySkill(sourcePath, targetPath, force, excludePaths);
 
       if (result.copied) {
         // Skip attribution to save tokens - attribution is already in external-skills.json
