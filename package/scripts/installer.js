@@ -12,7 +12,7 @@ const REPO_URL = "https://github.com/dongitran/ai-agent-config.git";
 const CACHE_DIR = path.join(platforms.HOME, ".ai-agent-config-cache");
 const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agent", "skills");
 const REPO_WORKFLOWS_DIR = path.join(CACHE_DIR, ".agent", "workflows");
-const PACKAGE_SKILLS_DIR = path.join(__dirname, "..", "skills");
+const PACKAGE_SKILLS_DIR = path.join(__dirname, "..", ".agent", "skills");
 
 /**
  * Copy directory recursively
