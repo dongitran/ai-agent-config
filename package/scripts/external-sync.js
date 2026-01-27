@@ -1,24 +1,30 @@
 /**
  * External Skills Sync Module
  * Automatically sync skills from external repositories
+ * v2.0: Now reads from user config at ~/.ai-agent/config.json
  */
 
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
+const configManager = require("./config-manager");
 
-const CONFIG_FILE = path.join(__dirname, "../../.agent/external-skills.json");
 const CACHE_DIR = path.join(require("os").homedir(), ".ai-agent-external-cache");
 const TARGET_DIR = path.join(__dirname, "../../.agent/skills");
 
 /**
- * Load external skills configuration
+ * Load external skills configuration from user config
  */
 function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) {
-    throw new Error(`Config file not found: ${CONFIG_FILE}`);
+  try {
+    // Load sources from user config
+    const sources = configManager.getAllSources();
+    return { sources };
+  } catch (error) {
+    console.error("⚠️  Failed to load user config:", error.message);
+    console.log("💡 Run 'ai-agent init' to create config");
+    throw error;
   }
-  return JSON.parse(fs.readFileSync(CONFIG_FILE, "utf-8"));
 }
 
 /**
