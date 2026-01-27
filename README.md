@@ -24,7 +24,7 @@
 - 🔗 **Cross-Platform** - Works with Claude Code, Antigravity, Cursor, Windsurf, and more
 - 🔄 **Auto-Sync** - Automatically sync skills from external repositories (Vercel Labs, Everything Claude Code, etc.)
 - 🤖 **GitHub Actions** - Weekly auto-updates with PR creation
-- 📦 **26+ Production Skills** - 2 core + 2 Vercel + 11 Everything Claude Code + 1 NestJS + 1 Playwright + 4 workflows
+- 📦 **24+ Production Skills** - 2 Vercel + 11 Everything Claude Code + 1 NestJS + 1 Playwright + 4 workflows
 - ✅ **Tested** - Comprehensive test suite with CI/CD pipeline
 - 🎨 **Curated** - Hand-picked skills from industry leaders and hackathon winners
 
@@ -71,13 +71,6 @@ ai-agent --version            # Show version
 ```
 
 ## 🧠 Included Skills
-
-### Main Skills
-
-| Skill | Description | Platforms |
-|-------|-------------|-----------|
-| 🔍 **code-review** | Security, performance & best practices checks | All |
-| 📝 **git-commit** | Conventional commit standards with Co-Authored-By | All |
 
 ### External Skills (Auto-Synced)
 
