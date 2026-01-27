@@ -69,6 +69,19 @@
       ],
       "license": "MIT",
       "attribution": "Skills from Everything Claude Code by Affaan Mustafa (https://github.com/affaan-m/everything-claude-code)"
+    },
+    {
+      "name": "playwright-skill",
+      "repo": "https://github.com/lackeyjb/playwright-skill.git",
+      "branch": "main",
+      "skills": [
+        {
+          "path": "skills/playwright-skill",
+          "name": "playwright"
+        }
+      ],
+      "license": "MIT",
+      "attribution": "Playwright skill from lackeyjb (https://github.com/lackeyjb/playwright-skill)"
     }
   ]
 }
