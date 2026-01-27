@@ -241,13 +241,16 @@ function sourceAdd(args) {
     console.log("\n❌ Missing repository URL");
     console.log("Usage: ai-agent source add <repo-url> [options]");
     console.log("\nOptions:");
-    console.log("  --name <name>       Source name (default: auto-generated)");
-    console.log("  --branch <branch>   Git branch (default: main)");
-    console.log("  --path <path>       Path to skills directory (default: skills)");
+    console.log("  --name <name>           Source name (default: auto-generated)");
+    console.log("  --branch <branch>       Git branch (default: main)");
+    console.log("  --path <path>           Path to skills in repo (default: skills)");
+    console.log("  --exclude <paths>       Comma-separated paths to exclude");
     console.log("\nExample:");
     console.log("  ai-agent source add https://github.com/mycompany/ai-skills \\");
     console.log("    --name company-skills \\");
-    console.log("    --branch main");
+    console.log("    --branch main \\");
+    console.log("    --path skills \\");
+    console.log("    --exclude .git,.github,README.md");
     console.log("");
     return;
   }
@@ -256,6 +259,8 @@ function sourceAdd(args) {
   const options = {
     name: null,
     branch: "main",
+    path: "skills",
+    excludePaths: [],
     skills: [],
   };
 
@@ -264,6 +269,10 @@ function sourceAdd(args) {
       options.name = args[++i];
     } else if (args[i] === "--branch" && args[i + 1]) {
       options.branch = args[++i];
+    } else if (args[i] === "--path" && args[i + 1]) {
+      options.path = args[++i];
+    } else if (args[i] === "--exclude" && args[i + 1]) {
+      options.excludePaths = args[++i].split(',').map(p => p.trim());
     }
   }
 
@@ -275,15 +284,26 @@ function sourceAdd(args) {
 
   console.log(`\n➕ Adding source: ${options.name}\n`);
   console.log(`   Repository: ${repo}`);
-  console.log(`   Branch: ${options.branch}\n`);
+  console.log(`   Branch: ${options.branch}`);
+  console.log(`   Path: ${options.path}`);
+  if (options.excludePaths.length > 0) {
+    console.log(`   Exclude: ${options.excludePaths.join(', ')}`);
+  }
+  console.log("");
 
   const sourceData = {
     name: options.name,
     repo,
     branch: options.branch,
+    path: options.path,
     skills: [],
     enabled: true,
   };
+
+  // Add excludePaths if provided
+  if (options.excludePaths.length > 0) {
+    sourceData.excludePaths = options.excludePaths;
+  }
 
   const result = configManager.addSource(sourceData);
 

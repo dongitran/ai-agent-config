@@ -1,230 +1,281 @@
-# 🌌 AI Agent Config
+# ai-agent-config
 
-<div align="center">
+> Universal Global Skills & Workflows for AI Coding Assistants - User-configurable skill sources
 
-**✨ Universal Global Skills & Workflows for AI Coding Assistants ✨**
+[![npm version](https://badge.fury.io/js/ai-agent-config.svg)](https://www.npmjs.com/package/ai-agent-config)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![npm](https://img.shields.io/npm/v/ai-agent-config)](https://www.npmjs.com/package/ai-agent-config)
-[![CI](https://github.com/dongitran/ai-agent-config/actions/workflows/ci.yml/badge.svg)](https://github.com/dongitran/ai-agent-config/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Website](https://img.shields.io/badge/Website-ai--agent--config.pages.dev-8b5cf6)](https://ai-agent-config.pages.dev)
+**One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
 
-*One Universe of Skills - All AI Platforms* 🪐
+## 🚀 What's New in v2.0
 
-</div>
+- ✅ **User-configurable sources** - Add custom skill repositories from GitHub
+- ✅ **Source management** - Enable, disable, add, remove sources via CLI
+- ✅ **Config management** - Export/import configs for team sharing
+- ✅ **Auto-migration** - Seamless upgrade from v1.x
+- ✅ **Backward compatible** - All v1 commands still work
 
----
-
-## 🎯 What is this?
-
-**ai-agent-config** is an NPM package that provides **global skills & workflows** for AI coding assistants. Install once, use everywhere - with automatic syncing from curated external sources.
-
-## ✨ Features
-
-- 🔗 **Cross-Platform** - Works with Claude Code, Antigravity, Cursor, Windsurf, and more
-- 🔄 **Auto-Sync** - Automatically sync skills from external repositories (Vercel Labs, Everything Claude Code, etc.)
-- 🤖 **GitHub Actions** - Weekly auto-updates with PR creation
-- 📦 **24+ Production Skills** - 2 Vercel + 11 Everything Claude Code + 1 NestJS + 1 Playwright + 4 workflows
-- ✅ **Tested** - Comprehensive test suite with CI/CD pipeline
-- 🎨 **Curated** - Hand-picked skills from industry leaders and hackathon winners
-
-## 🚀 Quick Start
+## 📦 Quick Start
 
 ```bash
 # Install globally
 npm install -g ai-agent-config
 
-# Sync and install
-ai-agent sync                 # Sync from main repository
-ai-agent sync-external        # Sync from external sources (Vercel Labs, etc.)
-ai-agent install              # Install to all detected platforms
+# Initialize (creates config at ~/.ai-agent/config.json)
+ai-agent init
 
-# List available skills
-ai-agent list                 # Show main skills & workflows
-ai-agent list-external        # Show external skills
+# Update skills from all sources
+ai-agent update
 
-# Manage platforms
-ai-agent platforms            # Show detected platforms
-ai-agent --version            # Show version
+# Install to your AI platforms
+ai-agent install
 ```
 
-## 📦 CLI Commands
+## 🎯 Key Features
 
-| Command | Description |
-|---------|-------------|
-| `ai-agent install` | Install skills to all detected platforms |
-| `ai-agent sync` | Sync skills from main GitHub repository |
-| `ai-agent sync-external` | Sync skills from external sources (NEW!) |
-| `ai-agent list` | List available skills and workflows |
-| `ai-agent list-external` | List available external skills (NEW!) |
-| `ai-agent platforms` | Show detected AI platforms |
-| `ai-agent uninstall` | Remove installed skills |
-| `ai-agent version` | Show version number |
-
-### Options
+### Add Custom Skills from Any GitHub Repo
 
 ```bash
---platform <name>    # Target specific platform (claude, antigravity, cursor)
---skill <name>       # Install specific skill only
---force              # Force overwrite existing files
---source <name>      # Sync from specific external source
+# Add your company's skills
+ai-agent source add https://github.com/mycompany/ai-skills \
+  --name company-skills \
+  --branch main \
+  --path skills \
+  --exclude .git,README.md
+
+# Update and install
+ai-agent update
+ai-agent install
 ```
 
-## 🧠 Included Skills
+### Manage Skill Sources
 
-### External Skills (Auto-Synced)
+```bash
+# List all sources (official + custom)
+ai-agent source list
 
-#### From Vercel Labs
-| Skill | Description |
-|-------|-------------|
-| ⚛️ **react-best-practices** | 57 React/Next.js optimization rules from Vercel Engineering |
-| 🎨 **web-design-guidelines** | Web design best practices and patterns |
+# Enable/disable sources
+ai-agent source disable playwright-skill
+ai-agent source enable vercel-labs
 
-#### From Everything Claude Code (Anthropic Hackathon Winner)
-| Skill | Description |
-|-------|-------------|
-| 🔧 **backend-patterns** | API design, caching strategies, database optimization |
-| 🐘 **postgres-patterns** | PostgreSQL optimization, indexing, query patterns |
-| 💎 **frontend-patterns** | Component architecture, state management, rendering optimization |
-| 📐 **project-guidelines-example** | Project structure templates and organizational patterns |
-| 📋 **coding-standards** | Language-specific best practices and style guides |
-| 🛡️ **security-review** | Security checklist and vulnerability analysis |
-| 🧪 **tdd-workflow** | Test-driven development methodology |
-| 🎓 **continuous-learning** | Auto-extract patterns from sessions into reusable skills |
-| ⚡ **eval-harness** | Evaluation framework with pass@k metrics |
-| 🔄 **verification-loop** | Continuous verification with checkpoint system |
-| 📦 **strategic-compact** | Context optimization and compaction strategies |
+# Remove custom source
+ai-agent source remove old-source
 
-#### From Kadajett (NestJS Expert)
-| Skill | Description |
-|-------|-------------|
-| 🏗️ **nestjs-best-practices** | 40 production-ready NestJS patterns: modules, DI, security, performance, microservices |
+# View source details
+ai-agent source info company-skills
+```
 
-#### From Testing Tools
-| Skill | Description |
-|-------|-------------|
-| 🎭 **playwright** | End-to-end testing automation with Playwright |
+### Share Config with Your Team
 
-## 🔄 Included Workflows
+```bash
+# Export your config
+ai-agent config export team-config.json
 
-| Workflow | Description | Available As |
-|----------|-------------|--------------|
-| 📋 **release-notes** | Generate comprehensive release notes with migration guides & diagrams | `/release-notes` in Claude Code |
-| 💡 **brainstorm** | 7-phase creative ideation process | `/brainstorm` in Claude Code |
-| 🚀 **create-pr** | GitHub Pull Request creation workflow | `/create-pr` in Claude Code |
-| 🔄 **update-skills** | Sync & install latest skills | `/update-skills` in Claude Code |
+# Team members import
+ai-agent config import team-config.json --merge
+```
 
-*Note: Workflows are automatically converted to skills format for Claude Code*
+## 📚 Available Skills (Official Sources)
 
-## 🛸 Supported Platforms
+### Frontend Development
+- `react-best-practices` - React & Next.js optimization (Vercel Labs)
+- `frontend-design` - Production-grade UI components (Vercel Labs)
+- `web-design-guidelines` - Web interface best practices (Vercel Labs)
+- `frontend-patterns` - Frontend architecture patterns
 
-| Platform | Skills Path | Workflows Support |
-|----------|-------------|-------------------|
-| 🟣 **Claude Code** | `~/.claude/skills/` | ✅ (as skills) |
-| 🔵 **Antigravity** | `~/.gemini/antigravity/skills/` | ✅ Native |
-| 🟢 **Cursor** | `~/.cursor/skills/` | ❌ |
-| 🌊 **Windsurf** | `~/.windsurf/skills/` | ❌ |
-| ⚡ **Codex CLI** | `~/.codex/skills/` | ❌ |
-| 🐙 **GitHub Copilot** | `~/.github/copilot-instructions.md` | ❌ |
+### Backend & Database
+- `backend-patterns` - API design, server-side patterns
+- `postgres-patterns` - PostgreSQL optimization (Supabase)
+- `nestjs-best-practices` - NestJS architecture & patterns
+- `security-review` - Security checklist & patterns
 
-## 🔄 External Skills Auto-Sync
+### Testing & Quality
+- `tdd-workflow` - Test-driven development workflow
+- `playwright` - Browser automation & testing
+- `code-review` - Code review best practices
+- `eval-harness` - Evaluation framework for AI sessions
 
-### How it works
+### Development Tools
+- `coding-standards` - Universal coding standards
+- `continuous-learning` - Extract reusable patterns
+- `strategic-compact` - Context management
 
-1. **Configuration**: Define external sources in `.agent/external-skills.json`
-2. **Manual Sync**: Run `ai-agent sync-external` anytime
-3. **Auto-Sync**: GitHub Actions runs weekly and creates PR when updates detected
-4. **Attribution**: Automatic license attribution added to synced skills
+## 🛠️ CLI Commands
 
-### Configure External Sources
+### Source Management
+```bash
+ai-agent source add <repo-url> [options]    # Add custom source
+ai-agent source remove <name>               # Remove source
+ai-agent source list                        # List all sources
+ai-agent source enable <name>               # Enable source
+ai-agent source disable <name>              # Disable source
+ai-agent source info <name>                 # View source details
+```
 
-Edit `.agent/external-skills.json`:
+### Config Management
+```bash
+ai-agent config get <key>                   # Get config value
+ai-agent config set <key> <value>           # Set config value
+ai-agent config edit                        # Edit in $EDITOR
+ai-agent config validate                    # Validate config
+ai-agent config export [file]               # Export config
+ai-agent config import <file> [--merge]     # Import config
+ai-agent config reset --yes                 # Reset to defaults
+```
+
+### Installation & Updates
+```bash
+ai-agent init                               # Initialize/migrate to v2.0
+ai-agent update [--source name]             # Update skills from sources
+ai-agent install [--platform name]          # Install to platforms
+ai-agent list                               # List installed skills
+ai-agent platforms                          # Show detected platforms
+ai-agent uninstall                          # Remove skills
+```
+
+## 🎨 Use Cases
+
+### For Companies
+```bash
+# 1. Create private skills repo
+# 2. Add to all team members
+ai-agent source add https://github.com/acme-corp/coding-standards \
+  --name acme-standards
+
+# 3. Share config file
+ai-agent config export acme-config.json
+# Send to team via Slack/Email
+
+# 4. Team members import
+ai-agent config import acme-config.json --merge
+```
+
+### For Individual Developers
+```bash
+# Add skills from multiple sources
+ai-agent source add https://github.com/username/my-skills
+ai-agent source add https://github.com/another/awesome-skills
+
+# Disable skills you don't use
+ai-agent source disable playwright-skill
+
+# Keep only what you need
+ai-agent update
+```
+
+### For Open Source Projects
+```bash
+# Create project-specific skills
+# Share via GitHub repo
+# Contributors use the same standards
+
+ai-agent source add https://github.com/project/ai-skills \
+  --name project-standards
+```
+
+## 📍 File Locations
+
+```
+~/.ai-agent/
+├── config.json                    # User configuration
+└── .ai-agent-external-cache/      # Downloaded skill repositories
+
+AI Platform Skills:
+~/.claude/skills/                  # Claude Code
+~/.gemini/antigravity/skills/      # Antigravity IDE
+~/.cursor/skills/                  # Cursor
+~/.windsurf/skills/                # Windsurf
+```
+
+## 🔧 Configuration File
+
+User config at `~/.ai-agent/config.json`:
 
 ```json
 {
-  "sources": [
-    {
-      "name": "vercel-labs",
-      "repo": "https://github.com/vercel-labs/agent-skills.git",
-      "branch": "main",
-      "skills": [
-        { "path": "skills/react-best-practices", "name": "react-best-practices" },
-        { "path": "skills/web-design-guidelines", "name": "web-design-guidelines" }
-      ],
-      "license": "MIT",
-      "attribution": "Skills from Vercel Labs (https://github.com/vercel-labs/agent-skills)"
-    }
-  ]
+  "version": "2.0",
+  "sources": {
+    "official": [
+      {
+        "name": "vercel-labs",
+        "repo": "https://github.com/vercel-labs/agent-skills.git",
+        "branch": "main",
+        "enabled": true,
+        "skills": [...]
+      }
+    ],
+    "custom": [
+      {
+        "name": "my-skills",
+        "repo": "https://github.com/me/my-skills.git",
+        "branch": "main",
+        "path": "skills",
+        "excludePaths": [".git", "README.md"],
+        "enabled": true
+      }
+    ]
+  },
+  "preferences": {
+    "autoUpdate": true,
+    "updateInterval": "weekly"
+  }
 }
 ```
-
-### Sync Commands
-
-```bash
-# Sync all external skills
-ai-agent sync-external
-
-# Sync with force overwrite
-ai-agent sync-external --force
-
-# Sync from specific source
-ai-agent sync-external --source vercel-labs
-
-# Sync specific skill only
-ai-agent sync-external --skill react-best-practices
-
-# List available external skills
-ai-agent list-external
-```
-
-## 💫 Why?
-
-- 🔗 **One source of truth** - Sync skills across all AI tools
-- ⚡ **Auto-install** - NPM postinstall detection and guidance
-- 🌍 **Cross-platform** - Works with all major AI coding assistants
-- 🤖 **Auto-updates** - GitHub Actions sync external skills weekly
-- 📚 **Curated sources** - Hand-picked skills from industry leaders (Vercel, etc.)
-- ✅ **Tested** - Comprehensive test suite with CI/CD
-- 🎯 **Slash commands** - Workflows available as `/commands` in Claude Code
 
 ## 🤝 Contributing
 
 We welcome contributions! Here's how:
 
-1. **Add your skills** to `.agent/skills/`
-2. **Add external sources** to `.agent/external-skills.json`
-3. **Run tests** with `npm test`
-4. **Submit PR** - CI will automatically test
+1. **Add skills to official sources**: Submit PR to add new curated sources
+2. **Report issues**: [GitHub Issues](https://github.com/dongitran/ai-agent-config/issues)
+3. **Share your skills**: Create skills repo and share with community
 
-## 📜 License
+## 📖 Migration from v1.x
 
-MIT License - see [LICENSE](LICENSE) file
+v2.0 automatically migrates your setup:
 
-### Attribution
+```bash
+# Install v2.0
+npm install -g ai-agent-config@latest
 
-- Main skills: Created by [@dongitran](https://github.com/dongitran)
-- External skills:
-  - `react-best-practices`, `web-design-guidelines`: From [Vercel Labs](https://github.com/vercel-labs/agent-skills) (MIT License)
-  - `backend-patterns`, `postgres-patterns`, `frontend-patterns`, `coding-standards`, `security-review`, `tdd-workflow`, `continuous-learning`, `eval-harness`, `verification-loop`, `strategic-compact`, `project-guidelines-example`: From [Everything Claude Code](https://github.com/affaan-m/everything-claude-code) by Affaan Mustafa (MIT License)
-  - `nestjs-best-practices`: From [agent-nestjs-skills](https://github.com/Kadajett/agent-nestjs-skills) by Kadajett (MIT License)
-  - `playwright`: From [playwright-skill](https://github.com/lackeyjb/playwright-skill) by lackeyjb (MIT License)
+# Run init (auto-detects v1 and migrates)
+ai-agent init
+
+# ✅ Done! All your skills are preserved
+```
+
+**No breaking changes** - All v1 commands work in v2.
+
+## 🌟 Why ai-agent-config?
+
+- ✅ **One source of truth** for AI coding skills across all platforms
+- ✅ **User-configurable** - Add unlimited custom skill sources
+- ✅ **Team-friendly** - Export/import configs for collaboration
+- ✅ **Auto-sync** - Weekly updates from official sources
+- ✅ **Zero dependencies** - Lightweight, fast, secure
+- ✅ **Open & extensible** - Use any GitHub repo as skill source
+
+## 📊 Supported Platforms
+
+| Platform | Status | Skills Directory |
+|----------|--------|------------------|
+| Claude Code | ✅ Supported | `~/.claude/skills/` |
+| Antigravity IDE | ✅ Supported | `~/.gemini/antigravity/skills/` |
+| Cursor | ✅ Supported | `~/.cursor/skills/` |
+| Windsurf | ✅ Supported | `~/.windsurf/skills/` |
+| Copilot (GitHub) | 🔄 Coming soon | - |
+
+## 📄 License
+
+MIT © [Dong Tran](https://github.com/dongitran)
 
 ## 🔗 Links
 
-- 📦 [NPM Package](https://www.npmjs.com/package/ai-agent-config)
-- 🌐 [Website](https://ai-agent-config.pages.dev)
-- 📖 [Documentation](https://github.com/dongitran/ai-agent-config)
-- 🐛 [Issues](https://github.com/dongitran/ai-agent-config/issues)
-- 🔄 [Changelog](https://github.com/dongitran/ai-agent-config/releases)
+- **NPM**: https://www.npmjs.com/package/ai-agent-config
+- **GitHub**: https://github.com/dongitran/ai-agent-config
+- **Issues**: https://github.com/dongitran/ai-agent-config/issues
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
-<div align="center">
-
-**Made with 🤖 by [Dong Tran](https://github.com/dongitran)**
-
-*Empowering the AI-assisted development universe* 🌟
-
-[⭐ Star on GitHub](https://github.com/dongitran/ai-agent-config) • [📦 Install from NPM](https://www.npmjs.com/package/ai-agent-config) • [🌐 Visit Website](https://ai-agent-config.pages.dev)
-
-</div>
+**Keywords**: AI coding assistant, Claude Code, Antigravity, Cursor, Windsurf, AI skills, code automation, developer tools, coding standards, best practices, AI agent config, skill management, team collaboration, custom skills, GitHub integration
