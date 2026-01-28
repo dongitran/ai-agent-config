@@ -7,13 +7,13 @@
 
 **One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
 
-## 🚀 What's New in v2.1
+## 🚀 What's New in v2.2
 
-- ✅ **User-configurable sources** - Add custom skill repositories from GitHub
+- ✅ **Minimal core** - Only 2 essential skills bundled (config-manager, skill-updater)
+- ✅ **User-configurable sources** - Add any skill repositories from GitHub
 - ✅ **Source management** - Enable, disable, add, remove sources via CLI
 - ✅ **Config management** - Export/import configs for team sharing
-- ✅ **Auto-migration** - Seamless upgrade from v2.0
-- ✅ **Backward compatible** - All v2.0 commands still work
+- ✅ **Zero defaults** - No external sources by default, full user control
 
 ## 📦 Quick Start
 
@@ -24,87 +24,31 @@ npm install -g ai-agent-config
 # Initialize (creates config at ~/.ai-agent/config.json)
 ai-agent init
 
-# Update skills from all sources
-ai-agent update
-
-# Install to your AI platforms
+# Install bundled skills to platforms
 ai-agent install
 ```
 
-## 🎯 Key Features
+## 🎯 Bundled Skills (2)
 
-### Add Custom Skills from Any GitHub Repo
+The package includes 2 core skills for managing the system:
 
-```bash
-# Add your company's skills
-ai-agent source add https://github.com/mycompany/ai-skills \
-  --name company-skills \
-  --branch main \
-  --path skills \
-  --exclude .git,README.md
+1. **config-manager** - Manage configuration and custom sources
+2. **skill-updater** - Update skills from GitHub repositories
 
-# Update and install
-ai-agent update
-ai-agent install
-```
+## 📚 Add More Skills
 
-### Manage Skill Sources
+To get more skills, add custom sources from GitHub:
 
 ```bash
-# List all sources (official + custom)
-ai-agent source list
+# Add Vercel Labs skills
+ai-agent source add https://github.com/vercel-labs/agent-skills.git \
+  --name vercel-labs \
+  --path skills
 
-# Enable/disable sources
-ai-agent source disable playwright-skill
-ai-agent source enable vercel-labs
-
-# Remove custom source
-ai-agent source remove old-source
-
-# View source details
-ai-agent source info company-skills
-```
-
-### Share Config with Your Team
-
-```bash
-# Export your config
-ai-agent config export team-config.json
-
-# Team members import
-ai-agent config import team-config.json --merge
-```
-
-## 📚 Available Skills
-
-### Official Sources (4 curated repositories)
-
-After running `ai-agent update`, you'll have access to 15+ skills from:
-
-1. **Vercel Labs** - Frontend best practices
-   - `react-best-practices`, `web-design-guidelines`
-
-2. **Everything Claude Code** - Full-stack development
-   - `backend-patterns`, `coding-standards`, `continuous-learning`
-   - `eval-harness`, `frontend-patterns`, `postgres-patterns`
-   - `project-guidelines-example`, `security-review`
-   - `strategic-compact`, `tdd-workflow`, `verification-loop`
-
-3. **Playwright Skill** - Browser automation
-   - `playwright`
-
-4. **NestJS Skills** - Backend framework
-   - `nestjs-best-practices`
-
-### Add Your Own Skills
-
-```bash
-# Add personal skills
-ai-agent source add https://github.com/yourname/my-skills
-
-# Add company skills
-ai-agent source add https://github.com/company/team-skills \
-  --name company-standards
+# Add Everything Claude Code
+ai-agent source add https://github.com/affaan-m/everything-claude-code.git \
+  --name everything-claude-code \
+  --path skills
 
 # Update and install
 ai-agent update
@@ -148,40 +92,26 @@ ai-agent uninstall                          # Remove skills
 
 ### For Companies
 ```bash
-# 1. Create private skills repo
-# 2. Add to all team members
+# Add your company's private skills repo
 ai-agent source add https://github.com/acme-corp/coding-standards \
   --name acme-standards
 
-# 3. Share config file
+# Share config file with team
 ai-agent config export acme-config.json
-# Send to team via Slack/Email
 
-# 4. Team members import
+# Team members import
 ai-agent config import acme-config.json --merge
 ```
 
 ### For Individual Developers
 ```bash
 # Add skills from multiple sources
-ai-agent source add https://github.com/username/my-skills
-ai-agent source add https://github.com/another/awesome-skills
+ai-agent source add https://github.com/vercel-labs/agent-skills.git --name vercel
+ai-agent source add https://github.com/yourname/my-skills --name personal
 
-# Disable skills you don't use
-ai-agent source disable playwright-skill
-
-# Keep only what you need
+# Update and install
 ai-agent update
-```
-
-### For Open Source Projects
-```bash
-# Create project-specific skills
-# Share via GitHub repo
-# Contributors use the same standards
-
-ai-agent source add https://github.com/project/ai-skills \
-  --name project-standards
+ai-agent install
 ```
 
 ## 📍 File Locations
@@ -206,22 +136,13 @@ User config at `~/.ai-agent/config.json`:
 {
   "version": "2.0",
   "sources": {
-    "official": [
-      {
-        "name": "vercel-labs",
-        "repo": "https://github.com/vercel-labs/agent-skills.git",
-        "branch": "main",
-        "enabled": true,
-        "skills": [...]
-      }
-    ],
+    "official": [],
     "custom": [
       {
         "name": "my-skills",
         "repo": "https://github.com/me/my-skills.git",
         "branch": "main",
         "path": "skills",
-        "excludePaths": [".git", "README.md"],
         "enabled": true
       }
     ]
@@ -237,32 +158,16 @@ User config at `~/.ai-agent/config.json`:
 
 We welcome contributions! Here's how:
 
-1. **Add skills to official sources**: Submit PR to add new curated sources
+1. **Share your skills**: Create skills repo and share with community
 2. **Report issues**: [GitHub Issues](https://github.com/dongitran/ai-agent-config/issues)
-3. **Share your skills**: Create skills repo and share with community
-
-## 📖 Migration from v1.x
-
-v2.0 automatically migrates your setup:
-
-```bash
-# Install v2.0
-npm install -g ai-agent-config@latest
-
-# Run init (auto-detects v1 and migrates)
-ai-agent init
-
-# ✅ Done! All your skills are preserved
-```
-
-**No breaking changes** - All v1 commands work in v2.
+3. **Submit PRs**: Improve the core tool
 
 ## 🌟 Why ai-agent-config?
 
-- ✅ **One source of truth** for AI coding skills across all platforms
+- ✅ **Minimal & focused** - Only 2 core skills bundled, add what you need
+- ✅ **Full control** - No default external sources, you decide what to install
 - ✅ **User-configurable** - Add unlimited custom skill sources
 - ✅ **Team-friendly** - Export/import configs for collaboration
-- ✅ **Auto-sync** - Weekly updates from official sources
 - ✅ **Zero dependencies** - Lightweight, fast, secure
 - ✅ **Open & extensible** - Use any GitHub repo as skill source
 
@@ -274,7 +179,7 @@ ai-agent init
 | Antigravity IDE | ✅ Supported | `~/.gemini/antigravity/skills/` |
 | Cursor | ✅ Supported | `~/.cursor/skills/` |
 | Windsurf | ✅ Supported | `~/.windsurf/skills/` |
-| Copilot (GitHub) | 🔄 Coming soon | - |
+| Codex CLI | ✅ Supported | `~/.codex/skills/` |
 
 ## 📄 License
 

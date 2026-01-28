@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Agent Config - Universal Skills for AI Coding Assistants</title>
-    <meta name="description" content="Universal Global Skills & Workflows for AI Coding Assistants. Install once, use everywhere.">
+    <title>AI Agent Config - Minimal Skill Manager for AI Coding Assistants</title>
+    <meta name="description" content="Minimal skill manager with 2 core skills. Add unlimited custom sources from GitHub. Full user control.">
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -50,7 +50,7 @@
                 <div class="hero-main">
                     <div class="hero-badge">
                         <span class="badge-dot"></span>
-                        <span>Open Source</span>
+                        <span>Open Source • v2.2</span>
                     </div>
 
                     <h1 class="hero-title">
@@ -60,8 +60,8 @@
                     </h1>
 
                     <p class="hero-desc">
-                        Universal Global Skills & Workflows<br>
-                        for AI Coding Assistants
+                        Minimal Skill Manager<br>
+                        Full User Control
                     </p>
 
                     <div class="hero-cta">
@@ -90,14 +90,21 @@
                                 <span class="t-cmd">npm install -g ai-agent-config</span>
                             </div>
                             <div class="terminal-line t-output">
-                                <span>+ ai-agent-config@1.0.6</span>
+                                <span>+ ai-agent-config@2.2.0</span>
+                            </div>
+                            <div class="terminal-line">
+                                <span class="t-prompt">~</span>
+                                <span class="t-cmd">ai-agent init</span>
+                            </div>
+                            <div class="terminal-line t-output t-success">
+                                <span>✓ Config created at ~/.ai-agent/config.json</span>
                             </div>
                             <div class="terminal-line">
                                 <span class="t-prompt">~</span>
                                 <span class="t-cmd">ai-agent install</span>
                             </div>
                             <div class="terminal-line t-output t-success">
-                                <span>✓ Installed 23+ skills to all platforms</span>
+                                <span>✓ Installed 2 core skills to all platforms</span>
                             </div>
                             <div class="terminal-line">
                                 <span class="t-prompt">~</span>
@@ -111,7 +118,7 @@
 
             <!-- Floating Tag -->
             <div class="floating-tag">
-                One Universe of Skills — All AI Platforms
+                2 Core Skills • Unlimited Custom Sources
             </div>
         </div>
 
@@ -121,316 +128,102 @@
         </div>
     </header>
 
-    <!-- Skills & Workflows Section -->
+    <!-- Skills Section -->
     <section class="section-skills" id="skills">
         <div class="container">
-            <div class="section-label">SKILL CATALOG</div>
-            <h2 class="section-heading">23 Production-Ready Skills</h2>
-            <p class="skills-intro">Battle-tested configurations from multiple sources, automatically synced and ready to supercharge your AI assistants.</p>
+            <div class="section-label">CORE SKILLS</div>
+            <h2 class="section-heading">2 Essential Skills Bundled</h2>
+            <p class="skills-intro">Minimal, focused core for managing your AI coding assistant skills. Add unlimited custom skills from any GitHub repository.</p>
 
-            <!-- Vercel Labs Skills -->
+            <!-- Core Skills -->
             <div class="category-row">
                 <div class="category-header">
-                    <div class="category-tag">Vercel Engineering</div>
-                    <div class="category-meta">2 skills • Auto-synced weekly</div>
+                    <div class="category-tag">Package Core</div>
+                    <div class="category-meta">2 skills • Always bundled</div>
                 </div>
                 <div class="cards-row">
                     <article class="card card-skill">
                         <div class="card-icon">
-                            <span>⚛️</span>
+                            <span>⚙️</span>
                             <div class="icon-ring"></div>
                         </div>
-                        <h3 class="card-title">react-best-practices</h3>
-                        <p class="card-desc">57 React/Next.js optimization rules from Vercel Engineering team</p>
+                        <h3 class="card-title">config-manager</h3>
+                        <p class="card-desc">Manage configuration and custom skill sources from GitHub</p>
                         <div class="card-tags">
-                            <span>React</span>
-                            <span>Next.js</span>
-                            <span>Performance</span>
+                            <span>Config</span>
+                            <span>Sources</span>
+                            <span>CLI</span>
                         </div>
                     </article>
 
                     <article class="card card-skill">
-                        <div class="card-icon">
-                            <span>🎨</span>
-                            <div class="icon-ring"></div>
-                        </div>
-                        <h3 class="card-title">web-design-guidelines</h3>
-                        <p class="card-desc">Web design patterns and UX best practices from Vercel</p>
-                        <div class="card-tags">
-                            <span>Design</span>
-                            <span>UX</span>
-                            <span>Patterns</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Everything Claude Code - Backend & Database -->
-            <div class="category-row">
-                <div class="category-header">
-                    <div class="category-tag">Backend & Database Engineering</div>
-                    <div class="category-meta">3 skills • Production Patterns</div>
-                </div>
-                <div class="cards-row cards-row-3">
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>🔧</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">backend-patterns</h3>
-                        <p class="card-desc">API design, caching strategies, database optimization patterns</p>
-                        <div class="card-tags">
-                            <span>API</span>
-                            <span>Database</span>
-                            <span>Caching</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-nestjs">
-                        <div class="card-icon">
-                            <span>🏗️</span>
-                            <div class="icon-ring icon-ring-nestjs"></div>
-                        </div>
-                        <h3 class="card-title">nestjs-best-practices</h3>
-                        <p class="card-desc">40 production-ready NestJS patterns covering modules, dependency injection, security, performance, and microservices architecture</p>
-                        <div class="card-tags">
-                            <span>NestJS</span>
-                            <span>Architecture</span>
-                            <span>TypeScript</span>
-                            <span>Microservices</span>
-                        </div>
-                        <div class="card-badge">
-                            <span class="badge-icon">⭐</span>
-                            <span>40 Rules</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>🐘</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">postgres-patterns</h3>
-                        <p class="card-desc">PostgreSQL optimization, indexing strategies, query patterns</p>
-                        <div class="card-tags">
-                            <span>PostgreSQL</span>
-                            <span>Performance</span>
-                            <span>Optimization</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Everything Claude Code - Frontend -->
-            <div class="category-row">
-                <div class="category-header">
-                    <div class="category-tag">Frontend Engineering</div>
-                    <div class="category-meta">1 skill • Everything Claude Code</div>
-                </div>
-                <div class="cards-row">
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>💎</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">frontend-patterns</h3>
-                        <p class="card-desc">Component architecture, state management, rendering optimization</p>
-                        <div class="card-tags">
-                            <span>Components</span>
-                            <span>State</span>
-                            <span>Performance</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>📐</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">project-guidelines-example</h3>
-                        <p class="card-desc">Project structure templates and organizational patterns</p>
-                        <div class="card-tags">
-                            <span>Architecture</span>
-                            <span>Organization</span>
-                            <span>Templates</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Everything Claude Code - Quality & Standards -->
-            <div class="category-row">
-                <div class="category-header">
-                    <div class="category-tag">Quality & Standards</div>
-                    <div class="category-meta">3 skills • Everything Claude Code</div>
-                </div>
-                <div class="cards-row cards-row-3">
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>📋</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">coding-standards</h3>
-                        <p class="card-desc">Language-specific best practices and style guides</p>
-                        <div class="card-tags">
-                            <span>Standards</span>
-                            <span>Style</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>🛡️</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">security-review</h3>
-                        <p class="card-desc">Security checklist and vulnerability analysis</p>
-                        <div class="card-tags">
-                            <span>Security</span>
-                            <span>OWASP</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>🧪</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">tdd-workflow</h3>
-                        <p class="card-desc">Test-driven development methodology and patterns</p>
-                        <div class="card-tags">
-                            <span>TDD</span>
-                            <span>Testing</span>
-                        </div>
-                    </article>
-                </div>
-            </div>
-
-            <!-- Everything Claude Code - Advanced -->
-            <div class="category-row">
-                <div class="category-header">
-                    <div class="category-tag">Advanced Workflows</div>
-                    <div class="category-meta">4 skills • Everything Claude Code</div>
-                </div>
-                <div class="cards-row cards-row-4">
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>🎓</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">continuous-learning</h3>
-                        <p class="card-desc">Auto-extract patterns from sessions into reusable skills</p>
-                        <div class="card-tags">
-                            <span>Learning</span>
-                            <span>Automation</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>⚡</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">eval-harness</h3>
-                        <p class="card-desc">Evaluation framework with pass@k metrics</p>
-                        <div class="card-tags">
-                            <span>Testing</span>
-                            <span>Metrics</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
                         <div class="card-icon">
                             <span>🔄</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
+                            <div class="icon-ring"></div>
                         </div>
-                        <h3 class="card-title">verification-loop</h3>
-                        <p class="card-desc">Continuous verification with checkpoint system</p>
+                        <h3 class="card-title">skill-updater</h3>
+                        <p class="card-desc">Update skills from GitHub repositories automatically</p>
                         <div class="card-tags">
-                            <span>CI/CD</span>
-                            <span>Quality</span>
-                        </div>
-                    </article>
-
-                    <article class="card card-skill card-ecc">
-                        <div class="card-icon">
-                            <span>📦</span>
-                            <div class="icon-ring icon-ring-ecc"></div>
-                        </div>
-                        <h3 class="card-title">strategic-compact</h3>
-                        <p class="card-desc">Context optimization and compaction strategies</p>
-                        <div class="card-tags">
-                            <span>Optimization</span>
-                            <span>Memory</span>
+                            <span>Sync</span>
+                            <span>Update</span>
+                            <span>GitHub</span>
                         </div>
                     </article>
                 </div>
             </div>
 
-            <!-- Workflows -->
+            <!-- Add More Skills -->
             <div class="category-row">
                 <div class="category-header">
-                    <div class="category-tag">Automation Workflows</div>
-                    <div class="category-meta">4 workflows • Multi-phase execution</div>
+                    <div class="category-tag">Custom Sources</div>
+                    <div class="category-meta">User-configurable • Unlimited</div>
                 </div>
 
-                <!-- Featured Workflow: Release Notes -->
                 <article class="card card-workflow card-featured">
-                    <div class="featured-label">NEW</div>
+                    <div class="featured-label">YOUR CHOICE</div>
                     <div class="card-icon card-icon-lg">
-                        <span>📋</span>
+                        <span>➕</span>
                         <div class="icon-ring"></div>
                         <div class="icon-ring icon-ring-2"></div>
                     </div>
-                    <h3 class="card-title">release-notes</h3>
-                    <div class="workflow-meta">6 phases • Migration guides • Mermaid diagrams</div>
-                    <p class="card-desc">Generate comprehensive, developer-friendly documentation for branches/PRs with automatic impact analysis, breaking change detection, and visual diagrams</p>
+                    <h3 class="card-title">Add Any Skills from GitHub</h3>
+                    <p class="card-desc">Add skills from Vercel Labs, Everything Claude Code, your company's private repo, or any GitHub repository. Full control over what you install.</p>
                     <div class="workflow-flow">
-                        <span>Git Analysis</span><span>→</span>
-                        <span>Code Exploration</span><span>→</span>
-                        <span>Impact Analysis</span><span>→</span>
-                        <span>Diagrams</span><span>→</span>
-                        <span>Documentation</span><span>→</span>
-                        <span>Review</span>
+                        <span>ai-agent source add &lt;repo&gt;</span><span>→</span>
+                        <span>ai-agent update</span><span>→</span>
+                        <span>ai-agent install</span>
                     </div>
                 </article>
 
                 <div class="cards-row cards-row-3">
                     <article class="card card-workflow">
                         <div class="card-icon">
-                            <span>🧠</span>
+                            <span>⚛️</span>
                             <div class="icon-ring"></div>
                         </div>
-                        <h3 class="card-title">brainstorm</h3>
-                        <div class="workflow-meta">20+ techniques</div>
-                        <p class="card-desc">7-phase creative problem-solving with SCAMPER, Six Hats, Mind Mapping & more</p>
-                        <div class="workflow-flow">
-                            <span>Research</span><span>→</span>
-                            <span>Confirm</span><span>→</span>
-                            <span>Clarify</span><span>→</span>
-                            <span>Ideate</span><span>→</span>
-                            <span>Evaluate</span><span>→</span>
-                            <span>Visualize</span><span>→</span>
-                            <span>Decide</span>
-                        </div>
+                        <h3 class="card-title">Vercel Labs</h3>
+                        <p class="card-desc">React/Next.js best practices from Vercel Engineering</p>
+                        <div class="workflow-meta">github.com/vercel-labs/agent-skills</div>
                     </article>
 
                     <article class="card card-workflow">
                         <div class="card-icon">
-                            <span>🚀</span>
+                            <span>💎</span>
                             <div class="icon-ring"></div>
                         </div>
-                        <h3 class="card-title">create-pr</h3>
-                        <p class="card-desc">Streamlined GitHub Pull Request creation with gh CLI</p>
+                        <h3 class="card-title">Everything Claude</h3>
+                        <p class="card-desc">Full-stack development skills from the community</p>
+                        <div class="workflow-meta">github.com/affaan-m/everything-claude-code</div>
                     </article>
 
                     <article class="card card-workflow">
                         <div class="card-icon">
-                            <span>🔄</span>
+                            <span>🏢</span>
                             <div class="icon-ring"></div>
                         </div>
-                        <h3 class="card-title">update-skills</h3>
-                        <p class="card-desc">Sync & install latest skills from central repository</p>
+                        <h3 class="card-title">Your Company</h3>
+                        <p class="card-desc">Private skills repo with your team's standards</p>
+                        <div class="workflow-meta">github.com/your-org/skills</div>
                     </article>
                 </div>
             </div>
@@ -443,37 +236,37 @@
             <div class="why-grid">
                 <div class="why-content">
                     <div class="section-label">WHY USE IT</div>
-                    <h2 class="section-heading">One Command.<br>All Platforms.</h2>
-                    <p class="why-desc">Stop copying configuration files manually. Install once, and your AI assistants are supercharged everywhere.</p>
+                    <h2 class="section-heading">Minimal Core.<br>Full Control.</h2>
+                    <p class="why-desc">Stop installing skills you don't need. Start with 2 essential tools, add only what you want from GitHub.</p>
                 </div>
 
                 <div class="why-features">
                     <div class="feature-item">
                         <div class="feature-num">01</div>
                         <div class="feature-content">
-                            <h3>Single Source of Truth</h3>
-                            <p>Sync 26 skills across all AI tools from one repository</p>
+                            <h3>Minimal Core</h3>
+                            <p>Only 2 bundled skills - config manager and skill updater</p>
                         </div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-num">02</div>
                         <div class="feature-content">
-                            <h3>Auto Install</h3>
-                            <p>NPM postinstall magic — just install and go</p>
+                            <h3>Zero Defaults</h3>
+                            <p>No external sources by default - you decide what to install</p>
                         </div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-num">03</div>
                         <div class="feature-content">
-                            <h3>Cross Platform</h3>
-                            <p>Works with Claude, Cursor, Windsurf & more</p>
+                            <h3>Unlimited Sources</h3>
+                            <p>Add skills from any GitHub repo - public or private</p>
                         </div>
                     </div>
                     <div class="feature-item">
                         <div class="feature-num">04</div>
                         <div class="feature-content">
-                            <h3>Auto-Sync External Skills</h3>
-                            <p>Weekly updates from Vercel Labs, Everything Claude Code, Playwright & more</p>
+                            <h3>Team Sharing</h3>
+                            <p>Export/import configs for team collaboration</p>
                         </div>
                     </div>
                 </div>
@@ -548,9 +341,7 @@
                     Made with 🤖 by <a href="https://github.com/dongitran">Dong Tran</a>
                 </p>
                 <p class="footer-note">
-                    Skills from <a href="https://github.com/vercel-labs/agent-skills">Vercel Labs</a> •
-                    <a href="https://github.com/affaan-m/everything-claude-code">Everything Claude Code</a> •
-                    <a href="https://github.com/lackeyjb/playwright-skill">Playwright Skill</a>
+                    v2.2.0 • Minimal core • Full user control
                 </p>
                 <p class="footer-tagline">Empowering the AI-assisted development universe</p>
             </div>

@@ -23,13 +23,19 @@ function main() {
     console.log("");
   }
 
+  console.log("📦 Bundled Skills:\n");
+  console.log("   • config-manager     - Manage configuration and sources");
+  console.log("   • skill-updater      - Update skills from repositories\n");
+
   console.log("📖 Quick Start:\n");
-  console.log("   1. Sync skills from repository:");
-  console.log("      $ ai-agent sync\n");
-  console.log("   2. Install to your platforms:");
+  console.log("   1. Initialize config:");
+  console.log("      $ ai-agent init\n");
+  console.log("   2. Install bundled skills to platforms:");
   console.log("      $ ai-agent install\n");
-  console.log("   3. View available skills:");
-  console.log("      $ ai-agent list\n");
+  console.log("   3. (Optional) Add more skills from GitHub:");
+  console.log("      $ ai-agent source add <repo-url>\n");
+  console.log("   4. Update & install additional skills:");
+  console.log("      $ ai-agent update && ai-agent install\n");
   console.log("📦 Repository: https://github.com/dongitran/ai-agent-config\n");
 }
 
