@@ -7,13 +7,13 @@
 
 **One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
 
-## 🚀 What's New in v2.0
+## 🚀 What's New in v2.1
 
 - ✅ **User-configurable sources** - Add custom skill repositories from GitHub
 - ✅ **Source management** - Enable, disable, add, remove sources via CLI
 - ✅ **Config management** - Export/import configs for team sharing
-- ✅ **Auto-migration** - Seamless upgrade from v1.x
-- ✅ **Backward compatible** - All v1 commands still work
+- ✅ **Auto-migration** - Seamless upgrade from v2.0
+- ✅ **Backward compatible** - All v2.0 commands still work
 
 ## 📦 Quick Start
 
@@ -75,30 +75,41 @@ ai-agent config export team-config.json
 ai-agent config import team-config.json --merge
 ```
 
-## 📚 Available Skills (Official Sources)
+## 📚 Available Skills
 
-### Frontend Development
-- `react-best-practices` - React & Next.js optimization (Vercel Labs)
-- `frontend-design` - Production-grade UI components (Vercel Labs)
-- `web-design-guidelines` - Web interface best practices (Vercel Labs)
-- `frontend-patterns` - Frontend architecture patterns
+### Official Sources (4 curated repositories)
 
-### Backend & Database
-- `backend-patterns` - API design, server-side patterns
-- `postgres-patterns` - PostgreSQL optimization (Supabase)
-- `nestjs-best-practices` - NestJS architecture & patterns
-- `security-review` - Security checklist & patterns
+After running `ai-agent update`, you'll have access to 15+ skills from:
 
-### Testing & Quality
-- `tdd-workflow` - Test-driven development workflow
-- `playwright` - Browser automation & testing
-- `code-review` - Code review best practices
-- `eval-harness` - Evaluation framework for AI sessions
+1. **Vercel Labs** - Frontend best practices
+   - `react-best-practices`, `web-design-guidelines`
 
-### Development Tools
-- `coding-standards` - Universal coding standards
-- `continuous-learning` - Extract reusable patterns
-- `strategic-compact` - Context management
+2. **Everything Claude Code** - Full-stack development
+   - `backend-patterns`, `coding-standards`, `continuous-learning`
+   - `eval-harness`, `frontend-patterns`, `postgres-patterns`
+   - `project-guidelines-example`, `security-review`
+   - `strategic-compact`, `tdd-workflow`, `verification-loop`
+
+3. **Playwright Skill** - Browser automation
+   - `playwright`
+
+4. **NestJS Skills** - Backend framework
+   - `nestjs-best-practices`
+
+### Add Your Own Skills
+
+```bash
+# Add personal skills
+ai-agent source add https://github.com/yourname/my-skills
+
+# Add company skills
+ai-agent source add https://github.com/company/team-skills \
+  --name company-standards
+
+# Update and install
+ai-agent update
+ai-agent install
+```
 
 ## 🛠️ CLI Commands
 
