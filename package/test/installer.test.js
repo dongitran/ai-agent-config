@@ -44,11 +44,12 @@ describe("Installer Module", () => {
       assert.ok(Array.isArray(skills));
     });
 
-    it("should return empty array if repo not cached", () => {
-      if (!installer.isRepoCached()) {
-        const skills = installer.getAvailableSkills();
-        assert.strictEqual(skills.length, 0);
-      }
+    it("should return bundled skills from package", () => {
+      const skills = installer.getAvailableSkills();
+      // v2.2: Always returns 2 bundled skills (config-manager, skill-updater)
+      assert.ok(skills.length >= 2);
+      assert.ok(skills.includes("config-manager"));
+      assert.ok(skills.includes("skill-updater"));
     });
   });
 
