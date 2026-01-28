@@ -80,12 +80,13 @@ function isRepoCached() {
 }
 
 /**
- * Get list of available skills from cached repo
+ * Get list of available skills
+ * Priority: Package bundled skills > External repo cache
  */
 function getAvailableSkills() {
   const skills = new Set();
 
-  // Get skills from package (.agent/skills/)
+  // Try package bundled skills first (.agent/skills/)
   if (fs.existsSync(PACKAGE_SKILLS_DIR)) {
     const packageSkills = fs.readdirSync(PACKAGE_SKILLS_DIR);
     packageSkills.forEach((name) => {
@@ -95,9 +96,14 @@ function getAvailableSkills() {
         skills.add(name);
       }
     });
+
+    // If package has bundled skills, return only those (don't merge with cache)
+    if (skills.size > 0) {
+      return Array.from(skills);
+    }
   }
 
-  // Get skills from repo cache
+  // Fallback: Get skills from external repo cache (only if no package skills)
   if (fs.existsSync(REPO_SKILLS_DIR)) {
     fs.readdirSync(REPO_SKILLS_DIR).forEach((name) => {
       const skillPath = path.join(REPO_SKILLS_DIR, name);
