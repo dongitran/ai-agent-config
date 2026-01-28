@@ -85,21 +85,9 @@ function isRepoCached() {
 function getAvailableSkills() {
   const skills = new Set();
 
-  // Debug logging
-  if (process.env.DEBUG_AI_AGENT) {
-    console.log('\n[DEBUG] getAvailableSkills():');
-    console.log('  PACKAGE_SKILLS_DIR:', PACKAGE_SKILLS_DIR);
-    console.log('  PACKAGE exists:', fs.existsSync(PACKAGE_SKILLS_DIR));
-    console.log('  REPO_SKILLS_DIR:', REPO_SKILLS_DIR);
-    console.log('  REPO exists:', fs.existsSync(REPO_SKILLS_DIR));
-  }
-
   // Get skills from package (.agent/skills/)
   if (fs.existsSync(PACKAGE_SKILLS_DIR)) {
     const packageSkills = fs.readdirSync(PACKAGE_SKILLS_DIR);
-    if (process.env.DEBUG_AI_AGENT) {
-      console.log('  Package skills found:', packageSkills);
-    }
     packageSkills.forEach((name) => {
       const skillPath = path.join(PACKAGE_SKILLS_DIR, name);
       const skillFile = path.join(skillPath, "SKILL.md");
@@ -120,13 +108,7 @@ function getAvailableSkills() {
     });
   }
 
-  const result = Array.from(skills);
-  if (process.env.DEBUG_AI_AGENT) {
-    console.log('  Total skills:', result.length);
-    console.log('  Skills:', result.slice(0, 5).join(', '), '...\n');
-  }
-
-  return result;
+  return Array.from(skills);
 }
 
 /**
