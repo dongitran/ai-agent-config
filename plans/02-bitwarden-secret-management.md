@@ -168,9 +168,7 @@ Found 3 secrets:
 ✓ OPENAI_API_KEY (found)
 ⚠ DATABASE_PASSWORD (not found in vault)
 
-💾 Add 2 secrets to ~/.zshrc for persistence? [Y/n]: Y
-
-Writing to ~/.zshrc...
+💾 Writing secrets to ~/.zshrc...
 ✓ Added 2 environment variables
 
 ✅ Secrets synced successfully!
@@ -385,7 +383,7 @@ source ~/.zshrc
 7. ✅ Scan MCP configs to discover required env vars
 8. ✅ Fetch from Bitwarden folder `MCP Secrets`
 9. ✅ Handle missing secrets gracefully (warn user)
-10. ✅ User confirmation before modifying shell profile
+10. ✅ Secrets automatically written to `~/.zshrc` (no confirmation needed)
 
 ---
 
@@ -516,7 +514,7 @@ Tasks:
 
 ### Phase 2: User Experience Enhancements
 
-- [ ] Interactive confirmation for shell profile modification
+- [ ] Auto-detect shell type (zsh, bash) and write to correct profile
 - [ ] Clear output with emojis and progress indicators
 - [ ] Handle missing secrets gracefully (warn, don't fail)
 - [ ] Detect shell type (zsh, bash) automatically
