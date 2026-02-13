@@ -41,7 +41,7 @@ const COMMANDS = {
   // Original Commands (updated)
   install: "Install skills to detected platforms",
   update: "Update skills from all sources",
-  sync: "Bi-directional sync (pull + push)",
+
   list: "List installed skills",
   platforms: "Show detected platforms",
   uninstall: "Remove installed skills",
@@ -104,12 +104,13 @@ Usage: ai-agent <command> [options]
   ai-agent init --repo https://github.com/yourname/my-ai-skills.git
 
   # Push skills to GitHub
-  ai-agent push --message "Added new  console.log(`
-  # Pull latest skills from GitHub  
-  ai - agent pull
-  
-  # Update all skills
-  ai - agent update`); add https://github.com/user/repo.git --name my-sourcekills \\
+  ai-agent push --message "Added new skills"
+
+  # Pull latest skills from GitHub
+  ai-agent pull
+
+  # Add a custom source
+  ai-agent source add https://github.com/user/repo.git \\
     --branch main \\
     --name company-skills
 
