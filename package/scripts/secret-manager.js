@@ -9,7 +9,6 @@ const { execSync, spawnSync } = require("child_process");
 const os = require("os");
 
 const HOME = os.homedir();
-const BITWARDEN_FOLDER = "MCP Secrets";
 
 /**
  * Validate that Bitwarden CLI is installed
@@ -153,6 +152,49 @@ function unlockBitwarden(password) {
 }
 
 /**
+ * Try to reuse BW_SESSION from Antigravity MCP config
+ * This prevents creating a new session that would invalidate the MCP server's session
+ * @returns {{ success: boolean, sessionKey?: string, reason?: string }}
+ */
+function tryReuseAntigravitySession() {
+    const platforms = require("./platforms");
+    const antigravity = platforms.getByName("antigravity");
+
+    if (!antigravity || !antigravity.mcpConfigPath) {
+        return { success: false, reason: "Antigravity not configured" };
+    }
+
+    if (!fs.existsSync(antigravity.mcpConfigPath)) {
+        return { success: false, reason: "mcp_config.json not found" };
+    }
+
+    try {
+        const mcpConfig = JSON.parse(fs.readFileSync(antigravity.mcpConfigPath, "utf-8"));
+        const bitwardenServer = mcpConfig.mcpServers?.bitwarden;
+
+        if (!bitwardenServer || !bitwardenServer.env || !bitwardenServer.env.BW_SESSION) {
+            return { success: false, reason: "No BW_SESSION in bitwarden MCP config" };
+        }
+
+        const sessionKey = bitwardenServer.env.BW_SESSION;
+
+        // Validate session by trying to list folders
+        const testResult = spawnSync("bw", ["list", "folders", "--session", sessionKey], {
+            encoding: "utf-8",
+            stdio: ["pipe", "pipe", "pipe"],
+        });
+
+        if (testResult.status === 0) {
+            return { success: true, sessionKey };
+        } else {
+            return { success: false, reason: "Session expired or invalid" };
+        }
+    } catch (error) {
+        return { success: false, reason: `Failed to read config: ${error.message}` };
+    }
+}
+
+/**
  * Discover required secrets from MCP server configs in the repo
  * Scans .agent/mcp-servers/{name}/config.json for bitwardenEnv fields
  */
@@ -176,7 +218,7 @@ function discoverRequiredSecrets() {
 
 /**
  * Fetch secrets from Bitwarden vault
- * Only searches in "MCP Secrets" folder
+ * Searches entire vault (all folders) for matching items
  */
 function fetchSecretsFromBitwarden(sessionKey, secretNames) {
     const results = {
@@ -185,30 +227,14 @@ function fetchSecretsFromBitwarden(sessionKey, secretNames) {
     };
 
     try {
-        // Step 1: Get folder ID for "MCP Secrets"
-        const foldersJson = execSync(`bw list folders --session ${sessionKey}`, {
-            encoding: "utf-8",
-            stdio: ["pipe", "pipe", "pipe"],
-        });
-        const folders = JSON.parse(foldersJson);
-        const mcpFolder = folders.find((f) => f.name === BITWARDEN_FOLDER);
-
-        if (!mcpFolder) {
-            console.warn(`\n⚠️  Folder "${BITWARDEN_FOLDER}" not found in Bitwarden vault`);
-            console.warn(`   Create folder "${BITWARDEN_FOLDER}" and add your secrets there\n`);
-            // All secrets are missing since folder doesn't exist
-            secretNames.forEach((name) => results.missing.push(name));
-            return results;
-        }
-
-        // Step 2: List all items in "MCP Secrets" folder
-        const itemsJson = execSync(`bw list items --folderid ${mcpFolder.id} --session ${sessionKey}`, {
+        // List all items in the vault (across all folders)
+        const itemsJson = execSync(`bw list items --session ${sessionKey}`, {
             encoding: "utf-8",
             stdio: ["pipe", "pipe", "pipe"],
         });
         const items = JSON.parse(itemsJson);
 
-        // Step 3: Match secrets by name
+        // Match secrets by name
         for (const secretName of secretNames) {
             const item = items.find((i) => i.name === secretName);
 
@@ -291,6 +317,7 @@ function writeToShellProfile(secrets) {
  */
 async function syncSecrets() {
     let sessionKey = null;
+    let sessionSource = null; // Track where session came from: "reused" or "new"
 
     try {
         console.log("\n🔐 Bitwarden Secret Sync\n");
@@ -309,22 +336,36 @@ async function syncSecrets() {
             process.exit(1);
         }
 
-        // 3. Prompt for password
-        const password = await promptPassword();
+        // 3. Try to reuse existing session from Antigravity MCP
+        console.log("🔄 Checking for existing Bitwarden session...");
+        const reuseResult = tryReuseAntigravitySession();
 
-        // 4. Unlock vault
-        console.log("\n🔓 Unlocking vault...");
-        const unlockResult = unlockBitwarden(password);
+        if (reuseResult.success) {
+            console.log("✓ Reusing session from Antigravity MCP config\n");
+            sessionKey = reuseResult.sessionKey;
+            sessionSource = "reused";
+        } else {
+            console.log(`  ⊗ ${reuseResult.reason}`);
+            console.log("  → Creating new session\n");
 
-        if (!unlockResult.success) {
-            console.error(`❌ ${unlockResult.message}\n`);
-            process.exit(1);
+            // 4. Fallback: Prompt for password
+            const password = await promptPassword();
+
+            // 5. Unlock vault
+            console.log("\n🔓 Unlocking vault...");
+            const unlockResult = unlockBitwarden(password);
+
+            if (!unlockResult.success) {
+                console.error(`❌ ${unlockResult.message}\n`);
+                process.exit(1);
+            }
+
+            console.log("✓ Vault unlocked\n");
+            sessionKey = unlockResult.sessionKey;
+            sessionSource = "new";
         }
 
-        console.log("✓ Vault unlocked\n");
-        sessionKey = unlockResult.sessionKey;
-
-        // 5. Discover required secrets from repo's bitwardenEnv
+        // 6. Discover required secrets from repo's bitwardenEnv
         console.log("🔍 Scanning MCP server configs for required secrets...");
         const discovery = discoverRequiredSecrets();
 
@@ -344,8 +385,8 @@ async function syncSecrets() {
             console.log(`  • ${name}`);
         });
 
-        // 6. Fetch secrets from Bitwarden
-        console.log(`\n🔐 Fetching from Bitwarden (folder: ${BITWARDEN_FOLDER})...`);
+        // 7. Fetch secrets from Bitwarden
+        console.log(`\n🔐 Fetching from Bitwarden vault...`);
         const fetchResults = fetchSecretsFromBitwarden(sessionKey, discovery.secrets);
 
         fetchResults.found.forEach((secret) => {
@@ -383,18 +424,19 @@ async function syncSecrets() {
 
         if (fetchResults.missing.length > 0) {
             console.log(`⚠️  Missing secrets: ${fetchResults.missing.join(", ")}`);
-            console.log(`   Add them to Bitwarden vault folder "${BITWARDEN_FOLDER}"\n`);
+            console.log(`   Add them to your Bitwarden vault\n`);
         }
     } finally {
-        // Cleanup: Lock vault to invalidate session key
-        if (sessionKey) {
+        // Cleanup: Only lock if we created a new session
+        // Don't lock if we reused the session - let MCP keep using it
+        if (sessionKey && sessionSource === "new") {
             try {
                 execSync("bw lock", { stdio: "pipe" });
             } catch (e) {
                 // Silent fail - vault may already be locked
             }
-            sessionKey = null;
         }
+        sessionKey = null;
     }
 }
 
