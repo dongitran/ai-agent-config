@@ -238,11 +238,36 @@ function fetchSecretsFromBitwarden(sessionKey, secretNames) {
         for (const secretName of secretNames) {
             const item = items.find((i) => i.name === secretName);
 
-            if (item && item.login && item.login.password) {
-                results.found.push({
-                    name: secretName,
-                    value: item.login.password,
-                });
+            if (item) {
+                // Try multiple sources for the secret value
+                let secretValue = null;
+
+                // Priority 1: Login password (most common for API keys)
+                if (item.login && item.login.password) {
+                    secretValue = item.login.password;
+                }
+                // Priority 2: Secure note content
+                else if (item.notes && item.notes.trim()) {
+                    secretValue = item.notes.trim();
+                }
+                // Priority 3: Custom field named "value" or "secret"
+                else if (item.fields && item.fields.length > 0) {
+                    const valueField = item.fields.find(
+                        (f) => f.name.toLowerCase() === "value" || f.name.toLowerCase() === "secret"
+                    );
+                    if (valueField && valueField.value) {
+                        secretValue = valueField.value;
+                    }
+                }
+
+                if (secretValue) {
+                    results.found.push({
+                        name: secretName,
+                        value: secretValue,
+                    });
+                } else {
+                    results.missing.push(secretName);
+                }
             } else {
                 results.missing.push(secretName);
             }
