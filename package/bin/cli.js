@@ -694,15 +694,12 @@ function update(args) {
   console.log("\n🔄 Updating skills from all sources...\n");
 
   const options = {
-    force: false,
     source: null,
     skill: null,
   };
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--force") {
-      options.force = true;
-    } else if (args[i] === "--source" && args[i + 1]) {
+    if (args[i] === "--source" && args[i + 1]) {
       options.source = args[++i];
     } else if (args[i] === "--skill" && args[i + 1]) {
       options.skill = args[++i];

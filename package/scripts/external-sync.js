@@ -141,7 +141,7 @@ function addAttribution(skillPath, attribution) {
  * Sync all external skills
  */
 function syncAll(options = {}) {
-  const { force = false, source = null, skill = null } = options;
+  const { source = null, skill = null } = options;
 
   console.log("\n🔄 Syncing external skills...\n");
 
@@ -194,7 +194,7 @@ function syncAll(options = {}) {
       const targetPath = path.join(targetDir, skillDef.name);
       const excludePaths = skillDef.excludePaths || [];
 
-      const result = copySkill(sourcePath, targetPath, force, excludePaths);
+      const result = copySkill(sourcePath, targetPath, true, excludePaths);
 
       if (result.copied) {
         // Skip attribution to save tokens - attribution is already in external-skills.json
