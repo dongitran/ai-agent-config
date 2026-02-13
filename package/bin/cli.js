@@ -719,6 +719,19 @@ function update(args) {
     if (result.failed > 0) {
       console.log(`  Failed: ${result.failed} source(s)`);
     }
+
+    // Auto-push after successful sync
+    if (result.copied > 0) {
+      console.log("\n📤 Auto-pushing synced skills to repository...\n");
+      const SyncManager = require("../scripts/sync-manager");
+      const syncManager = new SyncManager();
+
+      const skillNames = options.skill || "external skills";
+      const message = `chore: sync ${skillNames} from external sources`;
+
+      syncManager.push({ message });
+    }
+
     console.log("");
   } catch (error) {
     console.error(`\n❌ Update failed: ${error.message}`);

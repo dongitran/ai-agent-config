@@ -61,10 +61,10 @@
 npm install -g @bitwarden/cli
 ```
 
-**Authentication**: Via `BW_SESSION` env var
-```bash
-export BW_SESSION=$(bw unlock --raw)
-```
+**Authentication**: Package handles automatically
+- User prompted for password when running `ai-agent secrets sync`
+- Session key managed in-memory only
+- No manual unlock needed
 
 **Usage in package**: 
 ```bash
@@ -101,16 +101,18 @@ Add new command: `ai-agent secrets sync`
 
 **User Actions:**
 1. Install Bitwarden CLI: `npm install -g @bitwarden/cli`
-2. Login to Bitwarden: `bw login`
-3. Unlock vault and set session: 
+2. Get Bitwarden API credentials from Web Vault (Settings → Security → Keys)
+3. Add API credentials to shell profile:
    ```bash
-   export BW_SESSION=$(bw unlock --raw)
+   export BW_CLIENTID="user.xxx"
+   export BW_CLIENTSECRET="yyy"
    ```
-4. Store all MCP secrets in Bitwarden vault (organized by folders/items)
+4. Store all MCP secrets in Bitwarden vault (folder: `MCP Secrets`)
 
 **Package Actions:**
-1. Bundle Bitwarden MCP server in package
-2. Auto-install Bitwarden MCP to Antigravity on first `ai-agent install`
+1. Prompt for master password when running `ai-agent secrets sync`
+2. Unlock vault programmatically (in-memory session)
+3. Fetch secrets and write to `~/.zshrc`
 
 ### Phase 2: Secret Sync Workflow
 
@@ -266,30 +268,30 @@ Folder: MCP Secrets
 - Env var name `${GITHUB_TOKEN}` → Bitwarden item name `GITHUB_TOKEN`
 - Use item's password field as secret value
 
-### Bitwarden CLI Commands
+### Bitwarden CLI Commands (used by package)
 
-**Login & Unlock:**
+**Unlock with password stdin:**
 ```bash
-bw login
-export BW_SESSION=$(bw unlock --raw)
+echo "master_password" | bw unlock --passwordstdin --raw
+# → Returns session key (in-memory only)
 ```
 
 **Fetch Secret:**
 ```bash
-SECRET_VALUE=$(bw get password "GITHUB_TOKEN" --session $BW_SESSION)
+bw get password "GITHUB_TOKEN" --session $SESSION_KEY
 ```
 
 **List all items** (for discovery):
 ```bash
-bw list items --session $BW_SESSION --search "MCP Secrets"
+bw list items --session $SESSION_KEY --folder "MCP Secrets"
 ```
 
 ### Error Handling
 
-**Scenario 1: `BW_SESSION` not set**
+**Scenario 1: Password prompt failed**
 ```
-⚠️  Bitwarden session not found
-ℹ️  Run: export BW_SESSION=$(bw unlock --raw)
+⚠️  Failed to unlock Bitwarden vault
+ℹ️  Check your master password and try again
 ```
 
 **Scenario 2: Secret not found in Bitwarden**
@@ -527,13 +529,14 @@ Có 3 options:
 
 **Risks**:
 - ⚠️ Env vars visible in process list (`ps aux | grep`)
-- ⚠️ Env vars persisted in shell history if typed manually
-- ⚠️ `BW_SESSION` grants full vault access
+- ⚠️ Synced secrets persisted in `~/.zshrc` (plaintext)
+- ⚠️ API credentials (`BW_CLIENTID`, `BW_CLIENTSECRET`) in shell profile
 
 **Mitigations**:
-- ✅ Use `BW_SESSION` only (no master password in env)
-- ✅ Session expires after inactivity
-- ✅ Recommend users lock Bitwarden when not in use
+- ✅ Master password **never** stored anywhere
+- ✅ Session key in-memory only, discarded after sync
+- ✅ Password prompt each time secrets sync runs
+- ✅ `chmod 600 ~/.zshrc` to protect shell profile
 - ✅ Document security best practices
 
 ---
