@@ -1,6 +1,6 @@
 # AI Agent Config
 
-> Minimal Skill Manager for AI Coding Assistants - User-configurable skill sources
+> Minimal Skill Manager for AI Coding Assistants - Bi-directional sync with GitHub
 
 **Website:** https://dongitran.github.io/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
@@ -8,14 +8,15 @@
 
 ## Purpose
 
-This package provides a **minimal skill management system** for AI coding assistants. It bundles only 2 essential skills for managing the system itself, and allows users to add unlimited custom skill sources from GitHub repositories.
+This package provides a **minimal skill management system** for AI coding assistants. It bundles only 2 essential skills for managing the system itself, and allows users to add unlimited custom skill sources from GitHub repositories. **v2.3 adds bi-directional sync** to push/pull skills to/from GitHub.
 
-### Architecture Philosophy (v2.2)
+### Architecture Philosophy (v2.3)
 
 - **Minimal Core**: Only 2 bundled skills (config-manager, skill-updater)
-- **Zero Defaults**: No external sources by default - full user control
+- **Bi-directional Sync**: Push/pull skills to/from GitHub repositories
+- **Auto-sync**: Always pull before push to avoid conflicts (enabled by default)
 - **User-Configurable**: Add any GitHub repository as skill source
-- **Team-Friendly**: Export/import configs for collaboration
+- **Team-Friendly**: Export/import configs + sync via Git
 - **Cross-Platform**: Works with Claude Code, Antigravity, Cursor, Windsurf, Codex CLI
 
 ### Global Installation Paths
@@ -136,6 +137,15 @@ ai-agent source remove <name>           # Remove source
 ```
 
 ## CLI Commands
+
+### Repository Sync (v2.3)
+```bash
+ai-agent init --repo <url>                  # Initialize with repository
+ai-agent push [--message "msg"]             # Push skills to GitHub
+ai-agent pull                               # Pull skills from GitHub
+ai-agent sync [--message "msg"]             # Bi-directional sync (pull + push)
+ai-agent config set repository.autoSync false # Disable auto-sync before push
+```
 
 ### Source Management
 ```bash

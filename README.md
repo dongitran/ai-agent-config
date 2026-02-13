@@ -1,19 +1,21 @@
 # ai-agent-config
 
-> Universal Global Skills & Workflows for AI Coding Assistants - User-configurable skill sources
+> Universal Global Skills & Workflows for AI Coding Assistants - Bi-directional sync with GitHub
 
 [![npm version](https://badge.fury.io/js/ai-agent-config.svg)](https://www.npmjs.com/package/ai-agent-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 **One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
 
-## 🚀 What's New in v2.2
+## 🚀 What's New in v2.3
 
-- ✅ **Minimal core** - Only 2 essential skills bundled (config-manager, skill-updater)
-- ✅ **User-configurable sources** - Add any skill repositories from GitHub
-- ✅ **Source management** - Enable, disable, add, remove sources via CLI
-- ✅ **Config management** - Export/import configs for team sharing
-- ✅ **Zero defaults** - No external sources by default, full user control
+- 🔄 **Bi-directional sync** - Push/pull skills to/from GitHub repositories
+- ⬆️ **Push command** - Push local skills to GitHub with auto-sync
+- ⬇️ **Pull command** - Pull skills from GitHub to local
+- 🔁 **Enhanced sync** - Bi-directional sync (pull + push)
+- 🚀 **Init with repo** - `ai-agent init --repo <url>` for quick setup
+- ⚡ **Auto-sync** - Always pull before push (enabled by default)
+- ⚠️ **Conflict detection** - Graceful conflict handling with detailed messages
 
 ## 📦 Quick Start
 
@@ -21,11 +23,11 @@
 # Install globally
 npm install -g ai-agent-config
 
-# Initialize (creates config at ~/.ai-agent/config.json)
-ai-agent init
+# Initialize with your repository
+ai-agent init --repo https://github.com/yourname/my-ai-skills.git
 
-# Install bundled skills to platforms
-ai-agent install
+# Push skills to GitHub
+ai-agent push
 ```
 
 ## 🎯 Bundled Skills (2)
@@ -57,6 +59,15 @@ ai-agent install
 
 ## 🛠️ CLI Commands
 
+### Repository Sync (v2.3)
+```bash
+ai-agent init --repo <url>                  # Initialize with repository
+ai-agent push [--message "msg"]             # Push skills to GitHub
+ai-agent pull                               # Pull skills from GitHub
+ai-agent sync [--message "msg"]             # Bi-directional sync
+ai-agent config set repository.autoSync false # Disable auto-sync
+```
+
 ### Source Management
 ```bash
 ai-agent source add <repo-url> [options]    # Add custom source
@@ -80,7 +91,7 @@ ai-agent config reset --yes                 # Reset to defaults
 
 ### Installation & Updates
 ```bash
-ai-agent init                               # Initialize/migrate to v2.0
+ai-agent init                               # Initialize/migrate config
 ai-agent update [--source name]             # Update skills from sources
 ai-agent install [--platform name]          # Install to platforms
 ai-agent list                               # List installed skills
