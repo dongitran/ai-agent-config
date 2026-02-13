@@ -37,6 +37,54 @@ function main() {
   console.log("   4. Update & install additional skills:");
   console.log("      $ ai-agent update && ai-agent install\n");
   console.log("📦 Repository: https://github.com/dongitran/ai-agent-config\n");
+
+  // Auto-install Bitwarden MCP server to Antigravity
+  const fs = require("fs");
+  const path = require("path");
+  const os = require("os");
+
+  const antigravityMcpPath = path.join(
+    os.homedir(),
+    ".gemini",
+    "antigravity",
+    "mcp_config.json"
+  );
+
+  if (fs.existsSync(path.dirname(antigravityMcpPath))) {
+    try {
+      let mcpConfig = { mcpServers: {} };
+
+      // Read existing config if it exists
+      if (fs.existsSync(antigravityMcpPath)) {
+        const content = fs.readFileSync(antigravityMcpPath, "utf-8");
+        if (content.trim()) {
+          mcpConfig = JSON.parse(content);
+        }
+      }
+
+      // Add Bitwarden MCP server (enabled by default)
+      if (!mcpConfig.mcpServers.bitwarden) {
+        mcpConfig.mcpServers.bitwarden = {
+          command: "npx",
+          args: ["-y", "@bitwarden/mcp-server"],
+          env: {
+            BW_CLIENTID: "${BW_CLIENTID}",
+            BW_CLIENTSECRET: "${BW_CLIENTSECRET}",
+          },
+        };
+
+        fs.writeFileSync(
+          antigravityMcpPath,
+          JSON.stringify(mcpConfig, null, 2),
+          "utf-8"
+        );
+        console.log("🔐 Bitwarden MCP server added to Antigravity (✓ enabled)");
+        console.log("   Config: ~/.gemini/antigravity/mcp_config.json\n");
+      }
+    } catch (error) {
+      // Silent fail - not critical
+    }
+  }
 }
 
 main();

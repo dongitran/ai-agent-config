@@ -37,14 +37,17 @@
 **Workflow:**
 ```
 1. User stores all secrets in Bitwarden vault
-2. Package bundles Bitwarden MCP server (pre-configured)
-3. On `ai-agent pull/install`:
+2. Package auto-installs Bitwarden MCP server to Antigravity (enabled by default)
+3. On `ai-agent secrets sync`:
    - Package scans all MCP configs
    - Detects required env vars (e.g., ${GITHUB_TOKEN})
-   - Uses Bitwarden MCP to fetch secrets
-   - Automatically sets env vars on local machine
+   - Uses Bitwarden CLI to fetch secrets
+   - Automatically writes env vars to ~/.zshrc
 4. Antigravity launches with all secrets available
 ```
+
+**Bitwarden MCP Server**: Auto-installed to Antigravity and enabled by default. AI agents can query vault directly during conversations.
+
 
 ---
 
@@ -409,39 +412,27 @@ echo $GITHUB_TOKEN  # → ghp_xxx ✅
 echo $GITHUB_TOKEN  # → (empty) ❌
 ```
 
-**Giải pháp: Phải lưu env vars vào file để persist**
+**Giải pháp: Tự động lưu env vars vào shell profile để persist**
 
-Có 3 options:
+Package tự động append secrets vào `~/.zshrc` (macOS/Linux với zsh) hoặc `~/.bashrc` (bash):
 
-**Option A: Shell Profile File** (Recommended ✅)
-- File: `~/.zshrc` (macOS/Linux với zsh) hoặc `~/.bashrc` (bash)
-- Package tự động append vào cuối file:
-  ```bash
-  # AI Agent MCP Secrets (auto-generated)
-  export GITHUB_TOKEN="ghp_xxx"
-  export OPENAI_API_KEY="sk-xxx"
-  ```
-- ✅ **Pro**: Tự động load mỗi khi mở terminal mới
-- ✅ **Pro**: Persistent across restarts
-- ❌ **Con**: File profile trở nên dài (nhưng OK)
+```bash
+# === AI Agent MCP Secrets (auto-generated, do not edit manually) ===
+export GITHUB_TOKEN="ghp_xxx"
+export OPENAI_API_KEY="sk-xxx"
+# === End AI Agent MCP Secrets (last updated: 2024-01-15T10:30:00Z) ===
+```
 
-**Option B: Separate `.env` File**
-- File: `~/.ai-agent/secrets.env`
-- User phải manually load: `source ~/.ai-agent/secrets.env`
-- Hoặc: Add vào profile: `source ~/.ai-agent/secrets.env`
-- ✅ **Pro**: Tách biệt, dễ manage
-- ❌ **Con**: User phải manually load (hoặc vẫn phải edit profile)
+**Ưu điểm:**
+- ✅ Tự động load mỗi khi mở terminal mới
+- ✅ Persistent across restarts
+- ✅ Không cần user manually source file
+- ✅ Clear markers để dễ tìm và xóa nếu cần
 
-**Option C: Session-Only**
-- Chỉ `export` trong session hiện tại
-- ✅ **Pro**: Maximum security (không persist)
-- ❌ **Con**: Mỗi lần mở terminal phải chạy lại `ai-agent secrets sync`
-
-**💡 Recommendation: Option A** 
-- Tự động append vào `~/.zshrc` (với user consent)
-- Ask user trước: "Add secrets to ~/.zshrc? (Y/n)"
-- Hoặc: `ai-agent secrets sync --profile` để confirm
-- Add comment block rõ ràng để user dễ tìm và xóa nếu cần
+**Bảo mật:**
+- Secrets được lưu plaintext trong `~/.zshrc`
+- Recommend: `chmod 600 ~/.zshrc` để bảo vệ file
+- Master password **NEVER** stored anywhere
 
 ### 2. Bitwarden MCP vs Bitwarden CLI
 

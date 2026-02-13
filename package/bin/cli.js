@@ -8,6 +8,7 @@ const installer = require("../scripts/installer");
 const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 const externalSync = require("../scripts/external-sync");
+const secretManager = require("../scripts/secret-manager");
 
 const VERSION = require("../package.json").version;
 
@@ -38,6 +39,9 @@ const COMMANDS = {
   "config export": "Export config",
   "config import": "Import config",
   "config reset": "Reset to defaults",
+
+  // Secret Management
+  "secrets sync": "Sync MCP secrets from Bitwarden",
 
   // Original Commands (updated)
   install: "Install skills to detected platforms",
@@ -92,6 +96,9 @@ Usage: ai-agent <command> [options]
   init [--repo <url>]         Initialize config and clone repository
   push [--message <msg>]      Push skills to GitHub
   pull                        Pull skills from GitHub
+
+🔐 Secret Management:
+  secrets sync                Sync MCP secrets from Bitwarden
 
 🔍 External Skills:
   sync-external [opts]        Sync skills from external sources
@@ -915,117 +922,142 @@ function listExternal() {
   }
 }
 
-// Main
-const args = process.argv.slice(2);
-const command = args[0];
-const subcommand = args[1];
-
-// Handle multi-word commands
-if (command === "source") {
-  switch (subcommand) {
-    case "add":
-      sourceAdd(args.slice(2));
-      break;
-    case "remove":
-      sourceRemove(args.slice(2));
-      break;
-    case "list":
-      sourceList(args.slice(2));
-      break;
-    case "enable":
-      sourceToggle(args.slice(2), true);
-      break;
-    case "disable":
-      sourceToggle(args.slice(2), false);
-      break;
-    case "info":
-      sourceInfo(args.slice(2));
-      break;
-    default:
-      console.error(`Unknown source command: ${subcommand}`);
-      console.log('Run "ai-agent help" for usage information.');
-      process.exit(1);
-  }
-} else if (command === "config") {
-  switch (subcommand) {
-    case "get":
-      configGet(args.slice(2));
-      break;
-    case "set":
-      configSet(args.slice(2));
-      break;
-    case "edit":
-      configEdit(args.slice(2));
-      break;
-    case "validate":
-      configValidate(args.slice(2));
-      break;
-    case "export":
-      configExport(args.slice(2));
-      break;
-    case "import":
-      configImport(args.slice(2));
-      break;
-    case "reset":
-      configReset(args.slice(2));
-      break;
-    default:
-      console.error(`Unknown config command: ${subcommand}`);
-      console.log('Run "ai-agent help" for usage information.');
-      process.exit(1);
-  }
-} else {
-  // Single-word commands
-  switch (command) {
-    case "init":
-      init(args.slice(1));
-      break;
-    case "migrate":
-      migrateCmd(args.slice(1));
-      break;
-    case "push":
-      push(args.slice(1));
-      break;
-    case "pull":
-      pull(args.slice(1));
-      break;
-    case "install":
-      install(args.slice(1));
-      break;
-    case "update":
-      update(args.slice(1));
-      break;
-
-    case "sync-external":
-      // Backward compatibility - alias for update
-      update(args.slice(1));
-      break;
-    case "list":
-      listSkills();
-      break;
-    case "list-external":
-      listExternal(args.slice(1));
-      break;
-    case "platforms":
-      showPlatforms();
-      break;
-    case "uninstall":
-      uninstall(args.slice(1));
-      break;
-    case "version":
-    case "--version":
-    case "-v":
-      console.log(`v${VERSION}`);
-      break;
-    case "help":
-    case "--help":
-    case "-h":
-    case undefined:
-      showHelp();
-      break;
-    default:
-      console.error(`Unknown command: ${command}`);
-      console.log('Run "ai-agent help" for usage information.');
-      process.exit(1);
+/**
+ * Sync secrets from Bitwarden
+ */
+async function secretsSync() {
+  try {
+    await secretManager.syncSecrets();
+  } catch (error) {
+    console.error(`\n❌ Secrets sync failed: ${error.message}`);
+    process.exit(1);
   }
 }
+
+// Main
+(async () => {
+  const args = process.argv.slice(2);
+  const command = args[0];
+  const subcommand = args[1];
+
+  // Handle multi-word commands
+  if (command === "source") {
+    switch (subcommand) {
+      case "add":
+        sourceAdd(args.slice(2));
+        break;
+      case "remove":
+        sourceRemove(args.slice(2));
+        break;
+      case "list":
+        sourceList(args.slice(2));
+        break;
+      case "enable":
+        sourceToggle(args.slice(2), true);
+        break;
+      case "disable":
+        sourceToggle(args.slice(2), false);
+        break;
+      case "info":
+        sourceInfo(args.slice(2));
+        break;
+      default:
+        console.error(`Unknown source command: ${subcommand}`);
+        console.log('Run "ai-agent help" for usage information.');
+        process.exit(1);
+    }
+  } else if (command === "config") {
+    switch (subcommand) {
+      case "get":
+        configGet(args.slice(2));
+        break;
+      case "set":
+        configSet(args.slice(2));
+        break;
+      case "edit":
+        configEdit(args.slice(2));
+        break;
+      case "validate":
+        configValidate(args.slice(2));
+        break;
+      case "export":
+        configExport(args.slice(2));
+        break;
+      case "import":
+        configImport(args.slice(2));
+        break;
+      case "reset":
+        configReset(args.slice(2));
+        break;
+      default:
+        console.error(`Unknown config command: ${subcommand}`);
+        console.log('Run "ai-agent help" for usage information.');
+        process.exit(1);
+    }
+  } else if (command === "secrets") {
+    switch (subcommand) {
+      case "sync":
+        await secretsSync();
+        break;
+      default:
+        console.error(`Unknown secrets command: ${subcommand}`);
+        console.log('Run "ai-agent help" for usage information.');
+        process.exit(1);
+    }
+  } else {
+    // Single-word commands
+    switch (command) {
+      case "init":
+        init(args.slice(1));
+        break;
+      case "migrate":
+        migrateCmd(args.slice(1));
+        break;
+      case "push":
+        push(args.slice(1));
+        break;
+      case "pull":
+        pull(args.slice(1));
+        break;
+      case "install":
+        install(args.slice(1));
+        break;
+      case "update":
+        update(args.slice(1));
+        break;
+
+      case "sync-external":
+        // Backward compatibility - alias for update
+        update(args.slice(1));
+        break;
+      case "list":
+        listSkills();
+        break;
+      case "list-external":
+        listExternal(args.slice(1));
+        break;
+      case "platforms":
+        showPlatforms();
+        break;
+      case "uninstall":
+        uninstall(args.slice(1));
+        break;
+      case "version":
+      case "--version":
+      case "-v":
+        console.log(`v${VERSION}`);
+        break;
+      case "help":
+      case "--help":
+      case "-h":
+      case undefined:
+        showHelp();
+        break;
+      default:
+        console.error(`Unknown command: ${command}`);
+        console.log('Run "ai-agent help" for usage information.');
+        process.exit(1);
+    }
+  }
+})();
+

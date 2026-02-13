@@ -38,6 +38,9 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "dependencies": {
+    "inquirer": "^9.2.12"
+  },
   "files": [
     "bin/",
     "scripts/",
