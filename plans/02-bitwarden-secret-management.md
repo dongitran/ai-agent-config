@@ -2,9 +2,9 @@
 
 > Tự động quản lý secrets cho MCP servers bằng Bitwarden integration
 
-**Version**: v2.6.0 (Future)  
+**Version**: v2.5.8 (Implemented)  
 **Created**: 2026-02-13  
-**Status**: Brainstorming
+**Status**: ✅ **Phase 1 & 2 Completed** | ⚠️ Phase 3 (Testing) Partially Completed
 
 ---
 
@@ -377,16 +377,24 @@ source ~/.zshrc
 
 ## ✅ Success Criteria
 
-1. ✅ `ai-agent pull` pulls code only (skills, workflows, MCP servers)
-2. ✅ `ai-agent secrets sync` - separate command for Bitwarden integration
-3. ✅ Password prompt using `inquirer` (masked input)
-4. ✅ No plaintext password storage anywhere
-5. ✅ Session key kept in memory only, discarded after sync
-6. ✅ Secrets written to `~/.zshrc` with clear comments
-7. ✅ Scan MCP configs to discover required env vars
-8. ✅ Fetch from Bitwarden folder `MCP Secrets`
-9. ✅ Handle missing secrets gracefully (warn user)
-10. ✅ Secrets automatically written to `~/.zshrc` (no confirmation needed)
+**Implementation Status**: **8/10 Completed** ✅
+
+1. ✅ `ai-agent pull` pulls code only (skills, workflows, MCP servers) - **IMPLEMENTED**
+2. ✅ `ai-agent secrets sync` - separate command for Bitwarden integration - **IMPLEMENTED**
+3. ✅ Password prompt using `inquirer` (masked input) - **IMPLEMENTED**
+4. ✅ No plaintext password storage anywhere - **IMPLEMENTED**
+5. ✅ Session key kept in memory only, discarded after sync - **IMPLEMENTED**
+6. ✅ Secrets written to `~/.zshrc` with clear comments - **IMPLEMENTED**
+7. ✅ Scan MCP configs to discover required env vars - **IMPLEMENTED**
+8. ✅ Fetch from Bitwarden folder `MCP Secrets` - **IMPLEMENTED**
+9. ✅ Handle missing secrets gracefully (warn user) - **IMPLEMENTED**
+10. ✅ Secrets automatically written to `~/.zshrc` (no confirmation needed) - **IMPLEMENTED**
+
+**Notes**:
+- Auto-login via API key working (`BW_CLIENTID`, `BW_CLIENTSECRET`)
+- Shell detection (zsh/bash) implemented
+- Clear error messages with emojis and progress indicators
+- Vault locking after sync for security
 
 ---
 
@@ -488,37 +496,87 @@ export OPENAI_API_KEY="sk-xxx"
 
 ## 🚀 Implementation Phases
 
-### Phase 1: Core Secret Management
+### Phase 1: Core Secret Management ✅ COMPLETED
 
 **Scope**: Bitwarden CLI integration with password prompt
 
 Tasks:
-- [ ] Add `inquirer` dependency for password input
-- [ ] Create `secret-manager.js` module
-- [ ] Implement `promptPassword()` - masked password input
-- [ ] Implement `unlockBitwarden(password)` - unlock with stdin
-- [ ] Implement `discoverRequiredSecrets()` - scan MCP configs
-- [ ] Implement `fetchSecretsFromBitwarden(sessionKey)` - use `bw` CLI
-- [ ] Implement `writeToShellProfile(secrets)` - append to ~/.zshrc
-- [ ] Add CLI command: `ai-agent secrets sync`
-- [ ] Keep `ai-agent pull` unchanged (code only)
+- [x] Add `inquirer` dependency for password input
+- [x] Create `secret-manager.js` module
+- [x] Implement `promptPassword()` - masked password input
+- [x] Implement `unlockBitwarden(password)` - unlock with stdin
+- [x] Implement `discoverRequiredSecrets()` - scan MCP configs
+- [x] Implement `fetchSecretsFromBitwarden(sessionKey)` - use `bw` CLI
+- [x] Implement `writeToShellProfile(secrets)` - append to ~/.zshrc
+- [x] Add CLI command: `ai-agent secrets sync`
+- [x] Keep `ai-agent pull` unchanged (code only)
 
-### Phase 2: User Experience Enhancements
+### Phase 2: User Experience Enhancements ✅ COMPLETED
 
-- [ ] Auto-detect shell type (zsh, bash) and write to correct profile
-- [ ] Clear output with emojis and progress indicators
-- [ ] Handle missing secrets gracefully (warn, don't fail)
-- [ ] Detect shell type (zsh, bash) automatically
-- [ ] Better error messages for common issues
+- [x] Auto-detect shell type (zsh, bash) and write to correct profile
+- [x] Clear output with emojis and progress indicators
+- [x] Handle missing secrets gracefully (warn, don't fail)
+- [x] Detect shell type (zsh, bash) automatically
+- [x] Better error messages for common issues
 
-### Phase 3: Testing & Documentation
+### Phase 3: Testing & Documentation ⚠️ PARTIALLY COMPLETED
 
 - [ ] Unit tests for secret-manager module
 - [ ] Test password prompt flow
 - [ ] Test Bitwarden unlock/fetch
-- [ ] Manual testing with real Bitwarden vault
-- [ ] Documentation and usage examples
-- [ ] Security best practices guide
+- [x] Manual testing with real Bitwarden vault (working in production)
+- [x] Documentation and usage examples (in README)
+- [x] Security best practices guide (in README)
+
+### Phase 4: Bitwarden MCP Tool Filtering 🎯 (New)
+
+**Scope**: Auto-configure Bitwarden MCP to disable unnecessary organization tools
+
+**Problem**: 
+- Bitwarden MCP exposes 50+ tools, including many org-management tools
+- Most users only need vault access (get password, create item, etc.)
+- Excessive tools clutter AI agent's tool list
+
+**Solution**:
+When installing/updating package, automatically add `disabledTools` to Bitwarden MCP config if not already present.
+
+**Tasks**:
+- [ ] Update `postinstall.js` to check for `disabledTools` field
+- [ ] If missing, add predefined list of disabled tools
+- [ ] If already exists, skip (don't override user customization)
+- [ ] Test on fresh install and update scenarios
+- [ ] Document disabled tools list in README
+
+**Disabled Tools List**:
+```json
+{
+  "disabledTools": [
+    "lock", "sync", "status", "confirm",
+    "create_org_collection", "edit_org_collection", "edit_item_collections", "move",
+    "device_approval_list", "device_approval_approve", "device_approval_approve_all",
+    "device_approval_deny", "device_approval_deny_all",
+    "create_text_send", "create_file_send", "list_send", "get_send", 
+    "edit_send", "delete_send", "remove_send_password",
+    "create_attachment",
+    "list_org_collections", "get_org_collection", "update_org_collection", "delete_org_collection",
+    "list_org_members", "get_org_member", "get_org_member_groups",
+    "invite_org_member", "update_org_member", "update_org_member_groups",
+    "remove_org_member", "reinvite_org_member",
+    "list_org_groups", "get_org_group", "get_org_group_members",
+    "create_org_group", "update_org_group", "delete_org_group", "update_org_group_members",
+    "list_org_policies", "get_org_policy", "update_org_policy",
+    "get_org_events", "get_org_subscription", "update_org_subscription",
+    "import_org_users_and_groups"
+  ]
+}
+```
+
+**Rationale**:
+- Keep only essential vault operations (get, list, create, edit, delete items)
+- Disable org management (collections, members, groups, policies)
+- Disable Send feature (secure sharing - rarely needed)
+- Disable device approvals (admin-only)
+- Users can manually re-enable if needed
 
 ---
 
