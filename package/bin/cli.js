@@ -104,16 +104,12 @@ Usage: ai-agent <command> [options]
   ai-agent init --repo https://github.com/yourname/my-ai-skills.git
 
   # Push skills to GitHub
-  ai-agent push --message "Added new skills"
-
+  ai-agent push --message "Added new  console.log(`
   # Pull latest skills from GitHub  
-  ai-agent pull
-
-  # Bi-directional sync
-  ai-agent sync
-
-  # Add a source
-  ai-agent source add https://github.com/user/repo.git --name my-sourcekills \\
+  ai - agent pull
+  
+  # Update all skills
+  ai - agent update`); add https://github.com/user/repo.git --name my-sourcekills \\
     --branch main \\
     --name company-skills
 

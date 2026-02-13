@@ -69,8 +69,9 @@ Each MCP server folder contains a `config.json` with:
 - `command` - Executable to run the server
 - `args` - Command-line arguments (array)
 - `env` - Environment variables (object, can use `${VAR}` for secrets)
-- `platform` - Array of supported platforms (initially only `["antigravity"]`)
 - `enabled` - Boolean, whether to install this server
+
+**Note**: MCP servers install to **ALL detected platforms**. POC implementation handles Antigravity only, other platforms coming later.
 
 ### Local MCP Config Structure
 
@@ -106,9 +107,11 @@ Logic:
 - Read all folders in `.agent/mcp-servers/`
 - Parse `config.json` in each folder
 - Validate structure
-- Filter by `enabled` field and `platform` array
+- Filter by `enabled` field only (no platform check)
 - Merge vào existing `mcp_config.json` (or create new)
 - Support `--force` flag để overwrite existing servers
+
+**POC Implementation**: Only Antigravity platform supported initially
 
 ### Phase 3: Installer Integration
 
@@ -188,6 +191,7 @@ Logic:
 6. ✅ Environment variables được preserve (e.g., `${GITHUB_TOKEN}`)
 7. ✅ Backward compatible - không ảnh hưởng skills/workflows existing
 8. ✅ Antigravity nhận diện và load MCP servers correctly
+9. ✅ POC: Antigravity only, extensible cho platforms khác sau
 
 ---
 
