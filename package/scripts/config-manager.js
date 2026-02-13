@@ -1,6 +1,6 @@
 /**
  * Config Manager Module
- * Manages user configuration for ai-agent-config v2.0
+ * Manages user configuration for ai-agent-config v2.3
  */
 
 const fs = require("fs");
@@ -49,15 +49,20 @@ function loadOfficialSources() {
  */
 function createDefaultConfig() {
   const config = {
-    version: "2.0",
+    version: "2.3",
+    repository: {
+      url: null,
+      branch: "main",
+      local: path.join(os.homedir(), ".ai-agent", "sync-repo"),
+      lastSync: null,
+      autoSync: true,
+    },
+    sync: {
+      conflictResolution: "pull-first",
+    },
     sources: {
       official: loadOfficialSources().map((s) => ({ ...s, enabled: true })),
       custom: [],
-    },
-    sync: {
-      enabled: false,
-      provider: null,
-      config: {},
     },
     preferences: {
       autoUpdate: true,
@@ -91,6 +96,35 @@ function initConfig(force = false) {
 }
 
 /**
+ * Migrate config from older versions to v2.3
+ */
+function migrateConfig(oldConfig) {
+  const newConfig = {
+    version: "2.3",
+    repository: {
+      url: null,
+      branch: "main",
+      local: path.join(os.homedir(), ".ai-agent", "sync-repo"),
+      lastSync: null,
+      autoSync: true,
+    },
+    sync: {
+      conflictResolution: "pull-first",
+    },
+    sources: oldConfig.sources || {
+      official: loadOfficialSources().map((s) => ({ ...s, enabled: true })),
+      custom: [],
+    },
+    preferences: oldConfig.preferences || {
+      autoUpdate: true,
+      updateInterval: "weekly",
+    },
+  };
+
+  return newConfig;
+}
+
+/**
  * Load user config
  */
 function loadConfig() {
@@ -101,7 +135,17 @@ function loadConfig() {
   }
 
   const data = fs.readFileSync(CONFIG_FILE, "utf-8");
-  return JSON.parse(data);
+  let config = JSON.parse(data);
+
+  // Auto-migrate from v2.0/v2.2 to v2.3
+  if (config.version !== "2.3") {
+    console.log(`🔄 Migrating config from v${config.version} to v2.3...`);
+    config = migrateConfig(config);
+    saveConfig(config);
+    console.log("✅ Config migrated successfully!");
+  }
+
+  return config;
 }
 
 /**
@@ -141,6 +185,23 @@ function validateConfig(config) {
     }
     if (!config.sources.custom || !Array.isArray(config.sources.custom)) {
       errors.push("sources.custom must be an array");
+    }
+  }
+
+  // V2.3 validation
+  if (config.version === "2.3") {
+    if (!config.repository) {
+      errors.push("Missing repository field in v2.3 config");
+    } else {
+      if (config.repository.url && typeof config.repository.url !== "string") {
+        errors.push("repository.url must be a string");
+      }
+      if (config.repository.branch && typeof config.repository.branch !== "string") {
+        errors.push("repository.branch must be a string");
+      }
+      if (config.repository.autoSync !== undefined && typeof config.repository.autoSync !== "boolean") {
+        errors.push("repository.autoSync must be a boolean");
+      }
     }
   }
 
@@ -375,6 +436,7 @@ module.exports = {
   loadOfficialSources,
   createDefaultConfig,
   initConfig,
+  migrateConfig,
   loadConfig,
   saveConfig,
   validateConfig,

@@ -20,9 +20,11 @@ const packageJson = require("../package.json");
 const VERSION = packageJson.version;
 
 const COMMANDS = {
-  // v2.0 New Commands
-  init: "Initialize or migrate to v2.0 config",
+  // v2.3 New Commands
+  init: "Initialize or migrate config",
   migrate: "Migrate from v1.x to v2.0",
+  push: "Push skills to GitHub repository",
+  pull: "Pull skills from GitHub repository",
 
   // Source Management
   "source add": "Add a custom skill source",
@@ -44,7 +46,7 @@ const COMMANDS = {
   // Original Commands (updated)
   install: "Install skills to detected platforms",
   update: "Update skills from all sources",
-  sync: "Sync skills from GitHub repository",
+  sync: "Bi-directional sync (pull + push)",
   list: "List installed skills",
   platforms: "Show detected platforms",
   uninstall: "Remove installed skills",
@@ -194,10 +196,23 @@ function listSkills() {
   console.log("");
 }
 
+/**
+ * Get argument value by flag name
+ */
+function getArgValue(args, flag) {
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === flag && args[i + 1]) {
+      return args[i + 1];
+    }
+  }
+  return null;
+}
+
 function init(args) {
-  console.log("\n🚀 Initializing AI Agent Config v2.0...\n");
+  console.log("\n🚀 Initializing AI Agent Config...\n");
 
   const force = args.includes("--force");
+  const repoUrl = getArgValue(args, "--repo");
 
   // Check if migration needed
   if (migration.needsMigration()) {
@@ -213,9 +228,37 @@ function init(args) {
       console.log("🔄 Resetting config...");
       configManager.resetConfig();
       console.log("✅ Config reset to defaults\n");
-    } else {
+    } else if (!repoUrl) {
       console.log("\n💡 Use --force to reset config to defaults");
+      console.log("💡 Use --repo <url> to initialize with a repository");
     }
+  }
+
+  // Handle --repo flag
+  if (repoUrl) {
+    console.log(`\n📦 Setting up repository: ${repoUrl}`);
+
+    const config = configManager.loadConfig();
+    const localPath = path.join(process.env.HOME || process.env.USERPROFILE, ".ai-agent", "sync-repo");
+
+    // Clone if not exists
+    if (!fs.existsSync(localPath)) {
+      try {
+        console.log(`🔄 Cloning repository to ${localPath}...`);
+        execSync(`git clone "${repoUrl}" "${localPath}"`, { stdio: "inherit" });
+        console.log("✅ Repository cloned successfully!");
+      } catch (error) {
+        console.error(`❌ Failed to clone repository: ${error.message}\n`);
+        return;
+      }
+    } else {
+      console.log(`⚠️  Directory ${localPath} already exists, skipping clone`);
+    }
+
+    // Update config
+    configManager.setConfigValue("repository.url", repoUrl);
+    configManager.setConfigValue("repository.local", localPath);
+    console.log("✅ Repository configured!\n");
   }
 
   const detected = platforms.detectAll();
@@ -225,9 +268,14 @@ function init(args) {
   }
 
   console.log("\n📚 Next steps:");
-  console.log("  1. ai-agent update          # Update skills from sources");
-  console.log("  2. ai-agent install         # Install to platforms");
-  console.log("  3. ai-agent source add ...  # Add custom sources");
+  if (repoUrl) {
+    console.log("  1. ai-agent push            # Push skills to repository");
+    console.log("  2. ai-agent pull            # Pull skills from repository");
+  } else {
+    console.log("  1. ai-agent update          # Update skills from sources");
+    console.log("  2. ai-agent install         # Install to platforms");
+    console.log("  3. ai-agent source add ...  # Add custom sources");
+  }
   console.log("");
 }
 
@@ -681,25 +729,150 @@ function update(args) {
   }
 }
 
+/**
+ * Push skills to GitHub repository
+ */
+function push(args) {
+  console.log("\\n⬆️  Pushing to GitHub...\\n");
+
+  const config = configManager.loadConfig();
+
+  if (!config.repository.url) {
+    console.error("❌ No repository configured");
+    console.log("\\n   Run: ai-agent init --repo <url>\\n");
+    process.exit(1);
+  }
+
+  const SyncManager = require("../scripts/sync-manager");
+  const syncManager = new SyncManager(config);
+
+  const options = {
+    message: getArgValue(args, "--message") || "Update skills and workflows",
+  };
+
+  try {
+    const result = syncManager.push(options);
+
+    if (result.pushed) {
+      console.log("✅ Pushed successfully!");
+      console.log(`   Repository: ${config.repository.url}\\n`);
+    } else {
+      console.log(`⚠️  ${result.reason}`);
+
+      if (result.conflicts && result.conflicts.length > 0) {
+        console.log("\\n   Conflicting files:");
+        result.conflicts.forEach((f) => console.log(`     - ${f}`));
+        console.log("\\n   Resolve conflicts manually and try again.\\n");
+        process.exit(1);
+      }
+    }
+  } catch (error) {
+    console.error(`❌ Push failed: ${error.message}\\n`);
+    process.exit(1);
+  }
+}
+
+/**
+ * Pull skills from GitHub repository
+ */
+function pull(args) {
+  console.log("\\n⬇️  Pulling from GitHub...\\n");
+
+  const config = configManager.loadConfig();
+
+  if (!config.repository.url) {
+    console.error("❌ No repository configured");
+    console.log("\\n   Run: ai-agent init --repo <url>\\n");
+    process.exit(1);
+  }
+
+  const SyncManager = require("../scripts/sync-manager");
+  const syncManager = new SyncManager(config);
+
+  try {
+    const result = syncManager.pull();
+
+    if (result.pulled) {
+      console.log("✅ Pulled successfully!\\n");
+    } else {
+      console.log(`⚠️  ${result.reason || "Pull failed"}`);
+
+      if (result.conflicts && result.conflicts.length > 0) {
+        console.log("\\n   Conflicts in:");
+        result.conflicts.forEach((f) => console.log(`     - ${f}`));
+        console.log("\\n   Resolve manually and commit.\\n");
+        process.exit(1);
+      }
+    }
+  } catch (error) {
+    console.error(`❌ Pull failed: ${error.message}\\n`);
+    process.exit(1);
+  }
+}
+
+/**
+ * Bi-directional sync (pull + push)
+ */
 function sync(args) {
-  console.log("\n🔄 Syncing from GitHub repository...\n");
+  console.log("\\n🔄 Bi-directional sync...\\n");
+
+  const config = configManager.loadConfig();
+
+  if (!config.repository.url) {
+    // Fallback to old sync behavior
+    return oldSync(args);
+  }
+
+  const SyncManager = require("../scripts/sync-manager");
+  const syncManager = new SyncManager(config);
+
+  const options = {
+    message: getArgValue(args, "--message") || "Update skills and workflows",
+  };
+
+  try {
+    const result = syncManager.sync(options);
+
+    if (result.synced) {
+      console.log("✅ Sync completed!\\n");
+    } else {
+      console.log(`⚠️  ${result.reason}`);
+
+      if (result.conflicts && result.conflicts.length > 0) {
+        console.log("\\n   Conflicts in:");
+        result.conflicts.forEach((f) => console.log(`     - ${f}`));
+        console.log("\\n   Resolve manually and try again.\\n");
+      }
+      process.exit(1);
+    }
+  } catch (error) {
+    console.error(`❌ Sync failed: ${error.message}\\n`);
+    process.exit(1);
+  }
+}
+
+/**
+ * Old sync function (backward compatibility)
+ */
+function oldSync(args) {
+  console.log("\\n🔄 Syncing from GitHub repository...\\n");
   console.log(`   Repository: ${installer.REPO_URL}`);
-  console.log(`   Cache: ${installer.CACHE_DIR}\n`);
+  console.log(`   Cache: ${installer.CACHE_DIR}\\n`);
 
   try {
     const success = installer.syncRepo();
 
     if (success) {
-      console.log("\n✓ Sync complete!\n");
+      console.log("\\n✓ Sync complete!\\n");
 
       const skills = installer.getAvailableSkills();
       const workflows = installer.getAvailableWorkflows();
 
       console.log(`   Found ${skills.length} skill(s), ${workflows.length} workflow(s)`);
-      console.log("\n   Run 'ai-agent install' to install to your platforms.\n");
+      console.log("\\n   Run 'ai-agent install' to install to your platforms.\\n");
     }
   } catch (error) {
-    console.error(`\n❌ Sync failed: ${error.message}`);
+    console.error(`\\n❌ Sync failed: ${error.message}`);
     process.exit(1);
   }
 }
@@ -817,6 +990,12 @@ if (command === "source") {
       break;
     case "migrate":
       migrateCmd(args.slice(1));
+      break;
+    case "push":
+      push(args.slice(1));
+      break;
+    case "pull":
+      pull(args.slice(1));
       break;
     case "install":
       install(args.slice(1));
