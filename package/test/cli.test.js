@@ -22,7 +22,7 @@ describe("CLI Module", () => {
 
     it("should have correct version", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes('const VERSION = "2.4.2"'));
+      assert.ok(content.includes('const VERSION = "2.4.3"'));
     });
 
     it("should define all commands", () => {
