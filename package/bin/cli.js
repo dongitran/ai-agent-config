@@ -818,46 +818,6 @@ function pull(args) {
   }
 }
 
-/**
- * Bi-directional sync (pull + push)
- */
-function sync(args) {
-  console.log("\\n🔄 Bi-directional sync...\\n");
-
-  const config = configManager.loadConfig();
-
-  if (!config.repository.url) {
-    // Fallback to old sync behavior
-    return oldSync(args);
-  }
-
-  const SyncManager = require("../scripts/sync-manager");
-  const syncManager = new SyncManager(config);
-
-  const options = {
-    message: getArgValue(args, "--message") || "Update skills and workflows",
-  };
-
-  try {
-    const result = syncManager.sync(options);
-
-    if (result.synced) {
-      console.log("✅ Sync completed!\\n");
-    } else {
-      console.log(`⚠️  ${result.reason}`);
-
-      if (result.conflicts && result.conflicts.length > 0) {
-        console.log("\\n   Conflicts in:");
-        result.conflicts.forEach((f) => console.log(`     - ${f}`));
-        console.log("\\n   Resolve manually and try again.\\n");
-      }
-      process.exit(1);
-    }
-  } catch (error) {
-    console.error(`❌ Sync failed: ${error.message}\\n`);
-    process.exit(1);
-  }
-}
 
 /**
  * Old sync function (backward compatibility)
@@ -1011,9 +971,7 @@ if (command === "source") {
     case "update":
       update(args.slice(1));
       break;
-    case "sync":
-      sync(args.slice(1));
-      break;
+
     case "sync-external":
       // Backward compatibility - alias for update
       update(args.slice(1));

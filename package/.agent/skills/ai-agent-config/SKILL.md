@@ -104,11 +104,8 @@ ai-agent push --message "Initial setup"
 
 **Assistant**:
 ```bash
-# Pull latest from GitHub
+# Pull latest from GitHub (auto-installs)
 ai-agent pull
-
-# Install to all platforms
-ai-agent install --force
 ```
 
 ### Adding Custom Skills
@@ -122,11 +119,8 @@ ai-agent source add https://github.com/company/ai-skills.git \
   --name company-skills \
   --branch main
 
-# Update from new source
+# Update from new source (auto-installs)
 ai-agent update --source company-skills
-
-# Install to platforms
-ai-agent install
 ```
 
 ### Team Sharing
@@ -138,9 +132,8 @@ ai-agent install
 # Push to GitHub
 ai-agent push --message "Added debugging skills"
 
-# Team members pull
+# Team members pull (auto-installs)
 ai-agent pull
-ai-agent install
 ```
 
 ## Architecture
