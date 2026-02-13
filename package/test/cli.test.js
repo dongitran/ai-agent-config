@@ -20,9 +20,9 @@ describe("CLI Module", () => {
       assert.ok(content.startsWith("#!/usr/bin/env node"));
     });
 
-    it("should have version constant", () => {
+    it("should have correct version", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes('const VERSION = "2.4.0"'));
+      assert.ok(content.includes('const VERSION = "2.4.1"'));
     });
 
     it("should define all commands", () => {
