@@ -731,7 +731,6 @@ function update(args) {
       
       syncManager.push({ message });
     }
-    }
 
     console.log("");
   } catch (error) {
