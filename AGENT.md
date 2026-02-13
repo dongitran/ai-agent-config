@@ -74,23 +74,21 @@ When reviewing code, follow these steps:
 ## Quick Start
 
 ```bash
-# Install globally
 npm install -g ai-agent-config
 
 # Initialize config
 ai-agent init
 
-# Install 2 bundled skills
-ai-agent install
+# Install 2 bundled skills (auto-installs)
+ai-agent pull
 
 # (Optional) Add custom skill sources
 ai-agent source add https://github.com/vercel-labs/agent-skills.git \
   --name vercel-labs \
   --path skills
 
-# Update and install custom skills
+# Update custom skills (auto-installs)
 ai-agent update
-ai-agent install
 ```
 
 ## Bundled Skills (2)

@@ -776,13 +776,13 @@ function push(args) {
  * Pull skills from GitHub repository
  */
 function pull(args) {
-  console.log("\\n⬇️  Pulling from GitHub...\\n");
+  console.log("\n⬇️  Pulling from GitHub...\n");
 
   const config = configManager.loadConfig();
 
   if (!config.repository.url) {
     console.error("❌ No repository configured");
-    console.log("\\n   Run: ai-agent init --repo <url>\\n");
+    console.log("\n   Run: ai-agent init <url>\n");
     process.exit(1);
   }
 
@@ -793,19 +793,27 @@ function pull(args) {
     const result = syncManager.pull();
 
     if (result.pulled) {
-      console.log("✅ Pulled successfully!\\n");
+      console.log("✅ Pulled successfully!\n");
+
+      // Auto-install after pull (unless --no-install flag)
+      const noInstall = args.includes("--no-install");
+
+      if (!noInstall) {
+        console.log("📥 Auto-installing skills...\n");
+        install(["--force"]); // Force install to ensure latest
+      }
     } else {
       console.log(`⚠️  ${result.reason || "Pull failed"}`);
 
       if (result.conflicts && result.conflicts.length > 0) {
-        console.log("\\n   Conflicts in:");
+        console.log("\n   Conflicts in:");
         result.conflicts.forEach((f) => console.log(`     - ${f}`));
-        console.log("\\n   Resolve manually and commit.\\n");
+        console.log("\n   Resolve manually and commit.\n");
         process.exit(1);
       }
     }
   } catch (error) {
-    console.error(`❌ Pull failed: ${error.message}\\n`);
+    console.error(`❌ Pull failed: ${error.message}\n`);
     process.exit(1);
   }
 }

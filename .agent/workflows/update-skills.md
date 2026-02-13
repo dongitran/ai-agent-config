@@ -8,14 +8,9 @@ Sync and install the latest skills from the ai-agent-config repository.
 
 ## Steps
 
-1. Sync from GitHub repository:
+1. Sync from GitHub repository (auto-installs skills):
 ```bash
 ai-agent sync
-```
-
-2. Install/update all skills with force flag:
-```bash
-ai-agent install --force
 ```
 
 ## Notes

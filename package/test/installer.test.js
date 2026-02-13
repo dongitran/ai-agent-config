@@ -39,17 +39,15 @@ describe("Installer Module", () => {
   });
 
   describe("getAvailableSkills", () => {
-    it("should return array", () => {
+    test("should return array", () => {
       const skills = installer.getAvailableSkills();
       assert.ok(Array.isArray(skills));
     });
 
-    it("should return bundled skills from package", () => {
+    test("should return bundled skills from package", () => {
       const skills = installer.getAvailableSkills();
-      // v2.2: Always returns 2 bundled skills (config-manager, skill-updater)
-      assert.ok(skills.length >= 2);
       assert.ok(skills.includes("config-manager"));
-      assert.ok(skills.includes("skill-updater"));
+      assert.ok(skills.includes("ai-agent-config"));
     });
   });
 

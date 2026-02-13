@@ -21,19 +21,19 @@
 # Install globally
 npm install -g ai-agent-config
 
-# Initialize (creates config at ~/.ai-agent/config.json)
-ai-agent init
+# Initialize (optional)
+ai-agent init --repo https://github.com/youruser/my-ai-skills.git
 
-# Install bundled skills to platforms
-ai-agent install
+# Pull and auto-install
+ai-agent pull
 ```
 
 ## 🎯 Bundled Skills (2)
 
 The package includes 2 core skills for managing the system:
 
-1. **config-manager** - Manage configuration and custom sources
-2. **skill-updater** - Update skills from GitHub repositories
+1.  **config-manager** - Manage configuration and custom sources
+2.  **skill-updater** - Update skills from GitHub repositories
 
 ## 📚 Add More Skills
 
@@ -81,8 +81,7 @@ ai-agent config reset --yes                 # Reset to defaults
 ### Installation & Updates
 ```bash
 ai-agent init                               # Initialize/migrate config
-ai-agent update [--source name]             # Update skills from sources
-ai-agent install                            # Install to all detected platforms
+ai-agent pull                               # Pull + auto-install from GitHub
 ai-agent list                               # List installed skills
 ai-agent platforms                          # Show detected platforms
 ai-agent uninstall                          # Remove skills
