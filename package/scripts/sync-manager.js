@@ -165,7 +165,27 @@ class SyncManager {
      */
     gitCommit(message) {
         try {
-            execSync("git add .agent/", { cwd: this.repoPath, stdio: "pipe" });
+            // Add all .agent/ files except bundled package skills
+            execSync("git add .agent/workflows/", { cwd: this.repoPath, stdio: "pipe" });
+
+            // Add skills individually, excluding bundled ones
+            const fs = require("fs");
+            const path = require("path");
+            const skillsDir = path.join(this.repoPath, ".agent/skills");
+            const bundledSkills = ["ai-agent-config", "config-manager"];
+
+            if (fs.existsSync(skillsDir)) {
+                const skills = fs.readdirSync(skillsDir);
+                skills.forEach(skill => {
+                    if (!bundledSkills.includes(skill)) {
+                        execSync(`git add .agent/skills/${skill}`, {
+                            cwd: this.repoPath,
+                            stdio: "pipe"
+                        });
+                    }
+                });
+            }
+
             execSync(`git commit -m "${message}"`, { cwd: this.repoPath, stdio: "pipe" });
         } catch (error) {
             // Ignore commit errors if nothing to commit
