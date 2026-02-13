@@ -8,7 +8,7 @@ const installer = require("../scripts/installer");
 const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 
-const VERSION = "2.3.1";
+const VERSION = "2.4.0";
 
 // Get package root (one level up from bin/)
 const PACKAGE_ROOT = path.join(__dirname, "..");
