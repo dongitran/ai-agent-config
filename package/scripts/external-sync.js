@@ -10,7 +10,6 @@ const { execSync } = require("child_process");
 const configManager = require("./config-manager");
 
 const CACHE_DIR = path.join(require("os").homedir(), ".ai-agent-external-cache");
-const TARGET_DIR = path.join(__dirname, "../../.agent/skills");
 
 /**
  * Load external skills configuration from user config
@@ -19,7 +18,14 @@ function loadConfig() {
   try {
     // Load sources from user config
     const sources = configManager.getAllSources();
-    return { sources };
+    const config = configManager.loadConfig();
+
+    // Target directory is the user's configured repository
+    const targetDir = config.repository && config.repository.local
+      ? path.join(config.repository.local, ".agent/skills")
+      : path.join(require("os").homedir(), ".ai-agent/skills");
+
+    return { sources, targetDir };
   } catch (error) {
     console.error("⚠️  Failed to load user config:", error.message);
     console.log("💡 Run 'ai-agent init' to create config");
@@ -140,6 +146,7 @@ function syncAll(options = {}) {
   console.log("\n🔄 Syncing external skills...\n");
 
   const config = loadConfig();
+  const targetDir = config.targetDir;
   let sources = config.sources;
 
   // Filter by source if specified
@@ -184,7 +191,7 @@ function syncAll(options = {}) {
     // Copy each skill
     for (const skillDef of skills) {
       const sourcePath = path.join(repoDir, skillDef.path);
-      const targetPath = path.join(TARGET_DIR, skillDef.name);
+      const targetPath = path.join(targetDir, skillDef.name);
       const excludePaths = skillDef.excludePaths || [];
 
       const result = copySkill(sourcePath, targetPath, force, excludePaths);
@@ -213,6 +220,7 @@ function list() {
   console.log("\n📋 Available External Skills\n");
 
   const config = loadConfig();
+  const targetDir = config.targetDir;
 
   for (const source of config.sources) {
     console.log(`Source: ${source.name}`);
@@ -221,7 +229,7 @@ function list() {
     console.log(`  Skills:`);
 
     for (const skill of source.skills) {
-      const targetPath = path.join(TARGET_DIR, skill.name);
+      const targetPath = path.join(targetDir, skill.name);
       const installed = fs.existsSync(targetPath) ? "✓ installed" : "";
       console.log(`    • ${skill.name} ${installed}`);
     }
