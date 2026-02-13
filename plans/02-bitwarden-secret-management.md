@@ -316,57 +316,24 @@ ai-agent install
 
 ### 1. Environment Variable Persistence
 
-**Vấn đề**: Khi bạn chạy `export GITHUB_TOKEN="ghp_xxx"` trong terminal, env var này chỉ tồn tại trong **session hiện tại**. Khi bạn:
-- Đóng terminal → mất hết
-- Mở terminal mới → không có
-- Restart máy → không có
+**Challenge**: Env vars set via `export` chỉ tồn tại trong current session
 
-**Ví dụ thực tế:**
+**Options**:
+- **A**: Write to shell profile (`~/.zshrc`, `~/.bashrc`) - persistent
+  - ✅ Pro: Survives restarts
+  - ❌ Con: Pollutes user's shell profile
+  
+- **B**: Write to `.env` file, load before Antigravity
+  - ✅ Pro: Clean separation
+  - ❌ Con: User must manually load or setup auto-load
+  
+- **C**: Rely on user to set `BW_SESSION` before each Antigravity launch
+  - ✅ Pro: Maximum security (session expires)
+  - ❌ Con: User friction
 
-**Session 1** (Terminal cũ):
-```bash
-export GITHUB_TOKEN="ghp_xxx"
-echo $GITHUB_TOKEN  # → ghp_xxx ✅
-```
-
-**Session 2** (Terminal mới):
-```bash
-echo $GITHUB_TOKEN  # → (empty) ❌
-```
-
-**Giải pháp: Phải lưu env vars vào file để persist**
-
-Có 3 options:
-
-**Option A: Shell Profile File** (Recommended ✅)
-- File: `~/.zshrc` (macOS/Linux với zsh) hoặc `~/.bashrc` (bash)
-- Package tự động append vào cuối file:
-  ```bash
-  # AI Agent MCP Secrets (auto-generated)
-  export GITHUB_TOKEN="ghp_xxx"
-  export OPENAI_API_KEY="sk-xxx"
-  ```
-- ✅ **Pro**: Tự động load mỗi khi mở terminal mới
-- ✅ **Pro**: Persistent across restarts
-- ❌ **Con**: File profile trở nên dài (nhưng OK)
-
-**Option B: Separate `.env` File**
-- File: `~/.ai-agent/secrets.env`
-- User phải manually load: `source ~/.ai-agent/secrets.env`
-- Hoặc: Add vào profile: `source ~/.ai-agent/secrets.env`
-- ✅ **Pro**: Tách biệt, dễ manage
-- ❌ **Con**: User phải manually load (hoặc vẫn phải edit profile)
-
-**Option C: Session-Only**
-- Chỉ `export` trong session hiện tại
-- ✅ **Pro**: Maximum security (không persist)
-- ❌ **Con**: Mỗi lần mở terminal phải chạy lại `ai-agent secrets sync`
-
-**💡 Recommendation: Option A** 
-- Tự động append vào `~/.zshrc` (với user consent)
-- Ask user trước: "Add secrets to ~/.zshrc? (Y/n)"
-- Hoặc: `ai-agent secrets sync --profile` để confirm
-- Add comment block rõ ràng để user dễ tìm và xóa nếu cần
+**Recommendation**: Option A with user consent
+- Ask user: "Add env vars to ~/.zshrc? (Y/n)"
+- Or: `ai-agent secrets sync --profile` flag
 
 ### 2. Bitwarden MCP vs Bitwarden CLI
 
@@ -404,50 +371,25 @@ Có 3 options:
   - macOS/Linux: `~/.zshrc` or `~/.bashrc`
   - Windows: PowerShell profile or `.env` file
 
-### 5. Bitwarden Vault Organization
+### 5. Bitwarden Folder Organization
 
-**💡 Recommended Structure:**
+**Challenge**: How should users organize secrets in Bitwarden?
 
-**Trong Bitwarden Vault:**
-```
-📁 MCP Secrets (Folder)
-   ├── 🔑 GITHUB_TOKEN
-   │      Type: Login
-   │      Password: ghp_xxx...
-   │
-   ├── 🔑 OPENAI_API_KEY  
-   │      Type: Login
-   │      Password: sk-xxx...
-   │
-   └── 🔑 DATABASE_PASSWORD
-          Type: Login
-          Password: mypass123
-```
+**Recommendation**:
+- Enforce folder structure: `MCP Secrets/` folder
+- Or: Use tags (e.g., tag items with `mcp-secret`)
+- Package scans only items in designated folder/tag
 
-**Quy tắc:**
-1. **Folder Name**: `MCP Secrets` (fixed, package sẽ tìm trong folder này)
-2. **Item Name**: Phải match chính xác với env var name
-   - Env var: `${GITHUB_TOKEN}` → Item name: `GITHUB_TOKEN`
-   - Case-sensitive!
-3. **Item Type**: "Login" type
-4. **Field**: Dùng field `password` để store secret value
-
-**Config trong package:**
+**Config**:
 ```json
 {
   "secrets": {
     "provider": "bitwarden",
     "folder": "MCP Secrets",
-    "itemType": "login",
-    "field": "password"
+    "sessionVar": "BW_SESSION"
   }
 }
 ```
-
-**Tại sao dùng "Login" type?**
-- Bitwarden CLI `bw get password "ITEM_NAME"` works best với Login items
-- Folder organization rõ ràng
-- Dễ manage trong Bitwarden UI
 
 ### 6. Security Considerations
 
