@@ -1,196 +1,77 @@
 # ai-agent-config
 
-> Universal Global Skills & Workflows for AI Coding Assistants - User-configurable skill sources
+> Universal skill & workflow manager for AI coding assistants with bi-directional GitHub sync
 
 [![npm version](https://badge.fury.io/js/ai-agent-config.svg)](https://www.npmjs.com/package/ai-agent-config)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
-
-## 🚀 What's New in v2.2
-
-- ✅ **Minimal core** - Only 2 essential skills bundled (config-manager, skill-updater)
-- ✅ **User-configurable sources** - Add any skill repositories from GitHub
-- ✅ **Source management** - Enable, disable, add, remove sources via CLI
-- ✅ **Config management** - Export/import configs for team sharing
-- ✅ **Zero defaults** - No external sources by default, full user control
-
-## 📦 Quick Start
+## Install
 
 ```bash
-# Install globally
 npm install -g ai-agent-config
+```
 
-# Initialize (optional)
+## Quick Start
+
+```bash
+# Initialize with your GitHub repo
 ai-agent init --repo https://github.com/youruser/my-ai-skills.git
 
-# Pull and auto-install
+# Pull skills and auto-install to platforms
 ai-agent pull
-```
 
-## 🎯 Bundled Skills (2)
-
-The package includes 2 core skills for managing the system:
-
-1.  **config-manager** - Manage configuration and custom sources
-2.  **skill-updater** - Update skills from GitHub repositories
-
-## 📚 Add More Skills
-
-To get more skills, add custom sources from GitHub:
-
-```bash
-# Add Vercel Labs skills
+# Add external skill sources
 ai-agent source add https://github.com/vercel-labs/agent-skills.git \
-  --name vercel-labs \
-  --path skills
+  --name vercel-labs --path skills
 
-# Add Everything Claude Code
-ai-agent source add https://github.com/affaan-m/everything-claude-code.git \
-  --name everything-claude-code \
-  --path skills
-
-# Update and install
+# Sync external skills (pull -> sync -> push)
 ai-agent update
-ai-agent install
 ```
 
-## 🛠️ CLI Commands
+## Commands
 
-### Source Management
-```bash
-ai-agent source add <repo-url> [options]    # Add custom source
-ai-agent source remove <name>               # Remove source
-ai-agent source list                        # List all sources
-ai-agent source enable <name>               # Enable source
-ai-agent source disable <name>              # Disable source
-ai-agent source info <name>                 # View source details
-```
+| Command | Description |
+|---------|-------------|
+| `init --repo <url>` | Initialize config and clone repo |
+| `push` / `pull` | Git push/pull with your skills repo |
+| `update` | Pull -> sync external skills -> push |
+| `install` | Copy skills to platform directories |
+| `list` | List installed skills |
+| `platforms` | Show detected platforms |
+| `source add/remove/list` | Manage skill sources |
+| `config get/set/edit` | Manage configuration |
+| `uninstall` | Remove installed skills |
 
-### Config Management
-```bash
-ai-agent config get <key>                   # Get config value
-ai-agent config set <key> <value>           # Set config value
-ai-agent config edit                        # Edit in $EDITOR
-ai-agent config validate                    # Validate config
-ai-agent config export [file]               # Export config
-ai-agent config import <file> [--merge]     # Import config
-ai-agent config reset --yes                 # Reset to defaults
-```
+## Supported Platforms
 
-### Installation & Updates
-```bash
-ai-agent init                               # Initialize/migrate config
-ai-agent pull                               # Pull + auto-install from GitHub
-ai-agent list                               # List installed skills
-ai-agent platforms                          # Show detected platforms
-ai-agent uninstall                          # Remove skills
-```
+| Platform | Skills Path |
+|----------|-------------|
+| Claude Code | `~/.claude/skills/` |
+| Antigravity IDE | `~/.gemini/antigravity/skills/` |
+| Cursor | `~/.cursor/skills/` |
+| Windsurf | `~/.windsurf/skills/` |
+| Codex CLI | `~/.codex/skills/` |
+| GitHub Copilot | `~/.github/copilot-instructions.md` |
 
-## 🎨 Use Cases
-
-### For Companies
-```bash
-# Add your company's private skills repo
-ai-agent source add https://github.com/acme-corp/coding-standards \
-  --name acme-standards
-
-# Share config file with team
-ai-agent config export acme-config.json
-
-# Team members import
-ai-agent config import acme-config.json --merge
-```
-
-### For Individual Developers
-```bash
-# Add skills from multiple sources
-ai-agent source add https://github.com/vercel-labs/agent-skills.git --name vercel
-ai-agent source add https://github.com/yourname/my-skills --name personal
-
-# Update and install
-ai-agent update
-ai-agent install
-```
-
-## 📍 File Locations
-
-```
-~/.ai-agent/
-├── config.json                    # User configuration
-└── .ai-agent-external-cache/      # Downloaded skill repositories
-
-AI Platform Skills:
-~/.claude/skills/                  # Claude Code
-~/.gemini/antigravity/skills/      # Antigravity IDE
-~/.cursor/skills/                  # Cursor
-~/.windsurf/skills/                # Windsurf
-```
-
-## 🔧 Configuration File
+## Configuration
 
 User config at `~/.ai-agent/config.json`:
 
 ```json
 {
-  "version": "2.0",
+  "version": "2.3",
+  "repository": {
+    "url": "https://github.com/youruser/my-ai-skills.git",
+    "branch": "main",
+    "local": "~/.ai-agent/sync-repo"
+  },
   "sources": {
     "official": [],
-    "custom": [
-      {
-        "name": "my-skills",
-        "repo": "https://github.com/me/my-skills.git",
-        "branch": "main",
-        "path": "skills",
-        "enabled": true
-      }
-    ]
-  },
-  "preferences": {
-    "autoUpdate": true,
-    "updateInterval": "weekly"
+    "custom": []
   }
 }
 ```
 
-## 🤝 Contributing
+## License
 
-We welcome contributions! Here's how:
-
-1. **Share your skills**: Create skills repo and share with community
-2. **Report issues**: [GitHub Issues](https://github.com/dongitran/ai-agent-config/issues)
-3. **Submit PRs**: Improve the core tool
-
-## 🌟 Why ai-agent-config?
-
-- ✅ **Minimal & focused** - Only 2 core skills bundled, add what you need
-- ✅ **Full control** - No default external sources, you decide what to install
-- ✅ **User-configurable** - Add unlimited custom skill sources
-- ✅ **Team-friendly** - Export/import configs for collaboration
-- ✅ **Zero dependencies** - Lightweight, fast, secure
-- ✅ **Open & extensible** - Use any GitHub repo as skill source
-
-## 📊 Supported Platforms
-
-| Platform | Status | Skills Directory |
-|----------|--------|------------------|
-| Claude Code | ✅ Supported | `~/.claude/skills/` |
-| Antigravity IDE | ✅ Supported | `~/.gemini/antigravity/skills/` |
-| Cursor | ✅ Supported | `~/.cursor/skills/` |
-| Windsurf | ✅ Supported | `~/.windsurf/skills/` |
-| Codex CLI | ✅ Supported | `~/.codex/skills/` |
-
-## 📄 License
-
-MIT © [Dong Tran](https://github.com/dongitran)
-
-## 🔗 Links
-
-- **NPM**: https://www.npmjs.com/package/ai-agent-config
-- **GitHub**: https://github.com/dongitran/ai-agent-config
-- **Issues**: https://github.com/dongitran/ai-agent-config/issues
-- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
-
----
-
-**Keywords**: AI coding assistant, Claude Code, Antigravity, Cursor, Windsurf, AI skills, code automation, developer tools, coding standards, best practices, AI agent config, skill management, team collaboration, custom skills, GitHub integration
+MIT
