@@ -73,6 +73,11 @@ ai-agent platforms                      # Show detected platforms
 ai-agent uninstall                      # Remove installed skills
 ```
 
+### Secret Management
+```bash
+ai-agent secrets sync                   # Sync MCP secrets from Bitwarden vault
+```
+
 ## Supported Platforms
 
 | Platform | Skills Path |

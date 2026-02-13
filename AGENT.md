@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.4.10
+**Version:** 2.5.0
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
@@ -60,6 +60,7 @@ ai-agent-config/
 | `uninstall` | Remove installed skills |
 | `source add/remove/list/enable/disable/info` | Manage skill sources |
 | `config get/set/edit/validate/export/import/reset` | Manage config |
+| `secrets sync` | Sync MCP secrets from Bitwarden vault |
 | `sync-external` | Alias for `update` |
 | `list-external` | List available external skills |
 | `version` / `help` | Show version or help |
