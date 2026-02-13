@@ -29,15 +29,17 @@ describe("CLI Module", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
       const expectedCommands = [
         "init",
+        "pull",
+        "push",
+        "update",
         "install",
-        "sync",
         "list",
         "platforms",
         "uninstall",
-        "version",
-        "help",
+        "add-source",
+        "remove-source",
+        "list-sources",
       ];
-
       expectedCommands.forEach((cmd) => {
         assert.ok(content.includes(`case "${cmd}":`), `Should have ${cmd} command`);
       });
