@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
 
+# Website (lives on docs branch)
+website/
+
 # Build outputs
 dist/
 *.js
