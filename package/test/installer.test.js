@@ -39,12 +39,12 @@ describe("Installer Module", () => {
   });
 
   describe("getAvailableSkills", () => {
-    test("should return array", () => {
+    it("should return array", () => {
       const skills = installer.getAvailableSkills();
       assert.ok(Array.isArray(skills));
     });
 
-    test("should return bundled skills from package", () => {
+    it("should return bundled skills from package", () => {
       const skills = installer.getAvailableSkills();
       assert.ok(skills.includes("config-manager"));
       assert.ok(skills.includes("ai-agent-config"));
