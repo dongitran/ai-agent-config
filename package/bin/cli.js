@@ -7,6 +7,7 @@ const configManager = require("../scripts/config-manager");
 const installer = require("../scripts/installer");
 const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
+const externalSync = require("../scripts/external-sync");
 
 const VERSION = "2.4.1";
 
