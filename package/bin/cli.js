@@ -84,17 +84,20 @@ Usage: ai-agent <command> [options]
 
 🔧 Installation & Sync:
   install [opts]              Install skills to platforms
-  update [opts]               Update all skills from sources
-  list                        List installed  ai-agent update [--source <name>]      # Update from specific source
+  update [opts]               Update allskills from sources  
+  list                        List installed skills
+  uninstall [opts]            Uninstall skills from platforms
 
-  # Installation
-  ai-agent install                    # Install to all detected platforms
-  ai-agent install --force            # Force reinstall
-  ai-agent install --skill <name>    # Install specific skill
+🔄 GitHub Sync:
+  init [--repo <url>]         Initialize config and clone repository
+  push [--message <msg>]      Push skills to GitHub
+  pull                        Pull skills from GitHub
 
-  # List skills
-  ai-agent list                       # List installed skills
+🔍 External Skills:
+  sync-external [opts]        Sync skills from external sources
+  list-external               List available external skills
 
+🌐 Examples:
 🌐 Examples:
 
   # Initialize with GitHub repository
