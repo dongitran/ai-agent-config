@@ -62,7 +62,8 @@ function main() {
         }
       }
 
-      // Add Bitwarden MCP server (enabled by default)
+      // Add/Enable Bitwarden MCP server
+      let changed = false;
       if (!mcpConfig.mcpServers.bitwarden) {
         mcpConfig.mcpServers.bitwarden = {
           command: "npx",
@@ -72,13 +73,20 @@ function main() {
             BW_CLIENTSECRET: "${BW_CLIENTSECRET}",
           },
         };
+        changed = true;
+        console.log("🔐 Bitwarden MCP server added to Antigravity (✓ enabled)");
+      } else if (mcpConfig.mcpServers.bitwarden.disabled) {
+        delete mcpConfig.mcpServers.bitwarden.disabled;
+        changed = true;
+        console.log("🔓 Bitwarden MCP server enabled in Antigravity");
+      }
 
+      if (changed) {
         fs.writeFileSync(
           antigravityMcpPath,
           JSON.stringify(mcpConfig, null, 2),
           "utf-8"
         );
-        console.log("🔐 Bitwarden MCP server added to Antigravity (✓ enabled)");
         console.log("   Config: ~/.gemini/antigravity/mcp_config.json\n");
       }
     } catch (error) {

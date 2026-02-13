@@ -8,7 +8,9 @@ This MCP server allows AI agents (like Antigravity) to access your Bitwarden vau
 
 ## Installation
 
-The Bitwarden MCP server is **disabled by default**. It serves a different purpose than the `ai-agent secrets sync` command:
+## Enabled by Default
+
+The Bitwarden MCP server is **enabled by default** starting from v2.5.7. It serves a different purpose than the `ai-agent secrets sync` command:
 
 ### Two Different Use Cases:
 
@@ -18,7 +20,7 @@ The Bitwarden MCP server is **disabled by default**. It serves a different purpo
    - Writes to `~/.zshrc` for persistent environment variables
    - Run once when setting up or rotating secrets
 
-2. **Bitwarden MCP Server** (Optional)
+2. **Bitwarden MCP Server** (Optional for discussion, but enabled for convenience)
    - AI agent can query vault directly during conversations
    - Ask questions like "What's my GitHub token?"
    - Create/update vault items via AI
@@ -36,25 +38,17 @@ Same as `ai-agent secrets sync`:
   export BW_CLIENTSECRET="yyy"
   ```
 
-### Enable the MCP Server
+### Verification
 
-1. **Edit config** to enable:
-   ```bash
-   # Edit this file
-   nano /Users/dongtran/Code/Working/ai-agent-config/.agent/mcp-servers/bitwarden/config.json
-   
-   # Change "enabled": false to "enabled": true
-   ```
-
-2. **Install to Antigravity** (after implementing Plan 01 MCP sync):
+1. **Install to Antigravity**:
    ```bash
    ai-agent install
    ```
 
-3. **Verify** in Antigravity:
+2. **Verify** in Antigravity:
    - Open Antigravity
    - Go to "Manage MCP Servers"
-   - Should see "bitwarden" server listed
+   - Should see "bitwarden" server listed and ✅ enabled
 
 ## Usage Examples
 
@@ -75,14 +69,13 @@ The AI will use the Bitwarden MCP server to fetch/store this information securel
 - Session management handled by Bitwarden MCP server
 - No secrets stored in MCP config file
 
-## Disabled by Default
+## Why Enable by Default?
 
-This MCP server is **disabled by default** (`"enabled": false`) because:
-1. Not everyone needs AI agent vault access
-2. Most users only need `ai-agent secrets sync` for MCP environment variables
-3. Reduces attack surface if not needed
+1. **Seamless Integration**: AI agents can immediately help manage secrets
+2. **Simplified Setup**: No manual editing of config files required
+3. **Power User Ready**: Provides full vault access for autonomous agents
 
-Enable only if you want AI agents to have direct vault query capabilities.
+If you wish to disable it, you can do so in the Antigravity UI or by adding `"disabled": true` to the bitwarden server config in `~/.gemini/antigravity/mcp_config.json`.
 
 ## Documentation
 
