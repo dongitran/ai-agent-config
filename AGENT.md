@@ -6,6 +6,8 @@
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
+> **IMPORTANT:** When making any changes to the `package/` folder, you MUST follow the [Development Workflow](#development-workflow-package-changes) below. This includes: bumping version, updating READMEs, running tests, pushing, waiting for CI via `gh` CLI, fixing failures, and self-testing.
+
 ---
 
 ## Project Structure
@@ -25,7 +27,7 @@ ai-agent-config/
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.4.10
+│   └── package.json            # v2.5.0
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 4 workflows (brainstorm, create-pr, release-notes, update-skills)
