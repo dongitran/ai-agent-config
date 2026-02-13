@@ -199,6 +199,21 @@ function listSkills() {
     });
   }
 
+  // MCP Servers
+  const mcpInstaller = require("../scripts/mcp-installer");
+  const mcpServers = mcpInstaller.getAvailableMcpServers();
+
+  console.log("\nMCP Servers:");
+  if (mcpServers.length === 0) {
+    console.log("  (no MCP servers found)");
+  } else {
+    mcpServers.forEach((server) => {
+      const status = server.enabled === false ? " (disabled)" : "";
+      const desc = server.description ? ` - ${server.description}` : "";
+      console.log(`  • ${server.name}${desc}${status}`);
+    });
+  }
+
   console.log(`\nSource: ${installer.CACHE_DIR}`);
   console.log("");
 }
@@ -668,6 +683,13 @@ function install(args) {
       if (result.skillsCount > 0) parts.push(`${result.skillsCount} skill(s)`);
       if (result.workflowsCount > 0) parts.push(`${result.workflowsCount} workflow(s)`);
 
+      // Count MCP servers across all platforms
+      let mcpTotal = 0;
+      result.details.forEach((d) => {
+        if (d.mcpServers) mcpTotal += d.mcpServers.added + d.mcpServers.skipped;
+      });
+      if (mcpTotal > 0) parts.push(`${mcpTotal} MCP server(s)`);
+
       console.log(`\n✓ Installed ${parts.join(", ")} to ${result.platformsCount} platform(s)\n`);
       result.details.forEach((d) => {
         console.log(`  ${d.platform}:`);
@@ -685,7 +707,18 @@ function install(args) {
             console.log(`      • ${w.name} ${status}`);
           });
         }
+        if (d.mcpServers && d.mcpServers.servers.length > 0) {
+          console.log(`    MCP Servers: ${d.mcpServers.added} added, ${d.mcpServers.skipped} skipped`);
+          d.mcpServers.servers.forEach((name) => {
+            console.log(`      • ${name}`);
+          });
+        }
       });
+
+      // Hint about secrets sync if MCP servers were installed
+      if (mcpTotal > 0) {
+        console.log("\n💡 Run 'ai-agent secrets sync' to resolve Bitwarden secrets");
+      }
     } else {
       console.log("\n⚠️  No skills or workflows installed.");
     }
@@ -830,7 +863,7 @@ function pull(args) {
       const noInstall = args.includes("--no-install");
 
       if (!noInstall) {
-        console.log("📥 Auto-installing skills...\n");
+        console.log("📥 Auto-installing skills + MCP servers...\n");
         install(["--force"]); // Force install to ensure latest
       }
     } else {

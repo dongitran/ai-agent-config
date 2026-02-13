@@ -168,9 +168,13 @@ class SyncManager {
             // Add all .agent/ files except bundled package skills
             execSync("git add .agent/workflows/", { cwd: this.repoPath, stdio: "pipe" });
 
+            // Add MCP servers
+            const mcpServersDir = path.join(this.repoPath, ".agent/mcp-servers");
+            if (fs.existsSync(mcpServersDir)) {
+                execSync("git add .agent/mcp-servers/", { cwd: this.repoPath, stdio: "pipe" });
+            }
+
             // Add skills individually, excluding bundled ones
-            const fs = require("fs");
-            const path = require("path");
             const skillsDir = path.join(this.repoPath, ".agent/skills");
             const bundledSkills = ["ai-agent-config", "config-manager"];
 

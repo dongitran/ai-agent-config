@@ -153,35 +153,25 @@ function unlockBitwarden(password) {
 }
 
 /**
- * Discover required secrets from MCP configs
- * Scans ~/.gemini/antigravity/mcp_config.json for ${VAR} patterns
+ * Discover required secrets from MCP server configs in the repo
+ * Scans .agent/mcp-servers/{name}/config.json for bitwardenEnv fields
  */
 function discoverRequiredSecrets() {
-    const platforms = require("./platforms");
-    const antigravity = platforms.getByName("antigravity");
+    const mcpInstaller = require("./mcp-installer");
+    const envs = mcpInstaller.collectBitwardenEnvs();
 
-    if (!antigravity) {
-        return { found: false, secrets: [], reason: "Antigravity platform not detected" };
+    if (envs.length === 0) {
+        const mcpDir = mcpInstaller.getMcpServersDir();
+        if (!mcpDir) {
+            return { found: false, secrets: [], reason: "No repository configured or no MCP servers found" };
+        }
+        return { found: true, secrets: [] };
     }
 
-    const mcpConfigPath = path.join(antigravity.configPath, "mcp_config.json");
+    // Collect unique Bitwarden item names to fetch
+    const secretNames = [...new Set(envs.map((e) => e.bitwardenItem))];
 
-    if (!fs.existsSync(mcpConfigPath)) {
-        return { found: false, secrets: [], reason: "MCP config not found" };
-    }
-
-    try {
-        const content = fs.readFileSync(mcpConfigPath, "utf-8");
-
-        // Extract all ${VAR_NAME} patterns (supports mixed/lowercase)
-        const regex = /\$\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g;
-        const matches = [...content.matchAll(regex)];
-        const secretNames = [...new Set(matches.map((m) => m[1]))];
-
-        return { found: true, secrets: secretNames };
-    } catch (error) {
-        return { found: false, secrets: [], reason: error.message };
-    }
+    return { found: true, secrets: secretNames, envs };
 }
 
 /**
@@ -334,22 +324,22 @@ async function syncSecrets() {
         console.log("✓ Vault unlocked\n");
         sessionKey = unlockResult.sessionKey;
 
-        // 5. Discover required secrets
-        console.log("🔍 Scanning MCP configs for required secrets...");
+        // 5. Discover required secrets from repo's bitwardenEnv
+        console.log("🔍 Scanning MCP server configs for required secrets...");
         const discovery = discoverRequiredSecrets();
 
         if (!discovery.found) {
             console.log(`⚠️  ${discovery.reason}`);
-            console.log("\n💡 No secrets to sync. MCP configs will be available after implementing Plan 01.\n");
+            console.log("\n💡 Configure a repository first: ai-agent init --repo <url>\n");
             return;
         }
 
         if (discovery.secrets.length === 0) {
-            console.log("No environment variables found in MCP configs.\n");
+            console.log("No bitwardenEnv entries found in MCP server configs.\n");
             return;
         }
 
-        console.log(`Found ${discovery.secrets.length} secret(s):`);
+        console.log(`Found ${discovery.secrets.length} secret(s) to fetch:`);
         discovery.secrets.forEach((name) => {
             console.log(`  • ${name}`);
         });
@@ -359,32 +349,42 @@ async function syncSecrets() {
         const fetchResults = fetchSecretsFromBitwarden(sessionKey, discovery.secrets);
 
         fetchResults.found.forEach((secret) => {
-            console.log(`✓ ${secret.name} (found)`);
+            console.log(`  ✓ ${secret.name}`);
         });
 
         fetchResults.missing.forEach((name) => {
-            console.log(`⚠ ${name} (not found in vault)`);
+            console.log(`  ⚠ ${name} (not found in vault)`);
         });
 
-        // 7. Write to shell profile
+        // 7. Install MCP servers with resolved secrets to Antigravity
         if (fetchResults.found.length > 0) {
-            console.log("\n💾 Writing secrets to shell profile...");
-            const writeResult = writeToShellProfile(fetchResults.found);
-            console.log(`✓ Added ${writeResult.count} environment variable(s) to ${writeResult.path}`);
+            const mcpInstaller = require("./mcp-installer");
+
+            // Build resolvedSecrets map: bitwardenItemName → value
+            const resolvedSecrets = {};
+            fetchResults.found.forEach((s) => {
+                resolvedSecrets[s.name] = s.value;
+            });
+
+            console.log("\n📦 Installing MCP servers to Antigravity...");
+            const installResult = mcpInstaller.installMcpServersWithSecrets(resolvedSecrets);
+
+            installResult.servers.forEach((s) => {
+                if (s.secretsCount > 0) {
+                    console.log(`  ✓ ${s.name}: ${s.secretsCount} secret(s) resolved`);
+                } else {
+                    console.log(`  ✓ ${s.name}: no secrets needed`);
+                }
+            });
         }
 
         // 8. Summary
         console.log("\n✅ Secrets synced successfully!\n");
 
-        console.log("ℹ️  Next steps:");
-        console.log("   1. Restart terminal or run: source ~/.zshrc");
-
         if (fetchResults.missing.length > 0) {
-            console.log(`   2. Missing secrets: ${fetchResults.missing.join(", ")}`);
-            console.log("      Add them to Bitwarden or set manually");
+            console.log(`⚠️  Missing secrets: ${fetchResults.missing.join(", ")}`);
+            console.log(`   Add them to Bitwarden vault folder "${BITWARDEN_FOLDER}"\n`);
         }
-
-        console.log("");
     } finally {
         // Cleanup: Lock vault to invalidate session key
         if (sessionKey) {

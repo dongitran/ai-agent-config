@@ -42,6 +42,7 @@ const SUPPORTED = [
     configDir: ".gemini/antigravity",
     skillsDir: "skills",
     workflowsDir: "workflows",
+    mcpConfigFile: "mcp_config.json",
     get configPath() {
       return path.join(HOME, this.configDir);
     },
@@ -50,6 +51,9 @@ const SUPPORTED = [
     },
     get workflowsPath() {
       return path.join(HOME, this.configDir, this.workflowsDir);
+    },
+    get mcpConfigPath() {
+      return path.join(HOME, this.configDir, this.mcpConfigFile);
     },
     detect() {
       // Check for .gemini directory or Antigravity app

@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.5.9
+**Version:** 2.6.0
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
@@ -20,17 +20,20 @@ ai-agent-config/
 │   │   ├── config-manager.js   # Config CRUD (~/.ai-agent/config.json)
 │   │   ├── external-sync.js    # Sync skills from external GitHub repos
 │   │   ├── sync-manager.js     # Git push/pull to sync-repo
-│   │   ├── installer.js        # Install skills to platform directories
+│   │   ├── installer.js        # Install skills/workflows/MCP to platform directories
+│   │   ├── mcp-installer.js    # MCP server discovery, validation, install
+│   │   ├── secret-manager.js   # Bitwarden secret sync for MCP env vars
 │   │   ├── platforms.js        # Platform detection (6 platforms)
 │   │   ├── migration.js        # v1 -> v2 migration
 │   │   └── postinstall.js      # Post-install guidance
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.5.9
+│   └── package.json            # v2.6.0
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 4 workflows (brainstorm, create-pr, release-notes, update-skills)
+│   ├── mcp-servers/            # MCP server configs (config.json per server)
 │   └── external-skills.json    # External skill source definitions
 ├── .github/workflows/
 │   ├── ci.yml                  # CI: test -> lint -> build -> publish (on package/ changes)
@@ -44,10 +47,11 @@ ai-agent-config/
 ## Key Concepts
 
 - **Skills**: Folders with `SKILL.md` that AI platforms auto-discover
+- **MCP Servers**: Configs in `.agent/mcp-servers/<name>/config.json` with `bitwardenEnv` for secret resolution
 - **Sync-repo**: Local clone at `~/.ai-agent/sync-repo` used for git push/pull
 - **External cache**: `~/.ai-agent-external-cache/` stores cloned external repos
 - **Config**: `~/.ai-agent/config.json` stores user settings and sources
-- **Zero dependencies**: Package uses only Node.js built-in modules
+- **Zero dependencies**: Package uses only Node.js built-in modules (except `inquirer` for password prompt)
 
 ## CLI Commands
 

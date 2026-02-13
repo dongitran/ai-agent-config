@@ -8,6 +8,8 @@ const path = require("path");
 const { execSync } = require("child_process");
 const platforms = require("./platforms");
 
+const mcpInstaller = require("./mcp-installer");
+
 const REPO_URL = "https://github.com/dongitran/ai-agent-config.git";
 const CACHE_DIR = path.join(platforms.HOME, ".ai-agent-config-cache");
 const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agent", "skills");
@@ -178,6 +180,7 @@ function installToPlatform(platform, options = {}) {
     workflowsPath: workflowsPath,
     skills: [],
     workflows: [],
+    mcpServers: null,
   };
 
   // Install skills
@@ -227,6 +230,15 @@ function installToPlatform(platform, options = {}) {
           results.workflows.push({ name: wfFile.replace(".md", ""), skipped: 0, copied: 1 });
         }
       }
+    }
+  }
+
+  // Install MCP servers (Antigravity only for now)
+  if (platform.name === "antigravity") {
+    try {
+      results.mcpServers = mcpInstaller.installMcpServers({ force });
+    } catch (error) {
+      console.warn(`  ⚠️  MCP install failed: ${error.message}`);
     }
   }
 

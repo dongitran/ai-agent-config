@@ -5,7 +5,7 @@
 
 **Version**: v2.6.0
 **Created**: 2026-02-13
-**Status**: Planning
+**Status**: Implemented
 **Depends on**: [Plan 01](01-mcp-sync-feature.md) (MCP structure), [Plan 02](02-bitwarden-secret-management.md) (Bitwarden integration)
 
 ---
@@ -239,7 +239,7 @@ EDIT:   package/scripts/platforms.js        # Thêm mcpConfigPath cho antigravit
 EDIT:   package/scripts/secret-manager.js   # Update secrets sync để đọc bitwardenEnv
 EDIT:   package/scripts/sync-manager.js     # git add .agent/mcp-servers/
 EDIT:   package/bin/cli.js                  # Update list + install + pull output
-EDIT:   .agent/mcp-servers/bitwarden/config.json  # Update format mới
+NEW:    .agent/mcp-servers/notion/config.json      # Example MCP server config
 ```
 
 ### Phase 1: Foundation
@@ -296,32 +296,32 @@ EDIT:   .agent/mcp-servers/bitwarden/config.json  # Update format mới
 ## Implementation Phases
 
 ### Phase 1: Foundation
-- [ ] Update `platforms.js` - thêm `mcpConfigPath` cho Antigravity
-- [ ] Create `mcp-installer.js` - getAvailableMcpServers, validateMcpConfig, installMcpServers
-- [ ] Update `.agent/mcp-servers/bitwarden/config.json` - đổi `env` → `bitwardenEnv`
+- [x] Update `platforms.js` - thêm `mcpConfigPath` cho Antigravity
+- [x] Create `mcp-installer.js` - getAvailableMcpServers, validateMcpConfig, installMcpServers
+- [x] ~~Update `.agent/mcp-servers/bitwarden/config.json`~~ - bitwarden folder đã xoá, quản lý riêng bởi postinstall.js
 
 ### Phase 2: Install Integration
-- [ ] Update `installer.js` - gọi mcp-installer trong installToPlatform
-- [ ] Update `sync-manager.js` - git add .agent/mcp-servers/
-- [ ] Update `installer.js` - thêm REPO_MCP_DIR constant
+- [x] Update `installer.js` - gọi mcp-installer trong installToPlatform
+- [x] Update `sync-manager.js` - git add .agent/mcp-servers/
+- [x] Update `installer.js` - import mcp-installer module
 
 ### Phase 3: Secrets Sync Integration
-- [ ] Update `secret-manager.js` - đọc bitwardenEnv thay vì scan ${VAR}
-- [ ] Implement `installMcpServersWithSecrets()` trong mcp-installer.js
-- [ ] Update syncSecrets() flow
+- [x] Update `secret-manager.js` - đọc bitwardenEnv thay vì scan ${VAR}
+- [x] Implement `installMcpServersWithSecrets()` trong mcp-installer.js
+- [x] Update syncSecrets() flow
 
 ### Phase 4: CLI + UX
-- [ ] Update `cli.js` - list command hiển thị MCP servers
-- [ ] Update `cli.js` - install output có MCP servers
-- [ ] Update `cli.js` - secrets sync output mới
-- [ ] Thêm hint "Run secrets sync" sau install
+- [x] Update `cli.js` - list command hiển thị MCP servers
+- [x] Update `cli.js` - install output có MCP servers
+- [x] Update `cli.js` - secrets sync output mới
+- [x] Thêm hint "Run secrets sync" sau install
 
 ### Phase 5: Testing + Polish
 - [ ] Manual test: pull → install → secrets sync → Antigravity loads
 - [ ] Test merge logic: existing server không bị overwrite
 - [ ] Test secrets sync: bitwardenEnv → resolved env
 - [ ] Test edge cases: missing secrets, disabled servers, no BW vault
-- [ ] Update AGENT.md, README
+- [x] Update AGENT.md, README
 
 ---
 
