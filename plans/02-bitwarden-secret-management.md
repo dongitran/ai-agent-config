@@ -52,29 +52,27 @@
 
 ### Components
 
-#### 1. Bundled Bitwarden MCP Server
+#### 1. Bitwarden CLI Integration
 
-**Location**: `package/.agent/mcp-servers/bitwarden/`
+**Purpose**: Use Bitwarden CLI to fetch secrets programmatically
 
-**Purpose**: Pre-configured Bitwarden MCP server bundled with package
-
-**Config**: `package/.agent/mcp-servers/bitwarden/config.json`
-```
-{
-  "name": "bitwarden",
-  "description": "Password manager for secure secret storage",
-  "command": "npx",
-  "args": ["-y", "@modelcontextprotocol/server-bitwarden"],
-  "env": {
-    "BW_SESSION": "${BW_SESSION}"
-  },
-  "platform": ["antigravity"],
-  "enabled": true,
-  "bundled": true
-}
+**Installation**: User installs Bitwarden CLI globally
+```bash
+npm install -g @bitwarden/cli
 ```
 
-**Key Point**: Bitwarden MCP itself needs `BW_SESSION` env var to authenticate
+**Authentication**: Via `BW_SESSION` env var
+```bash
+export BW_SESSION=$(bw unlock --raw)
+```
+
+**Usage in package**: 
+```bash
+# Fetch secret from vault
+bw get password "GITHUB_TOKEN" --session $BW_SESSION --folder "MCP Secrets"
+```
+
+**Note**: Chúng ta dùng **Bitwarden CLI**, không phải Bitwarden MCP server. MCP server là optional nếu user muốn AI agent access Bitwarden vault (use case khác).
 
 #### 2. Secret Discovery Module
 
