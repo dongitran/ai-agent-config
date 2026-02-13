@@ -27,20 +27,79 @@ function validateBitwardenCLI() {
 }
 
 /**
- * Validate that Bitwarden API credentials are set
+ * Check Bitwarden login status using `bw status`
  */
-function validateBitwardenAuth() {
+function getBitwardenStatus() {
+    try {
+        const result = spawnSync("bw", ["status"], {
+            encoding: "utf-8",
+            stdio: ["pipe", "pipe", "pipe"],
+        });
+        const output = result.stdout || "";
+        const json = JSON.parse(output.trim());
+        return json.status; // "unauthenticated", "locked", "unlocked"
+    } catch {
+        return "unauthenticated";
+    }
+}
+
+/**
+ * Login to Bitwarden using API key (BW_CLIENTID + BW_CLIENTSECRET)
+ */
+function loginBitwarden() {
     const clientId = process.env.BW_CLIENTID;
     const clientSecret = process.env.BW_CLIENTSECRET;
 
     if (!clientId || !clientSecret) {
         return {
-            valid: false,
+            success: false,
             message:
                 "Bitwarden API credentials not set. Add to ~/.zshrc:\n" +
                 "  export BW_CLIENTID=\"user.xxx\"\n" +
-                "  export BW_CLIENTSECRET=\"yyy\"",
+                "  export BW_CLIENTSECRET=\"yyy\"\n\n" +
+                "  Get your API key from: https://vault.bitwarden.com/#/settings/security/security-keys",
         };
+    }
+
+    try {
+        const result = spawnSync("bw", ["login", "--apikey"], {
+            encoding: "utf-8",
+            env: { ...process.env, BW_CLIENTID: clientId, BW_CLIENTSECRET: clientSecret },
+            stdio: ["pipe", "pipe", "pipe"],
+        });
+
+        if (result.status === 0) {
+            return { success: true };
+        } else {
+            const errorMsg = result.stderr || result.stdout || "Unknown error";
+            return {
+                success: false,
+                message: `Failed to login: ${errorMsg.trim()}`,
+            };
+        }
+    } catch (error) {
+        return {
+            success: false,
+            message: `Failed to login: ${error.message}`,
+        };
+    }
+}
+
+/**
+ * Ensure Bitwarden is logged in, auto-login if needed
+ */
+function ensureBitwardenLogin() {
+    const status = getBitwardenStatus();
+
+    if (status === "unauthenticated") {
+        console.log("🔑 Logging into Bitwarden...");
+        const loginResult = loginBitwarden();
+        if (!loginResult.success) {
+            return { valid: false, message: loginResult.message };
+        }
+        console.log("✓ Logged in successfully\n");
+    } else {
+        console.log("✓ Already logged into Bitwarden\n");
     }
 
     return { valid: true };
@@ -253,8 +312,8 @@ async function syncSecrets() {
             process.exit(1);
         }
 
-        // 2. Validate API credentials
-        const authCheck = validateBitwardenAuth();
+        // 2. Check login status and auto-login if needed
+        const authCheck = ensureBitwardenLogin();
         if (!authCheck.valid) {
             console.error(`❌ ${authCheck.message}\n`);
             process.exit(1);
