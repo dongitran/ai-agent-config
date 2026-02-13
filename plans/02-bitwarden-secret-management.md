@@ -321,16 +321,11 @@ source ~/.zshrc
 
 **Daily Usage:**
 ```bash
-# Just pull - secrets already in shell profile
+# Just pull - automatically refreshes secrets + code
 ai-agent pull
 ```
 
-**Update Secrets:**
-```bash
-# Update secret in Bitwarden vault
-# Then refresh:
-ai-agent pull --refresh-secrets
-```
+> **Note**: `pull` LUÔN LUÔN refresh secrets từ Bitwarden mỗi lần chạy (nếu `BW_SESSION` available)
 
 ---
 
