@@ -102,10 +102,11 @@ Add new command: `ai-agent secrets sync`
 **User Actions:**
 1. Install Bitwarden CLI: `npm install -g @bitwarden/cli`
 2. Get Bitwarden API credentials from Web Vault (Settings → Security → Keys)
-3. Add API credentials to shell profile:
+3. Add API credentials to `~/.zshrc` (or `~/.bashrc` if using bash):
    ```bash
-   export BW_CLIENTID="user.xxx"
-   export BW_CLIENTSECRET="yyy"
+   echo 'export BW_CLIENTID="user.xxx"' >> ~/.zshrc
+   echo 'export BW_CLIENTSECRET="yyy"' >> ~/.zshrc
+   source ~/.zshrc  # Apply changes
    ```
 4. Store all MCP secrets in Bitwarden vault (folder: `MCP Secrets`)
 
@@ -323,10 +324,10 @@ npm install -g @bitwarden/cli
 # 3. Get Bitwarden API credentials (from Web Vault)
 # Settings → Security → Keys → API Key
 
-# 4. Add API creds to shell profile
+# 4. Add Bitwarden API credentials to ~/.zshrc
 echo 'export BW_CLIENTID="user.xxx"' >> ~/.zshrc
 echo 'export BW_CLIENTSECRET="yyy"' >> ~/.zshrc
-source ~/.zshrc
+source ~/.zshrc  # Apply changes immediately
 
 # 5. Init with GitHub repo
 ai-agent init --repo https://github.com/user/my-skills.git
@@ -480,52 +481,7 @@ Có 3 options:
   - macOS/Linux: `~/.zshrc` or `~/.bashrc`
   - Windows: PowerShell profile or `.env` file
 
-### 5. Bitwarden Vault Organization
-
-**💡 Recommended Structure:**
-
-**Trong Bitwarden Vault:**
-```
-📁 MCP Secrets (Folder)
-   ├── 🔑 GITHUB_TOKEN
-   │      Type: Login
-   │      Password: ghp_xxx...
-   │
-   ├── 🔑 OPENAI_API_KEY  
-   │      Type: Login
-   │      Password: sk-xxx...
-   │
-   └── 🔑 DATABASE_PASSWORD
-          Type: Login
-          Password: mypass123
-```
-
-**Quy tắc:**
-1. **Folder Name**: `MCP Secrets` (fixed, package sẽ tìm trong folder này)
-2. **Item Name**: Phải match chính xác với env var name
-   - Env var: `${GITHUB_TOKEN}` → Item name: `GITHUB_TOKEN`
-   - Case-sensitive!
-3. **Item Type**: "Login" type
-4. **Field**: Dùng field `password` để store secret value
-
-**Config trong package:**
-```json
-{
-  "secrets": {
-    "provider": "bitwarden",
-    "folder": "MCP Secrets",
-    "itemType": "login",
-    "field": "password"
-  }
-}
-```
-
-**Tại sao dùng "Login" type?**
-- Bitwarden CLI `bw get password "ITEM_NAME"` works best với Login items
-- Folder organization rõ ràng
-- Dễ manage trong Bitwarden UI
-
-### 6. Security Considerations
+### 5. Security Considerations
 
 **Risks**:
 - ⚠️ Env vars visible in process list (`ps aux | grep`)
