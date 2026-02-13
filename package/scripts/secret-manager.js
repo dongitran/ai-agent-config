@@ -6,7 +6,6 @@
 const fs = require("fs");
 const path = require("path");
 const { execSync, spawnSync } = require("child_process");
-const inquirer = require("inquirer");
 const os = require("os");
 
 const HOME = os.homedir();
@@ -48,19 +47,20 @@ function validateBitwardenAuth() {
 }
 
 /**
- * Prompt user for Bitwarden master password
+ * Prompt user for Bitwarden master password (masked input)
+ * Uses dynamic import for inquirer (ES Module)
  */
 async function promptPassword() {
-    const answers = await inquirer.prompt([
+    const inquirer = await import("inquirer");
+    const answers = await inquirer.default.prompt([
         {
             type: "password",
-            name: "masterPassword",
-            message: "Enter Bitwarden master password:",
+            name: "password",
+            message: "Enter your Bitwarden master password:",
             mask: "*",
         },
     ]);
-
-    return answers.masterPassword;
+    return answers.password;
 }
 
 /**
