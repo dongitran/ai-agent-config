@@ -707,6 +707,20 @@ function update(args) {
   }
 
   try {
+    const SyncManager = require("../scripts/sync-manager");
+    const config = configManager.loadConfig();
+    const syncManager = new SyncManager(config);
+
+    // 1. Pull latest from repository first
+    console.log("📥 Pulling latest from repository...\n");
+    const pullResult = syncManager.pull();
+    if (pullResult.pulled) {
+      console.log("   ✓ Repository up to date\n");
+    } else {
+      console.log(`   ⊗ Pull: ${pullResult.reason || "failed"}\n`);
+    }
+
+    // 2. Sync external skills
     const result = externalSync.syncAll(options);
 
     console.log(`\n✓ Updated from ${result.synced} source(s)`);
@@ -716,17 +730,19 @@ function update(args) {
       console.log(`  Failed: ${result.failed} source(s)`);
     }
 
-    // Auto-push after successful sync
+    // 3. Push changes to repository
     if (result.copied > 0) {
-      console.log("\n📤 Auto-pushing synced skills to repository...\n");
-      const SyncManager = require("../scripts/sync-manager");
-      const config = configManager.loadConfig();
-      const syncManager = new SyncManager(config);
-      
+      console.log("\n📤 Pushing synced skills to repository...\n");
+
       const skillNames = options.skill || "external skills";
       const message = `chore: sync ${skillNames} from external sources`;
-      
-      syncManager.push({ message });
+
+      const pushResult = syncManager.push({ message });
+      if (pushResult.pushed) {
+        console.log("   ✓ Pushed to repository");
+      } else {
+        console.log(`   ⊗ ${pushResult.reason}`);
+      }
     }
 
     console.log("");
