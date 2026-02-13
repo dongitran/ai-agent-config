@@ -9,7 +9,7 @@ const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 const externalSync = require("../scripts/external-sync");
 
-const VERSION = "2.4.4";
+const VERSION = "2.4.5";
 
 // Get package root (one level up from bin/)
 const PACKAGE_ROOT = path.join(__dirname, "..");
@@ -65,10 +65,6 @@ function showHelp() {
 
 Usage: ai-agent <command> [options]
 
-🆕 v2.0 Commands:
-  init                        Initialize or migrate to v2.0
-  migrate                     Migrate from v1.x to v2.0
-
 📦 Source Management:
   source add <repo> [opts]    Add custom skill source
   source remove <name>        Remove custom source
@@ -101,7 +97,7 @@ Usage: ai-agent <command> [options]
 
 🌐 Examples:
 
-  # Initialize with GitHub repository (v2.3)
+  # Initialize with GitHub repository
   ai-agent init --repo https://github.com/yourname/my-ai-skills.git
 
   # Push skills to GitHub
