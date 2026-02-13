@@ -9,7 +9,7 @@ const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 const externalSync = require("../scripts/external-sync");
 
-const VERSION = "2.4.6";
+const VERSION = "2.4.7";
 
 // Get package root (one level up from bin/)
 const PACKAGE_ROOT = path.join(__dirname, "..");
@@ -723,12 +723,14 @@ function update(args) {
     if (result.copied > 0) {
       console.log("\n📤 Auto-pushing synced skills to repository...\n");
       const SyncManager = require("../scripts/sync-manager");
-      const syncManager = new SyncManager();
-
+      const config = configManager.loadConfig();
+      const syncManager = new SyncManager(config);
+      
       const skillNames = options.skill || "external skills";
       const message = `chore: sync ${skillNames} from external sources`;
-
+      
       syncManager.push({ message });
+    }
     }
 
     console.log("");
