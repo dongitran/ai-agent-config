@@ -1,0 +1,13 @@
+{
+    "name": "notion",
+    "description": "Notion MCP Server - Interact with Notion pages, databases, and content",
+    "command": "npx",
+    "args": [
+        "-y",
+        "@notionhq/notion-mcp-server"
+    ],
+    "bitwardenEnv": {
+        "NOTION_TOKEN": "NOTION_INTEGRATION_TOKEN"
+    },
+    "enabled": true
+}

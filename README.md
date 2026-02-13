@@ -71,12 +71,18 @@ ai-agent install                        # Install skills to platforms
 ai-agent list                           # List installed skills
 ai-agent platforms                      # Show detected platforms
 ai-agent uninstall                      # Remove installed skills
+ai-agent sync-external                  # Alias for update
+ai-agent list-external                  # List available external skills
+ai-agent version                        # Show version
+ai-agent help                           # Show help
 ```
 
 ### Secret Management
 ```bash
 ai-agent secrets sync                   # Sync MCP secrets from Bitwarden vault
 ```
+
+Securely sync MCP secrets from Bitwarden vault to your shell profile. See [Bitwarden MCP Setup](./package/mcp-servers/bitwarden/README.md) for configuration.
 
 ## Supported Platforms
 

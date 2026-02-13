@@ -27,7 +27,7 @@ ai-agent-config/
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.5.0
+│   └── package.json            # v2.5.9
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 4 workflows (brainstorm, create-pr, release-notes, update-skills)
