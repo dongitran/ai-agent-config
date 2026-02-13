@@ -70,9 +70,9 @@ async function promptPassword() {
  */
 function unlockBitwarden(password) {
     try {
-        // Use spawnSync with stdin to avoid shell injection
-        const result = spawnSync("bw", ["unlock", "--passwordstdin", "--raw"], {
-            input: password + "\n",
+        // Use positional password argument for compatibility with older Bitwarden CLI versions
+        // Since we use spawnSync without shell: true, the password doesn't leak into shell history
+        const result = spawnSync("bw", ["unlock", password, "--raw"], {
             encoding: "utf-8",
         });
 

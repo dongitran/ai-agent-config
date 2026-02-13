@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.5.3
+**Version:** 2.5.4
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
@@ -181,3 +181,4 @@ The `update` command flow:
 2. Clone/update external source repos to cache
 3. Copy skills from cache to sync-repo
 4. Commit and push sync-repo
+ 
