@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.5.5
+**Version:** 2.5.6
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 

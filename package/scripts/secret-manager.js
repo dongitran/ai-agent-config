@@ -401,7 +401,7 @@ async function syncSecrets() {
 module.exports = {
     syncSecrets,
     validateBitwardenCLI,
-    validateBitwardenAuth,
+    ensureBitwardenLogin,
     promptPassword,
     unlockBitwarden,
     discoverRequiredSecrets,
