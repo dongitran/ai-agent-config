@@ -1,0 +1,3 @@
+
+# Ignore bundled skills (for npm package only, not git)
+package/.agent/skills/

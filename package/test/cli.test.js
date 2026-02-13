@@ -39,6 +39,8 @@ describe("CLI Module", () => {
         "add-source",
         "remove-source",
         "list-sources",
+        "list-external",
+        "sync-external",
       ];
       expectedCommands.forEach((cmd) => {
         assert.ok(content.includes(`case "${cmd}":`), `Should have ${cmd} command`);
