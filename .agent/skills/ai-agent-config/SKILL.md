@@ -9,7 +9,7 @@ Complete guide for the `ai-agent-config` CLI tool - universal skill management a
 
 ## Core Commands
 
-### GitHub Sync (v2.3+)
+### GitHub Sync
 
 ```bash
 # Initialize with repository
@@ -163,7 +163,6 @@ Key config settings:
 
 ```json
 {
-  "version": "2.3",
   "repository": {
     "url": "https://github.com/username/skills.git",
     "branch": "main",
