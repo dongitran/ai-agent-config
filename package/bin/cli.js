@@ -9,7 +9,7 @@ const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 const externalSync = require("../scripts/external-sync");
 
-const VERSION = "2.4.3";
+const VERSION = "2.4.4";
 
 // Get package root (one level up from bin/)
 const PACKAGE_ROOT = path.join(__dirname, "..");
