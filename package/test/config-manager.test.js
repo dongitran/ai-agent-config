@@ -12,7 +12,7 @@ const TEST_CONFIG_FILE = path.join(TEST_CONFIG_DIR, "config.json");
 test("config-manager module", async (t) => {
   await t.test("should create default config", () => {
     const config = configManager.createDefaultConfig();
-    assert.strictEqual(config.version, "2.0");
+    assert.strictEqual(config.version, "2.3");
     assert.ok(config.sources);
     assert.ok(config.sources.official);
     assert.ok(config.sources.custom);
@@ -28,7 +28,7 @@ test("config-manager module", async (t) => {
   });
 
   await t.test("should detect invalid config", () => {
-    const invalidConfig = { version: "2.0" }; // Missing sources
+    const invalidConfig = { version: "2.3" }; // Missing sources
     const result = configManager.validateConfig(invalidConfig);
     assert.strictEqual(result.valid, false);
     assert.ok(result.errors.length > 0);
