@@ -44,6 +44,7 @@ jobs:
       - name: Test CLI installation
         run: |
           cd package
+          npm install
           npm install -g .
           ai-agent --version
         shell: bash
