@@ -32,11 +32,18 @@ The Bitwarden MCP server is **enabled by default** starting from v2.5.7. It serv
 
 Same as `ai-agent secrets sync`:
 - Bitwarden CLI installed: `npm install -g @bitwarden/cli`
-- API credentials in shell profile:
+- API credentials & Session in shell profile:
   ```bash
-  export BW_CLIENTID="user.xxx"
-  export BW_CLIENTSECRET="yyy"
+  # Personal Vault Access (required for MCP server to start)
+  export BW_SESSION="your-session-key"
+  
+  # Organization API Access (optional)
+  export BW_CLIENT_ID="your-client-id"
+  export BW_CLIENT_SECRET="your-client-secret"
   ```
+
+> [!NOTE]
+> To get a `BW_SESSION` key, run `bw login` followed by `bw unlock`. Use the outputted key.
 
 ### Verification
 
@@ -64,9 +71,9 @@ The AI will use the Bitwarden MCP server to fetch/store this information securel
 
 ## Security Notes
 
-- API credentials (`BW_CLIENTID`, `BW_CLIENTSECRET`) are read from environment variables
-- Master password still required for vault access (MCP server handles this)
-- Session management handled by Bitwarden MCP server
+- API credentials (`BW_CLIENT_ID`, `BW_CLIENT_SECRET`) are read from environment variables
+- `BW_SESSION` is required for vault operations and must be refreshed if the vault locks
+- Master password still required for vault access (MCP server handles this via session)
 - No secrets stored in MCP config file
 
 ## Why Enable by Default?

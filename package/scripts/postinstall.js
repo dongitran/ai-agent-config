@@ -69,16 +69,26 @@ function main() {
           command: "npx",
           args: ["-y", "@bitwarden/mcp-server"],
           env: {
-            BW_CLIENTID: "${BW_CLIENTID}",
-            BW_CLIENTSECRET: "${BW_CLIENTSECRET}",
+            BW_SESSION: "${BW_SESSION}",
+            BW_CLIENT_ID: "${BW_CLIENT_ID}",
+            BW_CLIENT_SECRET: "${BW_CLIENT_SECRET}",
           },
         };
         changed = true;
         console.log("🔐 Bitwarden MCP server added to Antigravity (✓ enabled)");
-      } else if (mcpConfig.mcpServers.bitwarden.disabled) {
-        delete mcpConfig.mcpServers.bitwarden.disabled;
-        changed = true;
-        console.log("🔓 Bitwarden MCP server enabled in Antigravity");
+      } else {
+        // Ensure correct env var names even if already exists
+        const bw = mcpConfig.mcpServers.bitwarden;
+        if (!bw.env.BW_SESSION || !bw.env.BW_CLIENT_ID || !bw.env.BW_CLIENT_SECRET || bw.disabled) {
+          bw.env = {
+            BW_SESSION: "${BW_SESSION}",
+            BW_CLIENT_ID: "${BW_CLIENT_ID}",
+            BW_CLIENT_SECRET: "${BW_CLIENT_SECRET}",
+          };
+          delete bw.disabled;
+          changed = true;
+          console.log("🔓 Bitwarden MCP server configuration repaired and enabled");
+        }
       }
 
       if (changed) {
