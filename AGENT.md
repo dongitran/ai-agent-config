@@ -170,9 +170,9 @@ ai-agent config reset --yes                 # Reset to defaults
 
 ### Installation & Updates
 ```bash
-ai-agent init                               # Initialize/migrate to v2.0
+ai-agent init                               # Initialize config
 ai-agent update [--source name]             # Update skills from sources
-ai-agent install [--platform name]          # Install to platforms
+ai-agent install                            # Install to all detected platforms
 ai-agent list                               # List installed skills
 ai-agent platforms                          # Show detected platforms
 ai-agent uninstall                          # Remove skills

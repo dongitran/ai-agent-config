@@ -1,6 +1,6 @@
 {
   "name": "ai-agent-config",
-  "version": "2.3.0",
+  "version": "2.3.1",
   "description": "Universal Global Skills & Workflows for AI Coding Assistants (Claude Code, Antigravity, Cursor) - v2.3: Bi-directional sync with GitHub",
   "main": "index.js",
   "bin": {

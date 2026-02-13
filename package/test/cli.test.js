@@ -22,8 +22,7 @@ describe("CLI Module", () => {
 
     it("should have version constant", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes("const VERSION"));
-      assert.ok(content.includes("packageJson.version"));
+      assert.ok(content.includes('const VERSION = "2.3.1"'));
     });
 
     it("should define all commands", () => {

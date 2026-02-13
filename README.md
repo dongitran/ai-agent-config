@@ -7,16 +7,6 @@
 
 **One command to manage AI coding skills across Claude Code, Antigravity, Cursor, Windsurf, and more.**
 
-## 🚀 What's New in v2.3
-
-- 🔄 **Bi-directional sync** - Push/pull skills to/from GitHub repositories
-- ⬆️ **Push command** - Push local skills to GitHub with auto-sync
-- ⬇️ **Pull command** - Pull skills from GitHub to local
-- 🔁 **Enhanced sync** - Bi-directional sync (pull + push)
-- 🚀 **Init with repo** - `ai-agent init --repo <url>` for quick setup
-- ⚡ **Auto-sync** - Always pull before push (enabled by default)
-- ⚠️ **Conflict detection** - Graceful conflict handling with detailed messages
-
 ## 📦 Quick Start
 
 ```bash
@@ -93,7 +83,7 @@ ai-agent config reset --yes                 # Reset to defaults
 ```bash
 ai-agent init                               # Initialize/migrate config
 ai-agent update [--source name]             # Update skills from sources
-ai-agent install [--platform name]          # Install to platforms
+ai-agent install                            # Install to all detected platforms
 ai-agent list                               # List installed skills
 ai-agent platforms                          # Show detected platforms
 ai-agent uninstall                          # Remove skills

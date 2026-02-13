@@ -240,7 +240,7 @@ function installToPlatform(platform, options = {}) {
  * Install skills to all detected platforms
  */
 function install(options = {}) {
-  const { platform = null, force = false, skill = null, sync = true } = options;
+  const { force = false, skill = null, sync = true } = options;
 
   // Sync repo first if needed
   if (sync && !isRepoCached()) {
@@ -251,29 +251,17 @@ function install(options = {}) {
   }
 
   if (!isRepoCached()) {
-    console.log("\n⚠️  Skills repository not cached. Run 'ai-agent sync' first.");
-    return { skillsCount: 0, platformsCount: 0, details: [] };
+    console.log("\n⚠️  Skills repository not cached. Run 'ai-agent update' first.");
+    return { skillsCount: 0, platformsCount: 0, workflowsCount: 0, details: [] };
   }
 
-  let targetPlatforms;
-
-  if (platform) {
-    const platformObj = platforms.getByName(platform);
-    if (!platformObj) {
-      throw new Error(
-        `Unknown platform: ${platform}. Available: ${platforms.getAllNames().join(", ")}`
-      );
-    }
-    targetPlatforms = [platformObj];
-  } else {
-    targetPlatforms = platforms.detectAll().map((p) => platforms.getByName(p.name));
-  }
+  // Always install to all detected platforms
+  const targetPlatforms = platforms.detectAll().map((p) => platforms.getByName(p.name));
 
   if (targetPlatforms.length === 0) {
     console.log("\n⚠️  No AI coding platforms detected.");
     console.log("   Supported platforms:", platforms.getAllNames().join(", "));
-    console.log("\n   Force install with: ai-agent install --platform <name>");
-    return { skillsCount: 0, platformsCount: 0, details: [] };
+    return { skillsCount: 0, platformsCount: 0, workflowsCount: 0, details: [] };
   }
 
   const details = [];

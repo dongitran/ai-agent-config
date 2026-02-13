@@ -1,24 +1,19 @@
 #!/usr/bin/env node
 
-/**
- * AI Agent Config CLI v2.0
- * Universal Global Skills for AI Coding Assistants
- */
-
 const fs = require("fs");
 const path = require("path");
 const { execSync } = require("child_process");
-
-const platforms = require("../scripts/platforms");
-const installer = require("../scripts/installer");
-const externalSync = require("../scripts/external-sync");
 const configManager = require("../scripts/config-manager");
+const installer = require("../scripts/installer");
+const platforms = require("../scripts/platforms");
 const migration = require("../scripts/migration");
 
-// Read version from package.json
-const packageJson = require("../package.json");
-const VERSION = packageJson.version;
+const VERSION = "2.3.1";
 
+// Get package root (one level up from bin/)
+const PACKAGE_ROOT = path.join(__dirname, "..");
+
+// Commands with descriptions
 const COMMANDS = {
   // v2.3 New Commands
   init: "Initialize or migrate config",
@@ -93,24 +88,32 @@ Usage: ai-agent <command> [options]
 🔧 Installation & Sync:
   install [opts]              Install skills to platforms
   update [opts]               Update all skills from sources
-  list                        List installed skills
-  platforms                   Show detected platforms
-  uninstall [opts]            Remove installed skills
+  list                        List installed  ai-agent update [--source <name>]      # Update from specific source
 
-Options:
-  --platform <name>           Target specific platform
-  --skill <name>              Target specific skill
-  --source <name>             Target specific source
-  --force                     Force overwrite
-  --branch <name>             Git branch (for source add)
-  --merge                     Merge on import (don't replace)
+  # Installation
+  ai-agent install                    # Install to all detected platforms
+  ai-agent install --force            # Force reinstall
+  ai-agent install --skill <name>    # Install specific skill
 
-Examples:
-  # Initialize v2.0 config
-  ai-agent init
+  # List skills
+  ai-agent list                       # List installed skills
 
-  # Add your company's skills
-  ai-agent source add https://github.com/mycompany/ai-skills \\
+🌐 Examples:
+
+  # Initialize with GitHub repository (v2.3)
+  ai-agent init --repo https://github.com/yourname/my-ai-skills.git
+
+  # Push skills to GitHub
+  ai-agent push --message "Added new skills"
+
+  # Pull latest skills from GitHub  
+  ai-agent pull
+
+  # Bi-directional sync
+  ai-agent sync
+
+  # Add a source
+  ai-agent source add https://github.com/user/repo.git --name my-sourcekills \\
     --branch main \\
     --name company-skills
 
@@ -638,16 +641,13 @@ function install(args) {
   console.log("\n📥 Installing skills...\n");
 
   const options = {
-    platform: null,
     force: false,
     skill: null,
     sync: true,
   };
 
   for (let i = 0; i < args.length; i++) {
-    if (args[i] === "--platform" && args[i + 1]) {
-      options.platform = args[++i];
-    } else if (args[i] === "--force") {
+    if (args[i] === "--force") {
       options.force = true;
     } else if (args[i] === "--skill" && args[i + 1]) {
       options.skill = args[++i];
