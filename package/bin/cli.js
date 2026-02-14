@@ -12,54 +12,6 @@ const secretManager = require("../scripts/secret-manager");
 
 const VERSION = require("../package.json").version;
 
-// Get package root (one level up from bin/)
-const PACKAGE_ROOT = path.join(__dirname, "..");
-
-// Commands with descriptions
-const COMMANDS = {
-  // v2.3 New Commands
-  init: "Initialize or migrate config",
-  migrate: "Migrate from v1.x to v2.0",
-  push: "Push skills to GitHub repository",
-  pull: "Pull skills from GitHub repository",
-
-  // Source Management
-  "source add": "Add a custom skill source",
-  "source remove": "Remove a custom source",
-  "source list": "List all sources",
-  "source enable": "Enable a source",
-  "source disable": "Disable a source",
-  "source info": "Show source details",
-
-  // Config Management
-  "config get": "Get config value",
-  "config set": "Set config value",
-  "config edit": "Open config in editor",
-  "config validate": "Validate config",
-  "config export": "Export config",
-  "config import": "Import config",
-  "config reset": "Reset to defaults",
-
-  // Secret Management
-  "secrets sync": "Sync MCP secrets from Bitwarden",
-
-  // Original Commands (updated)
-  install: "Install skills to detected platforms",
-  update: "Update skills from all sources",
-
-  list: "List installed skills",
-  platforms: "Show detected platforms",
-  uninstall: "Remove installed skills",
-
-  // Backward compatibility
-  "sync-external": "Alias for 'update'",
-  "list-external": "List available sources",
-
-  // Utility
-  version: "Show version number",
-  help: "Show this help message",
-};
-
 function showHelp() {
   console.log(`
 ╔═══════════════════════════════════════════════════════════════╗
@@ -104,7 +56,6 @@ Usage: ai-agent <command> [options]
   sync-external [opts]        Sync skills from external sources
   list-external               List available external skills
 
-🌐 Examples:
 🌐 Examples:
 
   # Initialize with GitHub repository
@@ -553,7 +504,7 @@ function configSet(args) {
   if (value === "true") value = true;
   else if (value === "false") value = false;
   else if (value === "null") value = null;
-  else if (!isNaN(value)) value = Number(value);
+  else if (value !== "" && !isNaN(value)) value = Number(value);
 
   console.log(`\n⚙️  Setting ${key} = ${JSON.stringify(value)}\n`);
 
@@ -797,13 +748,13 @@ function update(args) {
  * Push skills to GitHub repository
  */
 function push(args) {
-  console.log("\\n⬆️  Pushing to GitHub...\\n");
+  console.log("\n⬆️  Pushing to GitHub...\n");
 
   const config = configManager.loadConfig();
 
   if (!config.repository.url) {
     console.error("❌ No repository configured");
-    console.log("\\n   Run: ai-agent init --repo <url>\\n");
+    console.log("\n   Run: ai-agent init --repo <url>\n");
     process.exit(1);
   }
 
@@ -819,19 +770,19 @@ function push(args) {
 
     if (result.pushed) {
       console.log("✅ Pushed successfully!");
-      console.log(`   Repository: ${config.repository.url}\\n`);
+      console.log(`   Repository: ${config.repository.url}\n`);
     } else {
       console.log(`⚠️  ${result.reason}`);
 
       if (result.conflicts && result.conflicts.length > 0) {
-        console.log("\\n   Conflicting files:");
+        console.log("\n   Conflicting files:");
         result.conflicts.forEach((f) => console.log(`     - ${f}`));
-        console.log("\\n   Resolve conflicts manually and try again.\\n");
+        console.log("\n   Resolve conflicts manually and try again.\n");
         process.exit(1);
       }
     }
   } catch (error) {
-    console.error(`❌ Push failed: ${error.message}\\n`);
+    console.error(`❌ Push failed: ${error.message}\n`);
     process.exit(1);
   }
 }
@@ -882,32 +833,6 @@ function pull(args) {
   }
 }
 
-
-/**
- * Old sync function (backward compatibility)
- */
-function oldSync(args) {
-  console.log("\\n🔄 Syncing from GitHub repository...\\n");
-  console.log(`   Repository: ${installer.REPO_URL}`);
-  console.log(`   Cache: ${installer.CACHE_DIR}\\n`);
-
-  try {
-    const success = installer.syncRepo();
-
-    if (success) {
-      console.log("\\n✓ Sync complete!\\n");
-
-      const skills = installer.getAvailableSkills();
-      const workflows = installer.getAvailableWorkflows();
-
-      console.log(`   Found ${skills.length} skill(s), ${workflows.length} workflow(s)`);
-      console.log("\\n   Run 'ai-agent install' to install to your platforms.\\n");
-    }
-  } catch (error) {
-    console.error(`\\n❌ Sync failed: ${error.message}`);
-    process.exit(1);
-  }
-}
 
 function uninstall(args) {
   console.log("\n🗑️  Uninstalling skills...\n");

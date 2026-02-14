@@ -6,6 +6,40 @@
 
 ---
 
+## 0. PROGRESS LOG
+
+### Test Coverage Improvement (Feb 2026)
+
+| Metric | Before | After | Target |
+|--------|--------|-------|--------|
+| Lines | 10% | **91.64%** | 95% |
+| Functions | ~20% | **96.93%** | 90% |
+| Branches | ~15% | **90.14%** | 80% |
+| Tests | 12 | **256** | - |
+
+**Per-file coverage:**
+- `config-manager.js`: 100%
+- `sync-manager.js`: 100%
+- `postinstall.js`: 100%
+- `platforms.js`: 99.03%
+- `mcp-installer.js`: 97.14%
+- `migration.js`: 97.14%
+- `installer.js`: 96.29%
+- `external-sync.js`: 80.81% (dead code `addAttribution` + internal functions)
+- `secret-manager.js`: 71.6% (async `syncSecrets` with inquirer + process.exit)
+
+**Remaining work:** Improve external-sync.js and secret-manager.js to reach 95% overall.
+
+### Bug Fixes Applied
+
+- **B1** - Double-escaped newlines in `push()`/`oldSync()` - FIXED
+- **B2** - Duplicate "Examples:" in help - FIXED
+- **B3** - `configSet` empty string → 0 - FIXED
+- **B12** - Unused `PACKAGE_ROOT` - REMOVED
+- **Dead code** - `oldSync()` function, `COMMANDS` object - REMOVED
+
+---
+
 ## 1. BUGS
 
 ### B1 - Double-escaped newlines in `push()` and `oldSync()` [HIGH]
