@@ -6,7 +6,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { spawnSync } = require("child_process");
 const configManager = require("./config-manager");
 
 const CACHE_DIR = path.join(require("os").homedir(), ".ai-agent-external-cache");
@@ -46,13 +46,19 @@ function syncRepo(source) {
   try {
     if (fs.existsSync(repoDir)) {
       console.log(`   Updating ${source.name}...`);
-      execSync(`git -C "${repoDir}" fetch origin`, { stdio: "pipe" });
-      execSync(`git -C "${repoDir}" reset --hard origin/${source.branch}`, { stdio: "pipe" });
+      spawnSync("git", ["-C", repoDir, "fetch", "origin"], { stdio: "pipe" });
+      const resetResult = spawnSync("git", ["-C", repoDir, "reset", "--hard", `origin/${source.branch}`], { stdio: "pipe" });
+      if (resetResult.status !== 0) {
+        throw new Error(resetResult.stderr?.toString() || "git reset failed");
+      }
     } else {
       console.log(`   Cloning ${source.name}...`);
-      execSync(`git clone --branch ${source.branch} "${source.repo}" "${repoDir}"`, {
+      const cloneResult = spawnSync("git", ["clone", "--branch", source.branch, source.repo, repoDir], {
         stdio: "pipe",
       });
+      if (cloneResult.status !== 0) {
+        throw new Error(cloneResult.stderr?.toString() || "git clone failed");
+      }
     }
     return true;
   } catch (error) {

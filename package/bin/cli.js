@@ -75,8 +75,8 @@ Usage: ai-agent <command> [options]
   # Update all skills
   ai-agent update
 
-  # Install to specific platform
-  ai-agent install --platform claude
+  # Force reinstall all skills
+  ai-agent install --force
 
   # Export your config to share with team
   ai-agent config export my-config.json

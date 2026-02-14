@@ -30,12 +30,17 @@
 
 **Remaining work:** Improve external-sync.js and secret-manager.js to reach 95% overall.
 
+**Not bugs (investigated):** B5 (async IIFE already has try/catch in secretsSync), B6 (`sync()` method is dead code, never called from CLI)
+
 ### Bug Fixes Applied
 
 - **B1** - Double-escaped newlines in `push()`/`oldSync()` - FIXED
 - **B2** - Duplicate "Examples:" in help - FIXED
 - **B3** - `configSet` empty string → 0 - FIXED
+- **B4** - Misleading `--platform` example in help text - FIXED
 - **B12** - Unused `PACKAGE_ROOT` - REMOVED
+- **S1** - Command injection in `external-sync.js` (`execSync` → `spawnSync`) - FIXED
+- **S2** - Command injection in `sync-manager.js` (`execSync` → `spawnSync`) - FIXED
 - **Dead code** - `oldSync()` function, `COMMANDS` object - REMOVED
 
 ---

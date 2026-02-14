@@ -5,7 +5,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { execSync } = require("child_process");
+const { execSync, spawnSync } = require("child_process");
 
 class SyncManager {
     constructor(config) {
@@ -149,10 +149,11 @@ class SyncManager {
             const branch = this.config.repository.branch || "main";
 
             // Compare local vs remote
-            const diff = execSync(`git diff HEAD origin/${branch} --name-only`, {
+            const diffResult = spawnSync("git", ["diff", "HEAD", `origin/${branch}`, "--name-only"], {
                 cwd: this.repoPath,
                 encoding: "utf-8",
             });
+            const diff = diffResult.stdout || "";
 
             return diff.trim().split("\n").filter(Boolean);
         } catch (error) {
@@ -182,7 +183,7 @@ class SyncManager {
                 const skills = fs.readdirSync(skillsDir);
                 skills.forEach(skill => {
                     if (!bundledSkills.includes(skill)) {
-                        execSync(`git add .agent/skills/${skill}`, {
+                        spawnSync("git", ["add", `.agent/skills/${skill}`], {
                             cwd: this.repoPath,
                             stdio: "pipe"
                         });
@@ -190,7 +191,13 @@ class SyncManager {
                 });
             }
 
-            execSync(`git commit -m "${message}"`, { cwd: this.repoPath, stdio: "pipe" });
+            const commitResult = spawnSync("git", ["commit", "-m", message], { cwd: this.repoPath, stdio: "pipe" });
+            if (commitResult.status !== 0) {
+                const output = (commitResult.stdout?.toString() || "") + (commitResult.stderr?.toString() || "");
+                if (!output.includes("nothing to commit")) {
+                    throw new Error(output || "git commit failed");
+                }
+            }
         } catch (error) {
             // Ignore commit errors if nothing to commit
             if (!error.message.includes("nothing to commit")) {
@@ -204,7 +211,10 @@ class SyncManager {
      */
     gitPush() {
         const branch = this.config.repository.branch || "main";
-        execSync(`git push origin ${branch}`, { cwd: this.repoPath, stdio: "inherit" });
+        const result = spawnSync("git", ["push", "origin", branch], { cwd: this.repoPath, stdio: "inherit" });
+        if (result.status !== 0) {
+            throw new Error("git push failed");
+        }
     }
 
     /**

@@ -29,7 +29,7 @@ ai-agent-config/
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.6.3
+│   └── package.json            # v2.6.4
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 5 workflows (brainstorm, create-pr, release-notes, sync-bitwarden-to-github, update-skills)
@@ -155,6 +155,27 @@ ai-agent update
 ai-agent install
 ai-agent list
 ai-agent platforms
+```
+
+### 10. Create GitHub Release
+
+After self-test passes, create a release describing what changed and what commands are affected:
+
+```bash
+gh release create v<version> --title "v<version>" --notes "$(cat <<'EOF'
+## What's Changed
+
+- <bullet points describing changes>
+
+## Affected Commands
+
+- `ai-agent <command>` — <what changed>
+
+## Migration
+
+<any breaking changes or steps users need to take, or "No migration needed.">
+EOF
+)"
 ```
 
 ---

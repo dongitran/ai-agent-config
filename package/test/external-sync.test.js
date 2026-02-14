@@ -25,6 +25,7 @@ describe("External Sync Module", () => {
     if (fs.existsSync(dir)) fs.rmSync(dir, { recursive: true, force: true });
     configManager.initConfig();
     mocks.execSync.reset();
+    mocks.spawnSync.reset();
   });
 
   describe("loadConfig", () => {
@@ -79,7 +80,9 @@ describe("External Sync Module", () => {
       configManager.addSource({
         name: "fail-src", repo: "https://x.com", branch: "main", skills: [],
       });
-      mocks.execSync.mockImplementation(() => { throw new Error("clone failed"); });
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 1, stdout: "", stderr: "clone failed"
+      }));
       const r = externalSync.syncAll();
       assert.strictEqual(r.failed, 1);
     });
