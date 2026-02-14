@@ -9,5 +9,19 @@
     "bitwardenEnv": {
         "NOTION_TOKEN": "NOTION_INTEGRATION_TOKEN"
     },
-    "enabled": true
+    "enabled": true,
+    "disabledTools": [
+        "API-query-data-source",
+        "API-retrieve-a-data-source",
+        "API-update-a-data-source",
+        "API-create-a-data-source",
+        "API-list-data-source-templates",
+        "API-retrieve-a-comment",
+        "API-create-a-comment",
+        "API-get-users",
+        "API-move-page",
+        "API-retrieve-a-page-property",
+        "API-get-block-children",
+        "API-update-a-block"
+    ]
 }
