@@ -260,8 +260,168 @@ describe("MCP Installer Module", () => {
     });
   });
 
+  describe("writeMcpToPlatformConfig", () => {
+    it("should preserve non-mcpServers keys", () => {
+      const tmpFile = path.join(env.tmpDir, "test-preserve.json");
+      fs.writeFileSync(tmpFile, JSON.stringify({
+        preferences: { theme: "dark" },
+        mcpServers: {},
+      }), "utf-8");
+
+      const servers = [{ name: "s1", command: "cmd", args: ["-y"] }];
+      mcpInstaller.writeMcpToPlatformConfig(tmpFile, servers, { force: true, platformName: "claude" });
+
+      const config = JSON.parse(fs.readFileSync(tmpFile, "utf-8"));
+      assert.deepStrictEqual(config.preferences, { theme: "dark" });
+      assert.ok(config.mcpServers.s1);
+    });
+
+    it("should create directory if not exists", () => {
+      const tmpFile = path.join(env.tmpDir, "new-dir", "sub", "config.json");
+      const servers = [{ name: "s1", command: "cmd", args: [] }];
+      mcpInstaller.writeMcpToPlatformConfig(tmpFile, servers, { force: true, platformName: "test" });
+
+      assert.ok(fs.existsSync(tmpFile));
+      const config = JSON.parse(fs.readFileSync(tmpFile, "utf-8"));
+      assert.ok(config.mcpServers.s1);
+    });
+
+    it("should merge new servers with existing", () => {
+      const tmpFile = path.join(env.tmpDir, "test-merge.json");
+      fs.writeFileSync(tmpFile, JSON.stringify({
+        mcpServers: { existing: { command: "old", args: [] } },
+      }), "utf-8");
+
+      const servers = [{ name: "new-srv", command: "cmd", args: ["-y"] }];
+      mcpInstaller.writeMcpToPlatformConfig(tmpFile, servers, { force: false, platformName: "test" });
+
+      const config = JSON.parse(fs.readFileSync(tmpFile, "utf-8"));
+      assert.ok(config.mcpServers.existing);
+      assert.ok(config.mcpServers["new-srv"]);
+    });
+
+    it("should not include disabledTools for Claude platform", () => {
+      const tmpFile = path.join(env.tmpDir, "test-claude-dt.json");
+      const servers = [{ name: "s1", command: "cmd", args: [], disabledTools: ["tool1", "tool2"] }];
+      mcpInstaller.writeMcpToPlatformConfig(tmpFile, servers, { force: true, platformName: "claude" });
+
+      const config = JSON.parse(fs.readFileSync(tmpFile, "utf-8"));
+      assert.strictEqual(config.mcpServers.s1.disabledTools, undefined);
+    });
+
+    it("should include disabledTools for non-Claude platforms", () => {
+      const tmpFile = path.join(env.tmpDir, "test-ag-dt.json");
+      const servers = [{ name: "s1", command: "cmd", args: [], disabledTools: ["tool1"] }];
+      mcpInstaller.writeMcpToPlatformConfig(tmpFile, servers, { force: true, platformName: "antigravity" });
+
+      const config = JSON.parse(fs.readFileSync(tmpFile, "utf-8"));
+      assert.deepStrictEqual(config.mcpServers.s1.disabledTools, ["tool1"]);
+    });
+  });
+
+  describe("installMcpServers - Claude Code", () => {
+    it("should install to Claude config when detected", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      setupMcpServer("claude-mcp", { name: "claude-mcp", command: "npx", args: ["-y", "pkg"] });
+      const r = mcpInstaller.installMcpServers({ force: true, platform: claude });
+      assert.ok(r.added > 0);
+      assert.ok(r.servers.includes("claude-mcp"));
+
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.ok(config.mcpServers["claude-mcp"]);
+      assert.strictEqual(config.mcpServers["claude-mcp"].command, "npx");
+    });
+
+    it("should NOT include disabledTools for Claude", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      setupMcpServer("dt-claude", {
+        name: "dt-claude", command: "cmd", args: [],
+        disabledTools: ["tool1", "tool2"],
+      });
+      mcpInstaller.installMcpServers({ force: true, platform: claude });
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.strictEqual(config.mcpServers["dt-claude"].disabledTools, undefined);
+    });
+
+    it("should preserve existing preferences in Claude config", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      // Pre-write config with preferences
+      fs.writeFileSync(claude.mcpConfigPath, JSON.stringify({
+        preferences: { theme: "dark", fontSize: 14 },
+        mcpServers: {},
+      }), "utf-8");
+
+      setupMcpServer("pref-test", { name: "pref-test", command: "cmd", args: [] });
+      mcpInstaller.installMcpServers({ force: true, platform: claude });
+
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.deepStrictEqual(config.preferences, { theme: "dark", fontSize: 14 });
+      assert.ok(config.mcpServers["pref-test"]);
+    });
+
+    it("should create config file if not exists", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      // Don't create the config file - let installMcpServers create it
+
+      setupMcpServer("new-file", { name: "new-file", command: "cmd", args: [] });
+      mcpInstaller.installMcpServers({ force: true, platform: claude });
+
+      assert.ok(fs.existsSync(claude.mcpConfigPath));
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.ok(config.mcpServers["new-file"]);
+    });
+
+    it("should handle corrupt Claude config gracefully", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      fs.writeFileSync(claude.mcpConfigPath, "not json", "utf-8");
+
+      setupMcpServer("corrupt-test", { name: "corrupt-test", command: "cmd", args: [] });
+      const r = mcpInstaller.installMcpServers({ force: true, platform: claude });
+      assert.ok(r.added > 0);
+    });
+
+    it("should skip existing servers without force", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      fs.writeFileSync(claude.mcpConfigPath, JSON.stringify({
+        mcpServers: { "skip-me": { command: "old", args: [] } },
+      }), "utf-8");
+
+      setupMcpServer("skip-me", { name: "skip-me", command: "new", args: [] });
+      const r = mcpInstaller.installMcpServers({ force: false, platform: claude });
+      assert.strictEqual(r.skipped, 1);
+    });
+  });
+
   describe("installMcpServersWithSecrets", () => {
-    it("should return zeros when no antigravity", () => {
+    it("should return zeros when no MCP-capable platforms detected", () => {
       const r = mcpInstaller.installMcpServersWithSecrets({});
       assert.strictEqual(r.installed, 0);
     });
@@ -329,6 +489,62 @@ describe("MCP Installer Module", () => {
       mcpInstaller.installMcpServersWithSecrets({});
       const config = JSON.parse(fs.readFileSync(ag.mcpConfigPath, "utf-8"));
       assert.deepStrictEqual(config.mcpServers.s6.disabledTools, ["from-config"]);
+    });
+  });
+
+  describe("installMcpServersWithSecrets - Claude Code", () => {
+    it("should write resolved env to Claude config", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      setupMcpServer("sec-claude", {
+        name: "sec-claude", command: "cmd", args: [],
+        bitwardenEnv: { API_KEY: "claude-api-key-item" },
+      });
+
+      const r = mcpInstaller.installMcpServersWithSecrets({ "claude-api-key-item": "secret-val" });
+      assert.ok(r.installed > 0);
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.strictEqual(config.mcpServers["sec-claude"].env.API_KEY, "secret-val");
+    });
+
+    it("should NOT include disabledTools for Claude in secrets sync", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      setupMcpServer("dt-sec-claude", {
+        name: "dt-sec-claude", command: "cmd", args: [],
+        disabledTools: ["tool1"],
+      });
+      mcpInstaller.installMcpServersWithSecrets({});
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.strictEqual(config.mcpServers["dt-sec-claude"].disabledTools, undefined);
+    });
+
+    it("should preserve existing preferences in Claude config during secrets sync", () => {
+      const pf = require("../scripts/platforms");
+      const claude = pf.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const claudeConfigDir = path.dirname(claude.mcpConfigPath);
+      fs.mkdirSync(claudeConfigDir, { recursive: true });
+
+      fs.writeFileSync(claude.mcpConfigPath, JSON.stringify({
+        preferences: { autoUpdate: true },
+        mcpServers: {},
+      }), "utf-8");
+
+      setupMcpServer("pref-sec", { name: "pref-sec", command: "cmd", args: [] });
+      mcpInstaller.installMcpServersWithSecrets({});
+
+      const config = JSON.parse(fs.readFileSync(claude.mcpConfigPath, "utf-8"));
+      assert.deepStrictEqual(config.preferences, { autoUpdate: true });
+      assert.ok(config.mcpServers["pref-sec"]);
     });
   });
 });

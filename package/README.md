@@ -61,14 +61,14 @@ ai-agent update
 
 ## Supported Platforms
 
-| Platform | Skills Path |
-|----------|-------------|
-| Claude Code | `~/.claude/skills/` |
-| Antigravity IDE | `~/.gemini/antigravity/skills/` |
-| Cursor | `~/.cursor/skills/` |
-| Windsurf | `~/.windsurf/skills/` |
-| Codex CLI | `~/.codex/skills/` |
-| GitHub Copilot | `~/.github/copilot-instructions.md` |
+| Platform | Skills Path | MCP Support |
+|----------|-------------|-------------|
+| Claude Code | `~/.claude/skills/` | `claude_desktop_config.json` |
+| Antigravity IDE | `~/.gemini/antigravity/skills/` | `mcp_config.json` |
+| Cursor | `~/.cursor/skills/` | - |
+| Windsurf | `~/.windsurf/skills/` | - |
+| Codex CLI | `~/.codex/skills/` | - |
+| GitHub Copilot | `~/.github/copilot-instructions.md` | - |
 
 ## Secret Management
 

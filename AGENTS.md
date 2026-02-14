@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.6.6
+**Version:** 2.7.0
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
@@ -29,7 +29,7 @@ ai-agent-config/
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.6.6
+│   └── package.json            # v2.7.0
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 5 workflows (brainstorm, create-pr, release-notes, sync-bitwarden-to-github, update-skills)
@@ -73,14 +73,14 @@ ai-agent-config/
 
 ## Supported Platforms
 
-| Platform | Skills Path |
-|----------|-------------|
-| Claude Code | `~/.claude/skills/` |
-| Antigravity IDE | `~/.gemini/antigravity/skills/` |
-| Cursor | `~/.cursor/skills/` |
-| Windsurf | `~/.windsurf/skills/` |
-| Codex CLI | `~/.codex/skills/` |
-| GitHub Copilot | `~/.github/copilot-instructions.md` |
+| Platform | Skills Path | MCP Support |
+|----------|-------------|-------------|
+| Claude Code | `~/.claude/skills/` | `~/Library/Application Support/Claude/claude_desktop_config.json` |
+| Antigravity IDE | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/mcp_config.json` |
+| Cursor | `~/.cursor/skills/` | - |
+| Windsurf | `~/.windsurf/skills/` | - |
+| Codex CLI | `~/.codex/skills/` | - |
+| GitHub Copilot | `~/.github/copilot-instructions.md` | - |
 
 ---
 

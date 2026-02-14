@@ -110,116 +110,141 @@ function collectBitwardenEnvs() {
 }
 
 /**
- * Install MCP servers to Antigravity's mcp_config.json
+ * Write MCP servers to a platform's config file
+ * @param {string} configPath - Path to platform's MCP config file
+ * @param {Array} servers - MCP server configs to install
+ * @param {Object} options - { force, platformName }
+ * @returns {{ added: number, skipped: number }}
+ */
+function writeMcpToPlatformConfig(configPath, servers, options = {}) {
+    const { force = false, platformName = "" } = options;
+
+    // Read existing config — preserve ALL existing keys (e.g. Claude's "preferences")
+    let config = { mcpServers: {} };
+    if (fs.existsSync(configPath)) {
+        try {
+            config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+            if (!config.mcpServers) config.mcpServers = {};
+        } catch {
+            config = { mcpServers: {} };
+        }
+    }
+
+    let added = 0;
+    let skipped = 0;
+
+    for (const server of servers) {
+        const existing = config.mcpServers[server.name];
+
+        if (existing && !force) {
+            skipped++;
+            continue;
+        }
+
+        const entry = {
+            command: server.command,
+            args: server.args,
+        };
+
+        // Preserve existing env
+        if (existing && existing.env) {
+            entry.env = existing.env;
+        }
+
+        // disabledTools: only add for platforms that support it (not Claude)
+        if (platformName !== "claude" && server.disabledTools && server.disabledTools.length > 0) {
+            entry.disabledTools = server.disabledTools;
+        }
+
+        config.mcpServers[server.name] = entry;
+        added++;
+    }
+
+    // Write back (create directory if needed)
+    if (added > 0) {
+        const configDir = path.dirname(configPath);
+        if (!fs.existsSync(configDir)) {
+            fs.mkdirSync(configDir, { recursive: true });
+        }
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+    }
+
+    return { added, skipped };
+}
+
+/**
+ * Install MCP servers to platforms' config files
  * This is the "pull" flow - installs structure without resolved secrets
- * @param {Object} options - { force: boolean }
+ * @param {Object} options - { force: boolean, platform: Object|null }
  * @returns {{ added: number, skipped: number, servers: string[] }}
  */
 function installMcpServers(options = {}) {
-    const { force = false } = options;
-    const antigravity = platforms.getByName("antigravity");
-
-    if (!antigravity || !antigravity.mcpConfigPath) {
-        return { added: 0, skipped: 0, servers: [] };
-    }
+    const { force = false, platform = null } = options;
 
     const servers = getAvailableMcpServers().filter((s) => s.enabled !== false);
     if (servers.length === 0) {
         return { added: 0, skipped: 0, servers: [] };
     }
 
-    // Read existing mcp_config.json
-    let mcpConfig = { mcpServers: {} };
-    if (fs.existsSync(antigravity.mcpConfigPath)) {
-        try {
-            mcpConfig = JSON.parse(fs.readFileSync(antigravity.mcpConfigPath, "utf-8"));
-            if (!mcpConfig.mcpServers) mcpConfig.mcpServers = {};
-        } catch {
-            mcpConfig = { mcpServers: {} };
+    // Determine target platforms
+    const targetPlatforms = [];
+    if (platform) {
+        // Single platform specified
+        if (platform.mcpConfigPath) targetPlatforms.push(platform);
+    } else {
+        // All detected platforms with MCP support
+        for (const p of platforms.detectAll()) {
+            const full = platforms.getByName(p.name);
+            if (full && full.mcpConfigPath) targetPlatforms.push(full);
         }
     }
 
-    let added = 0;
-    let skipped = 0;
-    const serverNames = [];
-
-    for (const server of servers) {
-        const existing = mcpConfig.mcpServers[server.name];
-
-        if (existing && !force) {
-            skipped++;
-            serverNames.push(server.name);
-            continue;
-        }
-
-        // Build server entry for Antigravity format
-        const entry = {
-            command: server.command,
-            args: server.args,
-        };
-
-        // Preserve existing env if not forcing
-        if (existing && existing.env) {
-            entry.env = existing.env;
-        }
-
-        if (server.disabledTools && server.disabledTools.length > 0) {
-            entry.disabledTools = server.disabledTools;
-        }
-
-        mcpConfig.mcpServers[server.name] = entry;
-        added++;
-        serverNames.push(server.name);
+    if (targetPlatforms.length === 0) {
+        return { added: 0, skipped: 0, servers: [] };
     }
 
-    // Write back
-    if (added > 0) {
-        const configDir = path.dirname(antigravity.mcpConfigPath);
-        if (!fs.existsSync(configDir)) {
-            fs.mkdirSync(configDir, { recursive: true });
-        }
-        fs.writeFileSync(antigravity.mcpConfigPath, JSON.stringify(mcpConfig, null, 2) + "\n", "utf-8");
+    let totalAdded = 0;
+    let totalSkipped = 0;
+    const serverNames = [...new Set(servers.map((s) => s.name))];
+
+    for (const p of targetPlatforms) {
+        const result = writeMcpToPlatformConfig(p.mcpConfigPath, servers, {
+            force,
+            platformName: p.name,
+        });
+        totalAdded += result.added;
+        totalSkipped += result.skipped;
     }
 
-    return { added, skipped, servers: serverNames };
+    return { added: totalAdded, skipped: totalSkipped, servers: serverNames };
 }
 
 /**
- * Install MCP servers with resolved secrets to Antigravity
- * This is the "secrets sync" flow - updates env with real values
- * @param {Object} resolvedSecrets - Map of envVar → resolvedValue
+ * Write MCP servers with resolved secrets to a platform's config file
+ * @param {string} configPath - Path to platform's MCP config file
+ * @param {Array} servers - MCP server configs
+ * @param {Object} resolvedSecrets - Map of bitwardenItem → resolvedValue
+ * @param {string} platformName - Platform name for disabledTools handling
  * @returns {{ installed: number, servers: Array<{ name: string, secretsCount: number }> }}
  */
-function installMcpServersWithSecrets(resolvedSecrets) {
-    const antigravity = platforms.getByName("antigravity");
-
-    if (!antigravity || !antigravity.mcpConfigPath) {
-        return { installed: 0, servers: [] };
-    }
-
-    const allServers = getAvailableMcpServers().filter((s) => s.enabled !== false);
-    if (allServers.length === 0) {
-        return { installed: 0, servers: [] };
-    }
-
-    // Read existing mcp_config.json
-    let mcpConfig = { mcpServers: {} };
-    if (fs.existsSync(antigravity.mcpConfigPath)) {
+function writeMcpWithSecretsToPlatformConfig(configPath, servers, resolvedSecrets, platformName) {
+    // Read existing config — preserve ALL existing keys
+    let config = { mcpServers: {} };
+    if (fs.existsSync(configPath)) {
         try {
-            mcpConfig = JSON.parse(fs.readFileSync(antigravity.mcpConfigPath, "utf-8"));
-            if (!mcpConfig.mcpServers) mcpConfig.mcpServers = {};
+            config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+            if (!config.mcpServers) config.mcpServers = {};
         } catch {
-            mcpConfig = { mcpServers: {} };
+            config = { mcpServers: {} };
         }
     }
 
     let installed = 0;
     const serverResults = [];
 
-    for (const server of allServers) {
-        const existing = mcpConfig.mcpServers[server.name] || {};
+    for (const server of servers) {
+        const existing = config.mcpServers[server.name] || {};
 
-        // Build entry: keep existing custom fields (disabledTools user may have customized)
         const entry = {
             command: server.command,
             args: server.args,
@@ -246,27 +271,69 @@ function installMcpServersWithSecrets(resolvedSecrets) {
             serverResults.push({ name: server.name, secretsCount: 0 });
         }
 
-        // Preserve user-customized disabledTools from existing config
-        if (existing.disabledTools) {
-            entry.disabledTools = existing.disabledTools;
-        } else if (server.disabledTools && server.disabledTools.length > 0) {
-            entry.disabledTools = server.disabledTools;
+        // disabledTools: only for platforms that support it (not Claude)
+        if (platformName !== "claude") {
+            if (existing.disabledTools) {
+                entry.disabledTools = existing.disabledTools;
+            } else if (server.disabledTools && server.disabledTools.length > 0) {
+                entry.disabledTools = server.disabledTools;
+            }
         }
 
-        mcpConfig.mcpServers[server.name] = entry;
+        config.mcpServers[server.name] = entry;
         installed++;
     }
 
     // Write back
     if (installed > 0) {
-        const configDir = path.dirname(antigravity.mcpConfigPath);
+        const configDir = path.dirname(configPath);
         if (!fs.existsSync(configDir)) {
             fs.mkdirSync(configDir, { recursive: true });
         }
-        fs.writeFileSync(antigravity.mcpConfigPath, JSON.stringify(mcpConfig, null, 2) + "\n", "utf-8");
+        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
     }
 
     return { installed, servers: serverResults };
+}
+
+/**
+ * Install MCP servers with resolved secrets to all MCP-capable platforms
+ * This is the "secrets sync" flow - updates env with real values
+ * @param {Object} resolvedSecrets - Map of bitwardenItem → resolvedValue
+ * @returns {{ installed: number, servers: Array<{ name: string, secretsCount: number }> }}
+ */
+function installMcpServersWithSecrets(resolvedSecrets) {
+    const allServers = getAvailableMcpServers().filter((s) => s.enabled !== false);
+    if (allServers.length === 0) {
+        return { installed: 0, servers: [] };
+    }
+
+    // All detected platforms with MCP support
+    const targetPlatforms = [];
+    for (const p of platforms.detectAll()) {
+        const full = platforms.getByName(p.name);
+        if (full && full.mcpConfigPath) targetPlatforms.push(full);
+    }
+
+    if (targetPlatforms.length === 0) {
+        return { installed: 0, servers: [] };
+    }
+
+    let totalInstalled = 0;
+    let aggregatedServers = [];
+
+    for (const p of targetPlatforms) {
+        const result = writeMcpWithSecretsToPlatformConfig(
+            p.mcpConfigPath, allServers, resolvedSecrets, p.name
+        );
+        totalInstalled += result.installed;
+        // Use server results from last platform (they're the same servers)
+        if (result.servers.length > 0) {
+            aggregatedServers = result.servers;
+        }
+    }
+
+    return { installed: totalInstalled, servers: aggregatedServers };
 }
 
 module.exports = {
@@ -276,5 +343,6 @@ module.exports = {
     collectBitwardenEnvs,
     installMcpServers,
     installMcpServersWithSecrets,
+    writeMcpToPlatformConfig,
     SKIP_FOLDERS,
 };

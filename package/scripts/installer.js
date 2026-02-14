@@ -233,10 +233,10 @@ function installToPlatform(platform, options = {}) {
     }
   }
 
-  // Install MCP servers (Antigravity only for now)
-  if (platform.name === "antigravity") {
+  // Install MCP servers to platforms with MCP support
+  if (platform.mcpConfigPath) {
     try {
-      results.mcpServers = mcpInstaller.installMcpServers({ force });
+      results.mcpServers = mcpInstaller.installMcpServers({ force, platform });
     } catch (error) {
       console.warn(`  ⚠️  MCP install failed: ${error.message}`);
     }
