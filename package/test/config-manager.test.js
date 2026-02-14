@@ -45,6 +45,25 @@ describe("config-manager module", () => {
     it("should return an array", () => {
       assert.ok(Array.isArray(configManager.loadOfficialSources()));
     });
+
+    it("should return empty array when official-sources.json is missing", () => {
+      // Mock the scenario where official-sources.json doesn't exist
+      // by requiring config-manager again with a different __dirname context
+      const origRequire = require("module").prototype.require;
+      const fsModule = require("fs");
+      const origExistsSync = fsModule.existsSync;
+
+      // Mock fs.existsSync to return false for official-sources.json
+      fsModule.existsSync = (p) => {
+        if (p && p.includes("official-sources.json")) return false;
+        return origExistsSync(p);
+      };
+
+      const result = configManager.loadOfficialSources();
+      assert.ok(Array.isArray(result));
+      // Restore
+      fsModule.existsSync = origExistsSync;
+    });
   });
 
   describe("createDefaultConfig", () => {

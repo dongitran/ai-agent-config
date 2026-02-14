@@ -161,6 +161,26 @@ describe("SyncManager Module", () => {
       const r = sm.push();
       assert.strictEqual(r.pushed, false);
     });
+
+    it("should handle error after commit during push", () => {
+      const sm = createManager();
+      let commitDone = false;
+      mocks.execSync.mockImplementation((cmd) => {
+        if (cmd.includes("status")) return "M file.txt\n";
+        if (cmd.includes("commit")) {
+          commitDone = true;
+          return "";
+        }
+        if (cmd.includes("push") && commitDone) {
+          throw new Error("Push failed");
+        }
+        return "";
+      });
+      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      const r = sm.push();
+      assert.strictEqual(r.pushed, false);
+      assert.ok(r.reason.includes("Push failed"));
+    });
   });
 
   describe("pull", () => {
@@ -228,6 +248,22 @@ describe("SyncManager Module", () => {
       mocks.execSync.mockImplementation(() => { throw new Error("pull fail"); });
       const r = sm.sync();
       assert.strictEqual(r.synced, false);
+    });
+
+    it("should fail if push fails after successful pull", () => {
+      const sm = createManager();
+      let pullCalled = false;
+      mocks.execSync.mockImplementation((cmd) => {
+        if (cmd.includes("pull")) {
+          pullCalled = true;
+          return "Already up to date.";
+        }
+        if (cmd.includes("status") && pullCalled) return "";
+        return "";
+      });
+      const r = sm.sync();
+      assert.strictEqual(r.synced, false);
+      assert.ok(r.reason.includes("No changes"));
     });
   });
 

@@ -76,6 +76,19 @@ describe("Platforms Module", () => {
       fs.mkdirSync(path.join(env.tmpDir, ".gemini"), { recursive: true });
       assert.strictEqual(ag.detect(), true);
     });
+    it("should detect Antigravity ONLY via ~/Applications path (line 63)", () => {
+      // Critical: Delete .gemini and /Applications/Antigravity.app to avoid short-circuit
+      // This forces evaluation of line 63: path.join(HOME, "Applications", "Antigravity.app")
+      const geminiDir = path.join(env.tmpDir, ".gemini");
+      const globalApp = "/Applications/Antigravity.app";
+      if (fs.existsSync(geminiDir)) fs.rmSync(geminiDir, { recursive: true, force: true });
+      // /Applications/Antigravity.app won't exist in test env anyway
+
+      const ag = platforms.getByName("antigravity");
+      const appPath = path.join(env.tmpDir, "Applications", "Antigravity.app");
+      fs.mkdirSync(appPath, { recursive: true });
+      assert.strictEqual(ag.detect(), true);
+    });
   });
 
   describe("Cursor platform", () => {
@@ -86,6 +99,17 @@ describe("Platforms Module", () => {
     it("should detect based on .cursor dir", () => {
       const cursor = platforms.getByName("cursor");
       fs.mkdirSync(cursor.configPath, { recursive: true });
+      assert.strictEqual(cursor.detect(), true);
+    });
+    it("should detect Cursor ONLY via ~/Applications path (line 86)", () => {
+      // Critical: Delete .cursor dir to avoid short-circuit
+      // This forces evaluation of line 86: path.join(HOME, "Applications", "Cursor.app")
+      const cursor = platforms.getByName("cursor");
+      const cursorDir = cursor.configPath; // path.join(HOME, ".cursor")
+      if (fs.existsSync(cursorDir)) fs.rmSync(cursorDir, { recursive: true, force: true });
+
+      const appPath = path.join(env.tmpDir, "Applications", "Cursor.app");
+      fs.mkdirSync(appPath, { recursive: true });
       assert.strictEqual(cursor.detect(), true);
     });
   });

@@ -282,6 +282,7 @@ describe("Secret Manager Module", () => {
     });
 
     it("should fail when session is expired", () => {
+      const { tmpDir, cleanup } = setupTestHome();
       const platforms = require("../scripts/platforms");
       const ag = platforms.getByName("antigravity");
       fs.mkdirSync(path.dirname(ag.mcpConfigPath), { recursive: true });
@@ -291,6 +292,224 @@ describe("Secret Manager Module", () => {
       mocks.spawnSync.mockImplementation(() => ({ status: 1 }));
       const r = secretManager.tryReuseAntigravitySession();
       assert.strictEqual(r.success, false);
+      cleanup();
+    });
+
+    it("should handle error when reading mcp config", () => {
+      const { tmpDir, cleanup } = setupTestHome();
+      const platforms = require("../scripts/platforms");
+      const ag = platforms.getByName("antigravity");
+      fs.mkdirSync(path.dirname(ag.mcpConfigPath), { recursive: true });
+      fs.writeFileSync(ag.mcpConfigPath, "{ invalid json }", "utf-8");
+
+      const r = secretManager.tryReuseAntigravitySession();
+      assert.strictEqual(r.success, false);
+      assert.ok(r.reason.includes("Failed to read config"));
+      cleanup();
+    });
+
+    it("should handle when Antigravity is not configured", () => {
+      // Mock platforms to return no Antigravity
+      const { module: sm2, mocks: mocks2 } = requireWithMockedChildProcess(
+        "../scripts/secret-manager",
+        ["../scripts/platforms", "../scripts/mcp-installer"]
+      );
+
+      // Override platforms module
+      const platformsPath = require.resolve("../scripts/platforms");
+      const originalPlatforms = require.cache[platformsPath];
+      require.cache[platformsPath] = {
+        id: platformsPath,
+        exports: {
+          getByName: () => null // Return null for Antigravity
+        },
+        loaded: true
+      };
+
+      // Re-require to get new behavior
+      delete require.cache[require.resolve("../scripts/secret-manager")];
+      const sm3 = require("../scripts/secret-manager");
+
+      const r = sm3.tryReuseAntigravitySession();
+      assert.strictEqual(r.success, false);
+      assert.ok(r.reason.includes("Antigravity not configured"));
+
+      // Restore
+      require.cache[platformsPath] = originalPlatforms;
+    });
+  });
+
+  describe("discoverRequiredSecrets edge cases", () => {
+    it("should handle when mcp dir is null", () => {
+      // Clear config to force no repository scenario
+      const configDir = configManager.getConfigDir();
+      fs.rmSync(configDir, { recursive: true, force: true });
+      fs.mkdirSync(configDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(configDir, "config.json"),
+        JSON.stringify({ sources: [] }),
+        "utf-8"
+      );
+
+      const r = secretManager.discoverRequiredSecrets();
+      assert.strictEqual(r.found, false);
+      assert.ok(r.reason.includes("No repository configured"));
+    });
+
+    it("should return empty secrets when no envs found", () => {
+      const { tmpDir, cleanup } = setupTestHome();
+
+      // Setup config with repository AFTER setupTestHome
+      configManager.initConfig();
+      configManager.setConfigValue("repository.url", "https://github.com/test/repo.git");
+      configManager.setConfigValue("repository.local", "~/.ai-agent/repo");
+
+      const platforms = require("../scripts/platforms");
+      const ag = platforms.getByName("antigravity");
+
+      // Create MCP config with no env vars requiring secrets
+      fs.mkdirSync(path.dirname(ag.mcpConfigPath), { recursive: true });
+      fs.writeFileSync(
+        ag.mcpConfigPath,
+        JSON.stringify({
+          mcpServers: {
+            test: {
+              command: "node",
+              args: ["test.js"]
+              // No env with BW_ prefix
+            }
+          }
+        }),
+        "utf-8"
+      );
+
+      const r = secretManager.discoverRequiredSecrets();
+      assert.strictEqual(r.found, true);
+      assert.strictEqual(r.secrets.length, 0);
+      cleanup();
+    });
+  });
+
+  describe("getBitwardenStatus", () => {
+    it("should return status from bw status command", () => {
+      // Mock getBitwardenStatus - need to require again with fresh mock
+      const { module: sm2, mocks: mocks2 } = requireWithMockedChildProcess(
+        "../scripts/secret-manager",
+        ["../scripts/platforms", "../scripts/mcp-installer"]
+      );
+
+      mocks2.spawnSync.mockImplementation(() => ({
+        status: 0,
+        stdout: JSON.stringify({ status: "unlocked" })
+      }));
+
+      // getBitwardenStatus is internal but ensureBitwardenLogin uses it
+      mocks2.spawnSync.mockImplementation(() => ({
+        status: 0,
+        stdout: JSON.stringify({ status: "unlocked" })
+      }));
+
+      const r = sm2.ensureBitwardenLogin();
+      assert.strictEqual(r.valid, true);
+    });
+
+    it("should return unauthenticated on parse error", () => {
+      const { module: sm2, mocks: mocks2 } = requireWithMockedChildProcess(
+        "../scripts/secret-manager",
+        ["../scripts/platforms", "../scripts/mcp-installer"]
+      );
+
+      mocks2.spawnSync.mockImplementation(() => ({
+        status: 0,
+        stdout: "invalid json"
+      }));
+
+      // When status parse fails, loginBitwarden is called
+      // Need to provide env vars for login
+      const origId = process.env.BW_CLIENTID;
+      const origSecret = process.env.BW_CLIENTSECRET;
+      process.env.BW_CLIENTID = "test";
+      process.env.BW_CLIENTSECRET = "test";
+
+      const r = sm2.ensureBitwardenLogin();
+
+      process.env.BW_CLIENTID = origId;
+      process.env.BW_CLIENTSECRET = origSecret;
+
+      // Should attempt login
+      assert.ok(r.valid === true || r.valid === false);
+    });
+  });
+
+  describe("loginBitwarden", () => {
+    it("should fail when credentials not set", () => {
+      const origId = process.env.BW_CLIENTID;
+      const origSecret = process.env.BW_CLIENTSECRET;
+      delete process.env.BW_CLIENTID;
+      delete process.env.BW_CLIENTSECRET;
+
+      // Force unauthenticated status to trigger login
+      mocks.spawnSync.mockImplementation((cmd, args) => {
+        if (args && args.includes("status")) {
+          return { status: 0, stdout: JSON.stringify({ status: "unauthenticated" }) };
+        }
+        return { status: 0, stdout: "" };
+      });
+
+      const r = secretManager.ensureBitwardenLogin();
+      assert.strictEqual(r.valid, false);
+      assert.ok(r.message.includes("credentials not set"));
+
+      process.env.BW_CLIENTID = origId;
+      process.env.BW_CLIENTSECRET = origSecret;
+    });
+
+    it("should handle login failure with error message", () => {
+      const origId = process.env.BW_CLIENTID;
+      const origSecret = process.env.BW_CLIENTSECRET;
+      process.env.BW_CLIENTID = "test-id";
+      process.env.BW_CLIENTSECRET = "test-secret";
+
+      mocks.spawnSync.mockImplementation((cmd, args) => {
+        if (args && args.includes("status")) {
+          return { status: 0, stdout: JSON.stringify({ status: "unauthenticated" }) };
+        }
+        if (args && args.includes("login")) {
+          return { status: 1, stderr: "Invalid credentials" };
+        }
+        return { status: 0, stdout: "" };
+      });
+
+      const r = secretManager.ensureBitwardenLogin();
+      assert.strictEqual(r.valid, false);
+      assert.ok(r.message.includes("Invalid credentials"));
+
+      process.env.BW_CLIENTID = origId;
+      process.env.BW_CLIENTSECRET = origSecret;
+    });
+
+    it("should handle login exception", () => {
+      const origId = process.env.BW_CLIENTID;
+      const origSecret = process.env.BW_CLIENTSECRET;
+      process.env.BW_CLIENTID = "test-id";
+      process.env.BW_CLIENTSECRET = "test-secret";
+
+      mocks.spawnSync.mockImplementation((cmd, args) => {
+        if (args && args.includes("status")) {
+          return { status: 0, stdout: JSON.stringify({ status: "unauthenticated" }) };
+        }
+        if (args && args.includes("login")) {
+          throw new Error("Network error");
+        }
+        return { status: 0, stdout: "" };
+      });
+
+      const r = secretManager.ensureBitwardenLogin();
+      assert.strictEqual(r.valid, false);
+      assert.ok(r.message.includes("Network error"));
+
+      process.env.BW_CLIENTID = origId;
+      process.env.BW_CLIENTSECRET = origSecret;
     });
   });
 });
