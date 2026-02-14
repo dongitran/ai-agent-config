@@ -8,7 +8,8 @@
   },
   "scripts": {
     "postinstall": "node scripts/postinstall.js",
-    "test": "node --test"
+    "test": "node --test",
+    "test:coverage": "npx c8 --all --include='scripts/**/*.js' --check-coverage --lines 95 --functions 90 --branches 80 node --test"
   },
   "keywords": [
     "ai",

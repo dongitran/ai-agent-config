@@ -1,36 +1,357 @@
-const test = require("node:test");
+const { describe, it, before, after, beforeEach } = require("node:test");
 const assert = require("node:assert");
-const configManager = require("../scripts/config-manager");
 const fs = require("fs");
 const path = require("path");
-const os = require("os");
+const { setupTestHome, freshRequire } = require("./helpers");
 
-// Use test directory for config
-const TEST_CONFIG_DIR = path.join(os.tmpdir(), "ai-agent-test");
-const TEST_CONFIG_FILE = path.join(TEST_CONFIG_DIR, "config.json");
+describe("config-manager module", () => {
+  let env, configManager;
 
-test("config-manager module", async (t) => {
-  await t.test("should create default config", () => {
-    const config = configManager.createDefaultConfig();
-    assert.strictEqual(config.version, "2.3");
-    assert.ok(config.sources);
-    assert.ok(config.sources.official);
-    assert.ok(config.sources.custom);
-    assert.ok(Array.isArray(config.sources.official));
-    assert.ok(Array.isArray(config.sources.custom));
+  before(() => {
+    env = setupTestHome();
+    configManager = freshRequire("../scripts/config-manager", ["../scripts/platforms"]);
   });
 
-  await t.test("should validate valid config", () => {
-    const config = configManager.createDefaultConfig();
-    const result = configManager.validateConfig(config);
-    assert.strictEqual(result.valid, true);
-    assert.strictEqual(result.errors.length, 0);
+  after(() => { env.cleanup(); });
+
+  beforeEach(() => {
+    const configDir = configManager.getConfigDir();
+    if (fs.existsSync(configDir)) fs.rmSync(configDir, { recursive: true, force: true });
   });
 
-  await t.test("should detect invalid config", () => {
-    const invalidConfig = { version: "2.3" }; // Missing sources
-    const result = configManager.validateConfig(invalidConfig);
-    assert.strictEqual(result.valid, false);
-    assert.ok(result.errors.length > 0);
+  describe("getConfigPath", () => {
+    it("should return path ending with config.json", () => {
+      assert.ok(configManager.getConfigPath().endsWith(path.join(".ai-agent", "config.json")));
+    });
+  });
+
+  describe("getConfigDir", () => {
+    it("should return path ending with .ai-agent", () => {
+      assert.ok(configManager.getConfigDir().endsWith(".ai-agent"));
+    });
+  });
+
+  describe("configExists", () => {
+    it("should return false when no config", () => {
+      assert.strictEqual(configManager.configExists(), false);
+    });
+    it("should return true when config exists", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.configExists(), true);
+    });
+  });
+
+  describe("loadOfficialSources", () => {
+    it("should return an array", () => {
+      assert.ok(Array.isArray(configManager.loadOfficialSources()));
+    });
+  });
+
+  describe("createDefaultConfig", () => {
+    it("should return config with all required fields", () => {
+      const config = configManager.createDefaultConfig();
+      assert.strictEqual(config.version, "2.3");
+      assert.ok(config.repository);
+      assert.strictEqual(config.repository.branch, "main");
+      assert.strictEqual(config.repository.autoSync, true);
+      assert.strictEqual(config.repository.url, null);
+      assert.ok(config.sync);
+      assert.strictEqual(config.sync.conflictResolution, "pull-first");
+      assert.ok(Array.isArray(config.sources.official));
+      assert.ok(Array.isArray(config.sources.custom));
+      assert.strictEqual(config.preferences.autoUpdate, true);
+      assert.strictEqual(config.preferences.updateInterval, "weekly");
+    });
+  });
+
+  describe("initConfig", () => {
+    it("should create config file", () => {
+      const result = configManager.initConfig();
+      assert.strictEqual(result.created, true);
+      assert.ok(fs.existsSync(result.path));
+    });
+    it("should not overwrite without force", () => {
+      configManager.initConfig();
+      const result = configManager.initConfig();
+      assert.strictEqual(result.created, false);
+      assert.ok(result.reason.includes("already exists"));
+    });
+    it("should overwrite with force=true", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.initConfig(true).created, true);
+    });
+  });
+
+  describe("migrateConfig", () => {
+    it("should migrate preserving sources", () => {
+      const old = { version: "2.0", sources: { official: [], custom: [{ name: "x" }] } };
+      const r = configManager.migrateConfig(old);
+      assert.strictEqual(r.version, "2.3");
+      assert.deepStrictEqual(r.sources.custom, [{ name: "x" }]);
+    });
+    it("should use defaults for missing fields", () => {
+      const r = configManager.migrateConfig({ version: "2.0" });
+      assert.strictEqual(r.version, "2.3");
+      assert.ok(r.sources);
+      assert.ok(r.preferences);
+    });
+  });
+
+  describe("loadConfig", () => {
+    it("should auto-init if no config", () => {
+      const config = configManager.loadConfig();
+      assert.strictEqual(config.version, "2.3");
+      assert.ok(fs.existsSync(configManager.getConfigPath()));
+    });
+    it("should read existing config", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.loadConfig().version, "2.3");
+    });
+    it("should auto-migrate old version", () => {
+      fs.mkdirSync(configManager.getConfigDir(), { recursive: true });
+      fs.writeFileSync(configManager.getConfigPath(), JSON.stringify({
+        version: "2.0", sources: { official: [], custom: [] },
+        preferences: { autoUpdate: true, updateInterval: "weekly" },
+      }), "utf-8");
+      assert.strictEqual(configManager.loadConfig().version, "2.3");
+    });
+  });
+
+  describe("saveConfig", () => {
+    it("should write config and create backup", () => {
+      configManager.initConfig();
+      const config = configManager.loadConfig();
+      config.preferences.autoUpdate = false;
+      configManager.saveConfig(config);
+      const saved = JSON.parse(fs.readFileSync(configManager.getConfigPath(), "utf-8"));
+      assert.strictEqual(saved.preferences.autoUpdate, false);
+      assert.ok(fs.existsSync(`${configManager.getConfigPath()}.backup`));
+    });
+    it("should create directory if not exists", () => {
+      configManager.saveConfig(configManager.createDefaultConfig());
+      assert.ok(fs.existsSync(configManager.getConfigPath()));
+    });
+  });
+
+  describe("validateConfig", () => {
+    it("should validate valid config", () => {
+      const r = configManager.validateConfig(configManager.createDefaultConfig());
+      assert.strictEqual(r.valid, true);
+      assert.strictEqual(r.errors.length, 0);
+    });
+    it("should detect missing version", () => {
+      assert.ok(!configManager.validateConfig({}).valid);
+    });
+    it("should detect missing sources", () => {
+      assert.ok(!configManager.validateConfig({ version: "2.3" }).valid);
+    });
+    it("should detect invalid sources.official", () => {
+      assert.ok(!configManager.validateConfig({ version: "2.3", sources: { official: "x", custom: [] } }).valid);
+    });
+    it("should detect invalid sources.custom", () => {
+      assert.ok(!configManager.validateConfig({ version: "2.3", sources: { official: [], custom: "x" } }).valid);
+    });
+    it("should require repository for v2.3", () => {
+      const r = configManager.validateConfig({ version: "2.3", sources: { official: [], custom: [] } });
+      assert.ok(!r.valid);
+    });
+    it("should detect invalid repository.url type", () => {
+      assert.ok(!configManager.validateConfig({
+        version: "2.3", sources: { official: [], custom: [] },
+        repository: { url: 123, branch: "main", autoSync: true },
+      }).valid);
+    });
+    it("should detect invalid repository.branch type", () => {
+      assert.ok(!configManager.validateConfig({
+        version: "2.3", sources: { official: [], custom: [] },
+        repository: { url: null, branch: 123 },
+      }).valid);
+    });
+    it("should detect invalid repository.autoSync type", () => {
+      assert.ok(!configManager.validateConfig({
+        version: "2.3", sources: { official: [], custom: [] },
+        repository: { url: null, branch: "main", autoSync: "yes" },
+      }).valid);
+    });
+  });
+
+  describe("getAllSources", () => {
+    it("should filter disabled sources", () => {
+      configManager.initConfig();
+      const c = configManager.loadConfig();
+      c.sources.custom = [{ name: "on", enabled: true }, { name: "off", enabled: false }];
+      configManager.saveConfig(c);
+      const s = configManager.getAllSources();
+      assert.ok(s.some(x => x.name === "on"));
+      assert.ok(!s.some(x => x.name === "off"));
+    });
+  });
+
+  describe("addSource", () => {
+    it("should add custom source", () => {
+      configManager.initConfig();
+      const r = configManager.addSource({ name: "ts", repo: "https://x.com" });
+      assert.strictEqual(r.added, true);
+      assert.strictEqual(r.source.enabled, true);
+      assert.ok(r.source.metadata.addedAt);
+    });
+    it("should reject duplicate", () => {
+      configManager.initConfig();
+      configManager.addSource({ name: "dup" });
+      assert.strictEqual(configManager.addSource({ name: "dup" }).added, false);
+    });
+    it("should reject name matching official", () => {
+      configManager.initConfig();
+      const c = configManager.loadConfig();
+      c.sources.official = [{ name: "osrc" }];
+      configManager.saveConfig(c);
+      assert.strictEqual(configManager.addSource({ name: "osrc" }).added, false);
+    });
+  });
+
+  describe("removeSource", () => {
+    it("should remove custom source", () => {
+      configManager.initConfig();
+      configManager.addSource({ name: "rem" });
+      const r = configManager.removeSource("rem");
+      assert.strictEqual(r.removed, true);
+    });
+    it("should reject official source", () => {
+      configManager.initConfig();
+      const c = configManager.loadConfig();
+      c.sources.official = [{ name: "off" }];
+      configManager.saveConfig(c);
+      assert.strictEqual(configManager.removeSource("off").removed, false);
+    });
+    it("should return not found", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.removeSource("nope").removed, false);
+    });
+  });
+
+  describe("toggleSource", () => {
+    it("should toggle official", () => {
+      configManager.initConfig();
+      const c = configManager.loadConfig();
+      c.sources.official = [{ name: "to", enabled: true }];
+      configManager.saveConfig(c);
+      const r = configManager.toggleSource("to", false);
+      assert.strictEqual(r.updated, true);
+      assert.strictEqual(r.type, "official");
+    });
+    it("should toggle custom", () => {
+      configManager.initConfig();
+      configManager.addSource({ name: "tc" });
+      assert.strictEqual(configManager.toggleSource("tc", false).type, "custom");
+    });
+    it("should return not found", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.toggleSource("x", true).updated, false);
+    });
+  });
+
+  describe("getSourceInfo", () => {
+    it("should find official", () => {
+      configManager.initConfig();
+      const c = configManager.loadConfig();
+      c.sources.official = [{ name: "io" }];
+      configManager.saveConfig(c);
+      assert.strictEqual(configManager.getSourceInfo("io").type, "official");
+    });
+    it("should find custom", () => {
+      configManager.initConfig();
+      configManager.addSource({ name: "ic" });
+      assert.strictEqual(configManager.getSourceInfo("ic").type, "custom");
+    });
+    it("should return not found", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.getSourceInfo("nope").found, false);
+    });
+  });
+
+  describe("exportConfig", () => {
+    it("should export to file", () => {
+      configManager.initConfig();
+      const out = path.join(env.tmpDir, "exp.json");
+      const r = configManager.exportConfig(out);
+      assert.strictEqual(r.exported, true);
+      const d = JSON.parse(fs.readFileSync(out, "utf-8"));
+      assert.ok(d.exportedAt);
+      assert.ok(d.exportedFrom);
+    });
+    it("should return data when no path", () => {
+      configManager.initConfig();
+      const r = configManager.exportConfig(null);
+      assert.ok(r.data.exportedAt);
+    });
+  });
+
+  describe("importConfig", () => {
+    it("should replace config", () => {
+      configManager.initConfig();
+      const p = path.join(env.tmpDir, "imp.json");
+      const d = configManager.createDefaultConfig();
+      d.preferences.autoUpdate = false;
+      fs.writeFileSync(p, JSON.stringify(d), "utf-8");
+      assert.strictEqual(configManager.importConfig(p).imported, true);
+      assert.strictEqual(configManager.loadConfig().preferences.autoUpdate, false);
+    });
+    it("should merge config", () => {
+      configManager.initConfig();
+      const p = path.join(env.tmpDir, "mrg.json");
+      const d = configManager.createDefaultConfig();
+      d.sources.custom = [{ name: "new", enabled: true }];
+      fs.writeFileSync(p, JSON.stringify(d), "utf-8");
+      assert.strictEqual(configManager.importConfig(p, true).imported, true);
+    });
+    it("should fail for nonexistent file", () => {
+      assert.strictEqual(configManager.importConfig("/no/file").imported, false);
+    });
+    it("should fail for invalid config", () => {
+      const p = path.join(env.tmpDir, "bad.json");
+      fs.writeFileSync(p, JSON.stringify({ bad: true }), "utf-8");
+      assert.ok(configManager.importConfig(p).errors);
+    });
+  });
+
+  describe("getConfigValue", () => {
+    it("should get nested value", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.getConfigValue("repository.branch").value, "main");
+    });
+    it("should get top-level value", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.getConfigValue("version").value, "2.3");
+    });
+    it("should return not found", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.getConfigValue("no.key").found, false);
+    });
+  });
+
+  describe("setConfigValue", () => {
+    it("should set nested value", () => {
+      configManager.initConfig();
+      configManager.setConfigValue("repository.branch", "dev");
+      assert.strictEqual(configManager.getConfigValue("repository.branch").value, "dev");
+    });
+    it("should create intermediate objects", () => {
+      configManager.initConfig();
+      configManager.setConfigValue("x.y.z", "val");
+      assert.strictEqual(configManager.getConfigValue("x.y.z").value, "val");
+    });
+    it("should return updated", () => {
+      configManager.initConfig();
+      assert.strictEqual(configManager.setConfigValue("version", "3").updated, true);
+    });
+  });
+
+  describe("resetConfig", () => {
+    it("should reset to defaults", () => {
+      configManager.initConfig();
+      configManager.setConfigValue("preferences.autoUpdate", false);
+      configManager.resetConfig();
+      assert.strictEqual(configManager.loadConfig().preferences.autoUpdate, true);
+    });
   });
 });

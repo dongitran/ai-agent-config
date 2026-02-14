@@ -1,77 +1,75 @@
-/**
- * Tests for CLI
- */
-
 const { describe, it } = require("node:test");
 const assert = require("node:assert");
 const path = require("path");
 const fs = require("fs");
+const { execSync } = require("child_process");
+
+const cliPath = path.join(__dirname, "..", "bin", "cli.js");
 
 describe("CLI Module", () => {
-  const cliPath = path.join(__dirname, "..", "bin", "cli.js");
-
-  describe("CLI file", () => {
+  describe("CLI file structure", () => {
     it("should exist", () => {
       assert.ok(fs.existsSync(cliPath));
     });
-
-    it("should be executable (have shebang)", () => {
-      const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.startsWith("#!/usr/bin/env node"));
+    it("should have shebang", () => {
+      assert.ok(fs.readFileSync(cliPath, "utf-8").startsWith("#!/usr/bin/env node"));
     });
-
-    it("should have correct version", () => {
+    it("should define all main commands", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8"));
-      assert.ok(content.includes(`require("../package.json").version`));
-      assert.ok(pkg.version);
-    });
-
-    it("should define all commands", () => {
-      const content = fs.readFileSync(cliPath, "utf-8");
-      const expectedCommands = [
-        "init",
-        "pull",
-        "push",
-        "update",
-        "install",
-        "list",
-        "platforms",
-        "uninstall",
-        "list-external",
-        "sync-external",
-      ];
-      expectedCommands.forEach((cmd) => {
-        assert.ok(content.includes(`case "${cmd}":`), `Should have ${cmd} command`);
+      ["init", "pull", "push", "update", "install", "list", "platforms", "uninstall", "list-external", "sync-external", "migrate"].forEach(cmd => {
+        assert.ok(content.includes(`case "${cmd}":`), `Missing ${cmd}`);
       });
     });
-
-    it("should have showHelp function", () => {
+    it("should define source subcommands", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes("function showHelp()"));
-      assert.ok(content.includes("AI Agent Config CLI"));
+      ["add", "remove", "list", "enable", "disable", "info"].forEach(sub => {
+        assert.ok(content.includes(`case "${sub}":`));
+      });
     });
-
-    it("should have version in help header", () => {
+    it("should define config subcommands", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes("AI Agent Config CLI v${VERSION"));
-    });
-
-    it("should handle version command", () => {
-      const content = fs.readFileSync(cliPath, "utf-8");
-      assert.ok(content.includes('case "version":'));
-      assert.ok(content.includes('case "--version":'));
-      assert.ok(content.includes('case "-v":'));
-      assert.ok(content.includes("console.log(`v${VERSION}`)"));
+      ["get", "set", "edit", "validate", "export", "import", "reset"].forEach(sub => {
+        assert.ok(content.includes(`case "${sub}":`));
+      });
     });
   });
 
-  describe("Package.json bin field", () => {
+  describe("CLI execution", () => {
+    it("should show version with --version", () => {
+      const out = execSync(`node "${cliPath}" --version`, { encoding: "utf-8" }).trim();
+      assert.ok(out.startsWith("v"));
+      assert.ok(out.includes(require("../package.json").version));
+    });
+    it("should show version with -v", () => {
+      assert.ok(execSync(`node "${cliPath}" -v`, { encoding: "utf-8" }).trim().startsWith("v"));
+    });
+    it("should show help with --help", () => {
+      const out = execSync(`node "${cliPath}" --help`, { encoding: "utf-8" });
+      assert.ok(out.includes("AI Agent Config CLI"));
+    });
+    it("should show help with no args", () => {
+      assert.ok(execSync(`node "${cliPath}"`, { encoding: "utf-8" }).includes("AI Agent Config CLI"));
+    });
+    it("should handle unknown command", () => {
+      try {
+        execSync(`node "${cliPath}" unknown-cmd`, { encoding: "utf-8", stdio: "pipe" });
+      } catch (err) {
+        assert.ok(err.stdout.includes("Unknown command") || err.stderr.includes("Unknown command"));
+      }
+    });
+    it("should run platforms command", () => {
+      const out = execSync(`node "${cliPath}" platforms`, { encoding: "utf-8" });
+      assert.ok(typeof out === "string");
+    });
+    it("should run list command", () => {
+      assert.ok(typeof execSync(`node "${cliPath}" list`, { encoding: "utf-8" }) === "string");
+    });
+  });
+
+  describe("Package.json", () => {
     it("should have correct bin entry", () => {
-      const packageJson = require("../package.json");
-      assert.ok(packageJson.bin);
-      assert.ok(packageJson.bin["ai-agent"]);
-      assert.ok(packageJson.bin["ai-agent"].includes("cli.js"));
+      const pkg = require("../package.json");
+      assert.ok(pkg.bin["ai-agent"].includes("cli.js"));
     });
   });
 });

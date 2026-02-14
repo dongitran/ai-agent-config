@@ -471,6 +471,7 @@ module.exports = {
     ensureBitwardenLogin,
     promptPassword,
     unlockBitwarden,
+    tryReuseAntigravitySession,
     discoverRequiredSecrets,
     fetchSecretsFromBitwarden,
     detectShellProfile,

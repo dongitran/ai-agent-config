@@ -4,5 +4,10 @@ node_modules/
 .env
 .env.local
 
+# Coverage
+coverage/
+.c8_output/
+.nyc_output/
+
 # Package bundled files (for npm only, not git)
 package/.agent/

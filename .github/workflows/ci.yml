@@ -35,10 +35,10 @@ jobs:
           echo "Package has no external dependencies - using Node.js built-in modules only"
         shell: bash
 
-      - name: Run tests
+      - name: Run tests with coverage
         run: |
           cd package
-          npm test
+          npx c8 --all --include='scripts/**/*.js' --check-coverage --lines 95 --functions 90 --branches 80 node --test
         shell: bash
 
       - name: Test CLI installation

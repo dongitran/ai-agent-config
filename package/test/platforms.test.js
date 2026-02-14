@@ -1,63 +1,120 @@
-/**
- * Tests for platforms.js
- */
-
-const { describe, it } = require("node:test");
+const { describe, it, before, after } = require("node:test");
 const assert = require("node:assert");
-const platforms = require("../scripts/platforms");
+const fs = require("fs");
+const path = require("path");
+const { setupTestHome, freshRequire, createTempDir } = require("./helpers");
 
 describe("Platforms Module", () => {
+  let env, platforms;
+
+  before(() => {
+    env = setupTestHome();
+    platforms = freshRequire("../scripts/platforms");
+  });
+
+  after(() => { env.cleanup(); });
+
   describe("SUPPORTED platforms", () => {
-    it("should have all required platforms defined", () => {
-      const platformNames = platforms.SUPPORTED.map((p) => p.name);
-      assert.ok(platformNames.includes("claude"));
-      assert.ok(platformNames.includes("antigravity"));
-      assert.ok(platformNames.includes("cursor"));
-      assert.ok(platformNames.includes("windsurf"));
-    });
-
-    it("should have required properties for each platform", () => {
-      platforms.SUPPORTED.forEach((platform) => {
-        assert.ok(platform.name, `Platform should have name`);
-        assert.ok(platform.displayName, `Platform ${platform.name} should have displayName`);
-
-        // Copilot uses instructionsFile instead of configDir/skillsDir
-        if (platform.name !== "copilot") {
-          assert.ok(platform.configDir, `Platform ${platform.name} should have configDir`);
-          assert.ok(platform.skillsDir, `Platform ${platform.name} should have skillsDir`);
-        }
-
-        assert.ok(
-          typeof platform.detect === "function",
-          `Platform ${platform.name} should have detect function`
-        );
+    it("should have all required platforms", () => {
+      const names = platforms.SUPPORTED.map(p => p.name);
+      ["claude", "antigravity", "cursor", "windsurf", "codex", "copilot"].forEach(n => {
+        assert.ok(names.includes(n), `Should include ${n}`);
       });
     });
 
-    it("should have configPath getter for most platforms", () => {
-      platforms.SUPPORTED.forEach((platform) => {
-        // Skip copilot as it doesn't have configPath
-        if (platform.name === "copilot") return;
-
-        assert.ok(platform.configPath, `Platform ${platform.name} should have configPath`);
-        assert.ok(
-          platform.configPath.includes(platform.configDir.split('/')[0]),
-          `configPath should include configDir`
-        );
+    it("should have required properties", () => {
+      platforms.SUPPORTED.forEach(p => {
+        assert.ok(p.name);
+        assert.ok(p.displayName);
+        assert.ok(typeof p.detect === "function");
       });
     });
 
-    it("should have skillsPath getter for most platforms", () => {
-      platforms.SUPPORTED.forEach((platform) => {
-        // Skip copilot as it uses instructionsFile instead
-        if (platform.name === "copilot") return;
-
-        assert.ok(platform.skillsPath, `Platform ${platform.name} should have skillsPath`);
-        assert.ok(
-          platform.skillsPath.includes(platform.skillsDir),
-          `skillsPath should include skillsDir`
-        );
+    it("should have configPath getter", () => {
+      platforms.SUPPORTED.forEach(p => {
+        assert.ok(p.configPath, `${p.name} should have configPath`);
       });
+    });
+
+    it("should have skillsPath for non-copilot platforms", () => {
+      platforms.SUPPORTED.filter(p => p.name !== "copilot").forEach(p => {
+        assert.ok(p.skillsPath, `${p.name} should have skillsPath`);
+      });
+    });
+  });
+
+  describe("Claude Code platform", () => {
+    it("should have workflowsDir and workflowsPath", () => {
+      const claude = platforms.getByName("claude");
+      assert.strictEqual(claude.workflowsDir, "workflows");
+      assert.ok(claude.workflowsPath.includes("workflows"));
+    });
+    it("should have commandsDir and commandsPath", () => {
+      const claude = platforms.getByName("claude");
+      assert.strictEqual(claude.commandsDir, "commands");
+      assert.ok(claude.commandsPath.includes("commands"));
+    });
+    it("should detect based on .claude dir", () => {
+      const claude = platforms.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      assert.strictEqual(claude.detect(), true);
+    });
+  });
+
+  describe("Antigravity platform", () => {
+    it("should have workflowsDir and workflowsPath", () => {
+      const ag = platforms.getByName("antigravity");
+      assert.strictEqual(ag.workflowsDir, "workflows");
+      assert.ok(ag.workflowsPath.includes("workflows"));
+    });
+    it("should have mcpConfigPath", () => {
+      const ag = platforms.getByName("antigravity");
+      assert.ok(ag.mcpConfigPath.includes("mcp_config.json"));
+    });
+    it("should detect based on .gemini dir", () => {
+      const ag = platforms.getByName("antigravity");
+      fs.mkdirSync(path.join(env.tmpDir, ".gemini"), { recursive: true });
+      assert.strictEqual(ag.detect(), true);
+    });
+  });
+
+  describe("Cursor platform", () => {
+    it("should have rulesPath", () => {
+      const cursor = platforms.getByName("cursor");
+      assert.ok(cursor.rulesPath.includes("rules"));
+    });
+    it("should detect based on .cursor dir", () => {
+      const cursor = platforms.getByName("cursor");
+      fs.mkdirSync(cursor.configPath, { recursive: true });
+      assert.strictEqual(cursor.detect(), true);
+    });
+  });
+
+  describe("Windsurf platform", () => {
+    it("should detect based on .windsurf dir", () => {
+      const ws = platforms.getByName("windsurf");
+      fs.mkdirSync(ws.configPath, { recursive: true });
+      assert.strictEqual(ws.detect(), true);
+    });
+  });
+
+  describe("Codex platform", () => {
+    it("should detect based on .codex dir", () => {
+      const codex = platforms.getByName("codex");
+      fs.mkdirSync(codex.configPath, { recursive: true });
+      assert.strictEqual(codex.detect(), true);
+    });
+  });
+
+  describe("Copilot platform", () => {
+    it("should have instructionsPath", () => {
+      const cp = platforms.getByName("copilot");
+      assert.ok(cp.instructionsPath.includes("copilot-instructions.md"));
+    });
+    it("should detect based on .github dir", () => {
+      const cp = platforms.getByName("copilot");
+      fs.mkdirSync(cp.configPath, { recursive: true });
+      assert.strictEqual(cp.detect(), true);
     });
   });
 
@@ -66,69 +123,80 @@ describe("Platforms Module", () => {
       const claude = platforms.getByName("claude");
       assert.ok(claude);
       assert.strictEqual(claude.name, "claude");
-      assert.strictEqual(claude.displayName, "Claude Code");
     });
-
-    it("should return null for unknown platform", () => {
-      const unknown = platforms.getByName("unknown-platform");
-      assert.strictEqual(unknown, null);
+    it("should be case-insensitive", () => {
+      assert.ok(platforms.getByName("Claude"));
+      assert.ok(platforms.getByName("CURSOR"));
+    });
+    it("should return null for unknown", () => {
+      assert.strictEqual(platforms.getByName("nonexistent"), null);
     });
   });
 
   describe("getAllNames", () => {
-    it("should return array of platform names", () => {
+    it("should return all platform names", () => {
       const names = platforms.getAllNames();
       assert.ok(Array.isArray(names));
-      assert.ok(names.length > 0);
       assert.ok(names.includes("claude"));
       assert.ok(names.includes("antigravity"));
+      assert.ok(names.length >= 6);
     });
   });
 
   describe("detectAll", () => {
     it("should return array", () => {
-      const detected = platforms.detectAll();
-      assert.ok(Array.isArray(detected));
+      assert.ok(Array.isArray(platforms.detectAll()));
     });
-
-    it("should return platforms with required properties", () => {
+    it("should detect platforms with created dirs", () => {
+      const claude = platforms.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
       const detected = platforms.detectAll();
-      detected.forEach((platform) => {
-        assert.ok(platform.name);
-        assert.ok(platform.displayName);
-        assert.ok(platform.skillsPath);
+      assert.ok(detected.some(p => p.name === "claude"));
+    });
+    it("should return objects with required properties", () => {
+      const claude = platforms.getByName("claude");
+      fs.mkdirSync(claude.configPath, { recursive: true });
+      const detected = platforms.detectAll();
+      detected.forEach(p => {
+        assert.ok(p.name);
+        assert.ok(p.displayName);
+        assert.ok(p.configPath);
       });
     });
   });
 
   describe("ensureSkillsDir", () => {
-    it("should return skills path for platform", () => {
+    it("should create and return skills path", () => {
       const claude = platforms.getByName("claude");
-      const skillsPath = platforms.ensureSkillsDir(claude);
-      assert.ok(skillsPath);
-      assert.ok(skillsPath.includes("skills"));
+      const p = platforms.ensureSkillsDir(claude);
+      assert.ok(p.includes("skills"));
+      assert.ok(fs.existsSync(p));
+    });
+    it("should not fail if already exists", () => {
+      const claude = platforms.getByName("claude");
+      platforms.ensureSkillsDir(claude);
+      const p = platforms.ensureSkillsDir(claude);
+      assert.ok(fs.existsSync(p));
     });
   });
 
-  describe("Claude Code platform", () => {
-    it("should have workflowsDir and workflowsPath", () => {
+  describe("ensureWorkflowsDir", () => {
+    it("should create and return workflows path for claude", () => {
       const claude = platforms.getByName("claude");
-      assert.ok(claude.workflowsDir, "Claude should have workflowsDir");
-      assert.strictEqual(claude.workflowsDir, "workflows");
-      assert.ok(claude.workflowsPath, "Claude should have workflowsPath");
-      assert.ok(
-        claude.workflowsPath.includes("workflows"),
-        "workflowsPath should include workflows"
-      );
+      const p = platforms.ensureWorkflowsDir(claude);
+      assert.ok(p.includes("workflows"));
+      assert.ok(fs.existsSync(p));
+    });
+    it("should return null for platform without workflowsPath", () => {
+      const cursor = platforms.getByName("cursor");
+      assert.strictEqual(platforms.ensureWorkflowsDir(cursor), null);
     });
   });
 
-  describe("Antigravity platform", () => {
-    it("should have workflowsDir and workflowsPath", () => {
-      const antigravity = platforms.getByName("antigravity");
-      assert.ok(antigravity.workflowsDir, "Antigravity should have workflowsDir");
-      assert.strictEqual(antigravity.workflowsDir, "workflows");
-      assert.ok(antigravity.workflowsPath, "Antigravity should have workflowsPath");
+  describe("HOME export", () => {
+    it("should export HOME constant", () => {
+      assert.ok(platforms.HOME);
+      assert.strictEqual(typeof platforms.HOME, "string");
     });
   });
 });
