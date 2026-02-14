@@ -10,5 +10,10 @@
         "GOOGLE_OAUTH_CREDENTIALS_JSON": "GCP_OAUTH_CALENDAR_MCP_MAIN"
     },
     "enabled": true,
-    "disabledTools": []
+    "disabledTools": [
+        "list-colors",
+        "get-freebusy",
+        "respond-to-event",
+        "manage-accounts"
+    ]
 }
