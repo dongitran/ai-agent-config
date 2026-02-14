@@ -102,11 +102,11 @@ function migrateConfig(oldConfig) {
   const newConfig = {
     version: "2.3",
     repository: {
-      url: null,
-      branch: "main",
-      local: path.join(os.homedir(), ".ai-agent", "sync-repo"),
-      lastSync: null,
-      autoSync: true,
+      url: oldConfig.repository?.url || null,
+      branch: oldConfig.repository?.branch || "main",
+      local: oldConfig.repository?.local || path.join(os.homedir(), ".ai-agent", "sync-repo"),
+      lastSync: oldConfig.repository?.lastSync || null,
+      autoSync: oldConfig.repository?.autoSync !== undefined ? oldConfig.repository.autoSync : true,
     },
     sync: {
       conflictResolution: "pull-first",
@@ -359,13 +359,15 @@ function importConfig(inputPath, merge = false) {
   }
 
   if (merge) {
-    // Merge with existing config
+    // Merge with existing config, deduplicating by source name
     const existing = loadConfig();
+    const existingNames = new Set(existing.sources.custom.map(s => s.name));
+    const newCustom = (importData.sources.custom || []).filter(s => !existingNames.has(s.name));
     const merged = {
       ...existing,
       sources: {
         official: existing.sources.official,
-        custom: [...existing.sources.custom, ...(importData.sources.custom || [])],
+        custom: [...existing.sources.custom, ...newCustom],
       },
     };
     saveConfig(merged);

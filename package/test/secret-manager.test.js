@@ -140,55 +140,69 @@ describe("Secret Manager Module", () => {
 
   describe("fetchSecretsFromBitwarden", () => {
     it("should find secrets by login password", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([
-        { name: "my-key", login: { password: "secret123" } },
-      ]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([
+          { name: "my-key", login: { password: "secret123" } },
+        ]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["my-key"]);
       assert.strictEqual(r.found.length, 1);
       assert.strictEqual(r.found[0].value, "secret123");
     });
 
     it("should find secrets by notes", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([
-        { name: "note-key", notes: "note-secret" },
-      ]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([
+          { name: "note-key", notes: "note-secret" },
+        ]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["note-key"]);
       assert.strictEqual(r.found[0].value, "note-secret");
     });
 
     it("should find secrets by custom field", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([
-        { name: "field-key", fields: [{ name: "value", value: "field-val" }] },
-      ]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([
+          { name: "field-key", fields: [{ name: "value", value: "field-val" }] },
+        ]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["field-key"]);
       assert.strictEqual(r.found[0].value, "field-val");
     });
 
     it("should find secrets by secret field name", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([
-        { name: "sec-key", fields: [{ name: "Secret", value: "sec-val" }] },
-      ]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([
+          { name: "sec-key", fields: [{ name: "Secret", value: "sec-val" }] },
+        ]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["sec-key"]);
       assert.strictEqual(r.found[0].value, "sec-val");
     });
 
     it("should report missing secrets", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["missing"]);
       assert.strictEqual(r.missing.length, 1);
       assert.ok(r.missing.includes("missing"));
     });
 
     it("should report item with no extractable value as missing", () => {
-      mocks.execSync.mockImplementation(() => JSON.stringify([
-        { name: "empty-item" },
-      ]));
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 0, stdout: JSON.stringify([
+          { name: "empty-item" },
+        ]),
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["empty-item"]);
       assert.strictEqual(r.missing.length, 1);
     });
 
     it("should handle bw errors gracefully", () => {
-      mocks.execSync.mockImplementation(() => { throw new Error("vault locked"); });
+      mocks.spawnSync.mockImplementation(() => ({
+        status: 1, stderr: "vault locked",
+      }));
       const r = secretManager.fetchSecretsFromBitwarden("session", ["key1", "key2"]);
       assert.strictEqual(r.missing.length, 2);
     });

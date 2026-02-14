@@ -228,11 +228,14 @@ function fetchSecretsFromBitwarden(sessionKey, secretNames) {
 
     try {
         // List all items in the vault (across all folders)
-        const itemsJson = execSync(`bw list items --session ${sessionKey}`, {
+        const listResult = spawnSync("bw", ["list", "items", "--session", sessionKey], {
             encoding: "utf-8",
             stdio: ["pipe", "pipe", "pipe"],
         });
-        const items = JSON.parse(itemsJson);
+        if (listResult.status !== 0) {
+            throw new Error(listResult.stderr || "Failed to list Bitwarden items");
+        }
+        const items = JSON.parse(listResult.stdout || "[]");
 
         // Match secrets by name
         for (const secretName of secretNames) {

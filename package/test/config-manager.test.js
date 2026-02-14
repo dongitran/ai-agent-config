@@ -114,6 +114,31 @@ describe("config-manager module", () => {
       assert.ok(r.sources);
       assert.ok(r.preferences);
     });
+    it("should preserve repository settings from old config", () => {
+      const old = {
+        version: "2.0",
+        repository: {
+          url: "https://github.com/user/repo.git",
+          branch: "develop",
+          local: "/custom/path",
+          lastSync: "2025-01-01T00:00:00.000Z",
+          autoSync: false,
+        },
+        sources: { official: [], custom: [] },
+      };
+      const r = configManager.migrateConfig(old);
+      assert.strictEqual(r.repository.url, "https://github.com/user/repo.git");
+      assert.strictEqual(r.repository.branch, "develop");
+      assert.strictEqual(r.repository.local, "/custom/path");
+      assert.strictEqual(r.repository.lastSync, "2025-01-01T00:00:00.000Z");
+      assert.strictEqual(r.repository.autoSync, false);
+    });
+    it("should use default repository when old config has no repository", () => {
+      const r = configManager.migrateConfig({ version: "2.0" });
+      assert.strictEqual(r.repository.url, null);
+      assert.strictEqual(r.repository.branch, "main");
+      assert.strictEqual(r.repository.autoSync, true);
+    });
   });
 
   describe("loadConfig", () => {
@@ -322,6 +347,20 @@ describe("config-manager module", () => {
       d.sources.custom = [{ name: "new", enabled: true }];
       fs.writeFileSync(p, JSON.stringify(d), "utf-8");
       assert.strictEqual(configManager.importConfig(p, true).imported, true);
+    });
+    it("should deduplicate sources on merge", () => {
+      configManager.initConfig();
+      configManager.addSource({ name: "dup-src", repo: "https://x.com" });
+      const p = path.join(env.tmpDir, "dup.json");
+      const d = configManager.createDefaultConfig();
+      d.sources.custom = [{ name: "dup-src", repo: "https://y.com", enabled: true }, { name: "unique-src", repo: "https://z.com", enabled: true }];
+      fs.writeFileSync(p, JSON.stringify(d), "utf-8");
+      configManager.importConfig(p, true);
+      const config = configManager.loadConfig();
+      const dups = config.sources.custom.filter(s => s.name === "dup-src");
+      assert.strictEqual(dups.length, 1);
+      assert.strictEqual(dups[0].repo, "https://x.com"); // keeps existing, not imported
+      assert.ok(config.sources.custom.some(s => s.name === "unique-src")); // new ones added
     });
     it("should fail for nonexistent file", () => {
       assert.strictEqual(configManager.importConfig("/no/file").imported, false);

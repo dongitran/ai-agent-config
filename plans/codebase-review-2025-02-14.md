@@ -41,6 +41,9 @@
 - **B12** - Unused `PACKAGE_ROOT` - REMOVED
 - **S1** - Command injection in `external-sync.js` (`execSync` → `spawnSync`) - FIXED
 - **S2** - Command injection in `sync-manager.js` (`execSync` → `spawnSync`) - FIXED
+- **S3** - Command injection in `secret-manager.js` `fetchSecretsFromBitwarden` (`execSync` → `spawnSync`) - FIXED
+- **B9** - `migrateConfig` discards repository settings - FIXED (now preserves url, branch, local, lastSync, autoSync)
+- **B10** - `importConfig` merge creates duplicate sources - FIXED (dedup by source name)
 - **Dead code** - `oldSync()` function, `COMMANDS` object - REMOVED
 
 ---
