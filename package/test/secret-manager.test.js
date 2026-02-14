@@ -364,6 +364,11 @@ describe("Secret Manager Module", () => {
       configManager.setConfigValue("repository.url", "https://github.com/test/repo.git");
       configManager.setConfigValue("repository.local", "~/.ai-agent/repo");
 
+      // Create the MCP servers directory that getMcpServersDir() expects
+      const repoPath = path.join(tmpDir, ".ai-agent", "repo");
+      const mcpServersDir = path.join(repoPath, ".agent", "mcp-servers");
+      fs.mkdirSync(mcpServersDir, { recursive: true });
+
       const platforms = require("../scripts/platforms");
       const ag = platforms.getByName("antigravity");
 
