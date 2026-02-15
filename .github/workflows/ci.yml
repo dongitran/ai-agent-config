@@ -29,10 +29,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Verify package structure
+      - name: Install dependencies
         run: |
           cd package
-          echo "Package has no external dependencies - using Node.js built-in modules only"
+          npm install
         shell: bash
 
       - name: Run tests with coverage
