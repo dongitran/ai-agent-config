@@ -21,7 +21,6 @@
         "API-get-users",
         "API-move-page",
         "API-retrieve-a-page-property",
-        "API-get-block-children",
         "API-update-a-block"
     ]
 }
