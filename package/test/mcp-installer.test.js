@@ -216,7 +216,8 @@ describe("MCP Installer Module", () => {
       }), "utf-8");
 
       setupMcpServer("my-mcp", { name: "my-mcp", command: "new", args: [] });
-      const r = mcpInstaller.installMcpServers({ force: false });
+      // Pass platform explicitly to test only antigravity
+      const r = mcpInstaller.installMcpServers({ force: false, platform: ag });
       assert.strictEqual(r.skipped, 1);
     });
 

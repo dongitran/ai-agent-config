@@ -2,7 +2,7 @@
 
 > CLI tool to manage AI coding skills & workflows across platforms (Claude Code, Antigravity, Cursor, Windsurf, Codex CLI)
 
-**Version:** 2.7.3
+**Version:** 2.8.0
 **NPM:** https://www.npmjs.com/package/ai-agent-config
 **Repository:** https://github.com/dongitran/ai-agent-config
 
@@ -29,7 +29,7 @@ ai-agent-config/
 │   ├── test/                   # Tests (node --test)
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
-│   └── package.json            # v2.7.3
+│   └── package.json            # v2.8.0
 ├── .agent/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 5 workflows (brainstorm, create-pr, release-notes, sync-bitwarden-to-github, update-skills)
@@ -77,9 +77,9 @@ ai-agent-config/
 |----------|-------------|-------------|
 | Claude Code | `~/.claude/skills/` | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | Antigravity IDE | `~/.gemini/antigravity/skills/` | `~/.gemini/antigravity/mcp_config.json` |
-| Cursor | `~/.cursor/skills/` | - |
-| Windsurf | `~/.windsurf/skills/` | - |
-| Codex CLI | `~/.codex/skills/` | - |
+| Cursor | `~/.cursor/skills/` | `~/.cursor/mcp.json` |
+| Windsurf | `~/.windsurf/skills/` | `~/.codeium/windsurf/mcp_config.json` |
+| Codex CLI | `~/.codex/skills/` | `~/.codex/config.toml` |
 | GitHub Copilot | `~/.github/copilot-instructions.md` | - |
 
 ---

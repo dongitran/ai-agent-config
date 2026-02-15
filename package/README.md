@@ -61,14 +61,16 @@ ai-agent update
 
 ## Supported Platforms
 
-| Platform | Skills Path | MCP Support |
-|----------|-------------|-------------|
-| Claude Code | `~/.claude/skills/` | `claude_desktop_config.json` |
-| Antigravity IDE | `~/.gemini/antigravity/skills/` | `mcp_config.json` |
-| Cursor | `~/.cursor/skills/` | - |
-| Windsurf | `~/.windsurf/skills/` | - |
-| Codex CLI | `~/.codex/skills/` | - |
-| GitHub Copilot | `~/.github/copilot-instructions.md` | - |
+| Platform | Skills Path | MCP Support | Format |
+|----------|-------------|-------------|--------|
+| Claude Code | `~/.claude/skills/` | ✅ `claude_desktop_config.json` | JSON |
+| Antigravity IDE | `~/.gemini/antigravity/skills/` | ✅ `mcp_config.json` | JSON |
+| **Cursor** | `~/.cursor/skills/` | ✅ **`~/.cursor/mcp.json`** | JSON |
+| **Windsurf** | `~/.windsurf/skills/` | ✅ **`~/.codeium/windsurf/mcp_config.json`** | JSON |
+| **Codex CLI** | `~/.codex/skills/` | ✅ **`~/.codex/config.toml`** | **TOML** |
+| GitHub Copilot | `~/.github/copilot-instructions.md` | ❌ | - |
+
+**New in v2.8.0:** MCP server support for Cursor, Windsurf, and Codex CLI!
 
 ## Secret Management
 

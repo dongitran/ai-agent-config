@@ -79,6 +79,7 @@ const SUPPORTED = [
     configDir: ".cursor",
     skillsDir: "skills",
     rulesDir: "rules",
+    mcpConfigFile: "mcp.json",
     get configPath() {
       return path.join(HOME, this.configDir);
     },
@@ -87,6 +88,9 @@ const SUPPORTED = [
     },
     get rulesPath() {
       return path.join(HOME, this.configDir, this.rulesDir);
+    },
+    get mcpConfigPath() {
+      return path.join(HOME, this.configDir, this.mcpConfigFile);
     },
     detect() {
       return (
@@ -101,11 +105,16 @@ const SUPPORTED = [
     displayName: "Windsurf",
     configDir: ".windsurf",
     skillsDir: "skills",
+    mcpConfigFile: "mcp_config.json",
     get configPath() {
       return path.join(HOME, this.configDir);
     },
     get skillsPath() {
       return path.join(HOME, this.configDir, this.skillsDir);
+    },
+    get mcpConfigPath() {
+      // Windsurf stores config in ~/.codeium/windsurf/
+      return path.join(HOME, ".codeium", "windsurf", this.mcpConfigFile);
     },
     detect() {
       return (
@@ -119,11 +128,16 @@ const SUPPORTED = [
     displayName: "Codex CLI",
     configDir: ".codex",
     skillsDir: "skills",
+    mcpConfigFile: "config.toml",
+    mcpConfigFormat: "toml", // TOML format instead of JSON
     get configPath() {
       return path.join(HOME, this.configDir);
     },
     get skillsPath() {
       return path.join(HOME, this.configDir, this.skillsDir);
+    },
+    get mcpConfigPath() {
+      return path.join(HOME, this.configDir, this.mcpConfigFile);
     },
     detect() {
       return fs.existsSync(this.configPath);

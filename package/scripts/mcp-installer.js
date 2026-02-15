@@ -5,10 +5,17 @@
 
 const fs = require("fs");
 const path = require("path");
+const toml = require("@iarna/toml");
 const platforms = require("./platforms");
 const configManager = require("./config-manager");
 
 const SKIP_FOLDERS = ["bitwarden"];
+
+// Config format constants
+const FORMAT_JSON = "json";
+const FORMAT_TOML = "toml";
+const TOML_MCP_KEY = "mcp_servers";  // Underscore! Not dot
+const JSON_MCP_KEY = "mcpServers";   // CamelCase
 
 /**
  * Get the MCP servers directory from the user's sync repo
@@ -86,6 +93,143 @@ function getAvailableMcpServers() {
 }
 
 /**
+ * Get config format for a platform
+ * @param {string} platformName - Platform name
+ * @returns {string} "json" or "toml"
+ */
+function getConfigFormat(platformName) {
+    const platform = platforms.getByName(platformName);
+    return platform?.mcpConfigFormat || FORMAT_JSON;
+}
+
+/**
+ * Read platform config file (supports JSON and TOML)
+ * @param {string} configPath - Path to config file
+ * @param {string} format - "json" or "toml"
+ * @returns {Object} Parsed config or empty object
+ */
+function readPlatformConfig(configPath, format) {
+    if (!fs.existsSync(configPath)) {
+        return {};
+    }
+
+    try {
+        const content = fs.readFileSync(configPath, "utf-8");
+
+        if (format === FORMAT_TOML) {
+            return toml.parse(content);
+        } else {
+            return JSON.parse(content);
+        }
+    } catch (error) {
+        console.warn(`⚠️  Failed to parse config at ${configPath}: ${error.message}`);
+        return {};
+    }
+}
+
+/**
+ * Write platform config file (supports JSON and TOML)
+ * @param {string} configPath - Path to config file
+ * @param {Object} config - Config object to write
+ * @param {string} format - "json" or "toml"
+ */
+function writePlatformConfig(configPath, config, format) {
+    let content;
+
+    if (format === FORMAT_TOML) {
+        content = toml.stringify(config);
+    } else {
+        content = JSON.stringify(config, null, 2) + "\n";
+    }
+
+    // Create directory if needed
+    const configDir = path.dirname(configPath);
+    if (!fs.existsSync(configDir)) {
+        fs.mkdirSync(configDir, { recursive: true });
+    }
+
+    fs.writeFileSync(configPath, content, "utf-8");
+
+    // Set restrictive permissions (owner read/write only) to protect secrets
+    // Only on Unix-like systems (macOS, Linux) - Windows uses ACL instead
+    if (process.platform !== "win32") {
+        try {
+            fs.chmodSync(configPath, 0o600);
+        } catch (e) {
+            console.warn(`⚠️  Warning: Could not set file permissions on ${configPath}: ${e.message}`);
+        }
+    }
+}
+
+/**
+ * Build server config object with platform-specific fields
+ * @param {Object} server - Server config from repo
+ * @param {string} platformName - Platform name
+ * @param {Object} existing - Existing server config (for preservation)
+ * @returns {Object} Platform-specific server config
+ */
+function buildServerConfig(server, platformName, existing = {}) {
+    const config = {
+        command: server.command,
+        args: server.args,
+    };
+
+    // Preserve existing env vars
+    if (existing.env) {
+        config.env = existing.env;
+    }
+
+    // Platform-specific field handling
+    switch (platformName) {
+        case "antigravity":
+            // Antigravity supports disabledTools
+            // Preserve existing disabledTools, or use server's if present
+            if (existing.disabledTools) {
+                config.disabledTools = existing.disabledTools;
+            } else if (server.disabledTools && server.disabledTools.length > 0) {
+                config.disabledTools = server.disabledTools;
+            }
+            break;
+
+        case "windsurf":
+            // Windsurf uses "disabled" boolean field
+            // Preserve user's manual setting, otherwise use repo default
+            if (existing.disabled !== undefined) {
+                config.disabled = existing.disabled;
+            } else if (server.enabled !== undefined) {
+                config.disabled = !server.enabled;
+            }
+            break;
+
+        case "codex":
+            // Codex supports enabled, enabled_tools, disabled_tools
+            // Preserve user's manual settings, otherwise use repo defaults
+            if (existing.enabled !== undefined) {
+                config.enabled = existing.enabled;
+            } else if (server.enabled !== undefined) {
+                config.enabled = server.enabled;
+            }
+
+            if (existing.disabled_tools) {
+                config.disabled_tools = existing.disabled_tools;
+            } else if (server.disabledTools && server.disabledTools.length > 0) {
+                config.disabled_tools = server.disabledTools; // Note: snake_case
+            }
+            break;
+
+        case "claude":
+            // Claude doesn't support disabledTools - skip
+            break;
+
+        case "cursor":
+            // Cursor doesn't support disabledTools - skip
+            break;
+    }
+
+    return config;
+}
+
+/**
  * Collect all bitwardenEnv entries from MCP server configs
  * @returns {Array<{ serverName: string, envVar: string, bitwardenItem: string }>}
  */
@@ -119,63 +263,39 @@ function collectBitwardenEnvs() {
 function writeMcpToPlatformConfig(configPath, servers, options = {}) {
     const { force = false, platformName = "" } = options;
 
-    // Read existing config — preserve ALL existing keys (e.g. Claude's "preferences")
-    let config = { mcpServers: {} };
-    if (fs.existsSync(configPath)) {
-        try {
-            config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-            if (!config.mcpServers) config.mcpServers = {};
-        } catch {
-            config = { mcpServers: {} };
-        }
+    // Determine config format
+    const format = getConfigFormat(platformName);
+
+    // Read existing config — preserve ALL existing keys
+    let config = readPlatformConfig(configPath, format);
+
+    // Initialize MCP servers section if not exists
+    const mcpKey = format === FORMAT_TOML ? TOML_MCP_KEY : JSON_MCP_KEY;
+    if (!config[mcpKey]) {
+        config[mcpKey] = {};
     }
 
     let added = 0;
     let skipped = 0;
 
     for (const server of servers) {
-        const existing = config.mcpServers[server.name];
+        const existing = config[mcpKey][server.name];
 
         if (existing && !force) {
             skipped++;
             continue;
         }
 
-        const entry = {
-            command: server.command,
-            args: server.args,
-        };
+        // Build platform-specific config
+        const entry = buildServerConfig(server, platformName, existing);
 
-        // Preserve existing env
-        if (existing && existing.env) {
-            entry.env = existing.env;
-        }
-
-        // disabledTools: only add for platforms that support it (not Claude)
-        if (platformName !== "claude" && server.disabledTools && server.disabledTools.length > 0) {
-            entry.disabledTools = server.disabledTools;
-        }
-
-        config.mcpServers[server.name] = entry;
+        config[mcpKey][server.name] = entry;
         added++;
     }
 
-    // Write back (create directory if needed)
+    // Write back only if changes were made
     if (added > 0) {
-        const configDir = path.dirname(configPath);
-        if (!fs.existsSync(configDir)) {
-            fs.mkdirSync(configDir, { recursive: true });
-        }
-        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
-        // Set restrictive permissions (owner read/write only) to protect secrets
-        // Only on Unix-like systems (macOS, Linux) - Windows uses ACL instead
-        if (process.platform !== "win32") {
-            try {
-                fs.chmodSync(configPath, 0o600);
-            } catch (e) {
-                console.warn(`⚠️  Warning: Could not set file permissions on ${configPath}: ${e.message}`);
-            }
-        }
+        writePlatformConfig(configPath, config, format);
     }
 
     return { added, skipped };
@@ -233,31 +353,30 @@ function installMcpServers(options = {}) {
  * @param {string} configPath - Path to platform's MCP config file
  * @param {Array} servers - MCP server configs
  * @param {Object} resolvedSecrets - Map of bitwardenItem → resolvedValue
- * @param {string} platformName - Platform name for disabledTools handling
+ * @param {string} platformName - Platform name for format and field handling
  * @returns {{ installed: number, servers: Array<{ name: string, secretsCount: number }> }}
  */
 function writeMcpWithSecretsToPlatformConfig(configPath, servers, resolvedSecrets, platformName) {
+    // Determine config format
+    const format = getConfigFormat(platformName);
+
     // Read existing config — preserve ALL existing keys
-    let config = { mcpServers: {} };
-    if (fs.existsSync(configPath)) {
-        try {
-            config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
-            if (!config.mcpServers) config.mcpServers = {};
-        } catch {
-            config = { mcpServers: {} };
-        }
+    let config = readPlatformConfig(configPath, format);
+
+    // Initialize MCP servers section if not exists
+    const mcpKey = format === FORMAT_TOML ? TOML_MCP_KEY : JSON_MCP_KEY;
+    if (!config[mcpKey]) {
+        config[mcpKey] = {};
     }
 
     let installed = 0;
     const serverResults = [];
 
     for (const server of servers) {
-        const existing = config.mcpServers[server.name] || {};
+        const existing = config[mcpKey][server.name] || {};
 
-        const entry = {
-            command: server.command,
-            args: server.args,
-        };
+        // Build platform-specific config
+        const entry = buildServerConfig(server, platformName, existing);
 
         // Build env from resolved secrets
         if (server.bitwardenEnv) {
@@ -280,35 +399,13 @@ function writeMcpWithSecretsToPlatformConfig(configPath, servers, resolvedSecret
             serverResults.push({ name: server.name, secretsCount: 0 });
         }
 
-        // disabledTools: only for platforms that support it (not Claude)
-        if (platformName !== "claude") {
-            if (existing.disabledTools) {
-                entry.disabledTools = existing.disabledTools;
-            } else if (server.disabledTools && server.disabledTools.length > 0) {
-                entry.disabledTools = server.disabledTools;
-            }
-        }
-
-        config.mcpServers[server.name] = entry;
+        config[mcpKey][server.name] = entry;
         installed++;
     }
 
     // Write back
     if (installed > 0) {
-        const configDir = path.dirname(configPath);
-        if (!fs.existsSync(configDir)) {
-            fs.mkdirSync(configDir, { recursive: true });
-        }
-        fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
-        // Set restrictive permissions (owner read/write only) to protect secrets
-        // Only on Unix-like systems (macOS, Linux) - Windows uses ACL instead
-        if (process.platform !== "win32") {
-            try {
-                fs.chmodSync(configPath, 0o600);
-            } catch (e) {
-                console.warn(`⚠️  Warning: Could not set file permissions on ${configPath}: ${e.message}`);
-            }
-        }
+        writePlatformConfig(configPath, config, format);
     }
 
     return { installed, servers: serverResults };
@@ -362,5 +459,10 @@ module.exports = {
     installMcpServers,
     installMcpServersWithSecrets,
     writeMcpToPlatformConfig,
+    // New helper functions (for testing)
+    getConfigFormat,
+    readPlatformConfig,
+    writePlatformConfig,
+    buildServerConfig,
     SKIP_FOLDERS,
 };
