@@ -1,6 +1,6 @@
 /**
  * Config Manager Module
- * Manages user configuration for ai-agent-config v2.3
+ * Manages user configuration for ai-agent-config
  */
 
 const fs = require("fs");
@@ -10,6 +10,7 @@ const os = require("os");
 const CONFIG_DIR = path.join(os.homedir(), ".ai-agent");
 const CONFIG_FILE = path.join(CONFIG_DIR, "config.json");
 const OFFICIAL_SOURCES = path.join(__dirname, "../config/official-sources.json");
+const CONFIG_VERSION = require("../package.json").version;
 
 /**
  * Get user config path
@@ -49,7 +50,7 @@ function loadOfficialSources() {
  */
 function createDefaultConfig() {
   const config = {
-    version: "2.3",
+    version: CONFIG_VERSION,
     repository: {
       url: null,
       branch: "main",
@@ -96,11 +97,11 @@ function initConfig(force = false) {
 }
 
 /**
- * Migrate config from older versions to v2.3
+ * Migrate config from older versions to current version
  */
 function migrateConfig(oldConfig) {
   const newConfig = {
-    version: "2.3",
+    version: CONFIG_VERSION,
     repository: {
       url: oldConfig.repository?.url || null,
       branch: oldConfig.repository?.branch || "main",
@@ -137,9 +138,9 @@ function loadConfig() {
   const data = fs.readFileSync(CONFIG_FILE, "utf-8");
   let config = JSON.parse(data);
 
-  // Auto-migrate from v2.0/v2.2 to v2.3
-  if (config.version !== "2.3") {
-    console.log(`🔄 Migrating config from v${config.version} to v2.3...`);
+  // Auto-migrate from older versions
+  if (config.version !== CONFIG_VERSION) {
+    console.log(`🔄 Migrating config from v${config.version} to v${CONFIG_VERSION}...`);
     config = migrateConfig(config);
     saveConfig(config);
     console.log("✅ Config migrated successfully!");
@@ -188,10 +189,10 @@ function validateConfig(config) {
     }
   }
 
-  // V2.3 validation
-  if (config.version === "2.3") {
+  // Current version validation
+  if (config.version === CONFIG_VERSION) {
     if (!config.repository) {
-      errors.push("Missing repository field in v2.3 config");
+      errors.push(`Missing repository field in v${CONFIG_VERSION} config`);
     } else {
       if (config.repository.url && typeof config.repository.url !== "string") {
         errors.push("repository.url must be a string");

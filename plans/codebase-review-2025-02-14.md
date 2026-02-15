@@ -1,7 +1,7 @@
 # Codebase Review & Improvement Plan
 
 > **Date:** 2025-02-14
-> **Version reviewed:** 2.6.3
+> **Version reviewed:** 2.7.2
 > **Scope:** Full codebase (9 modules, 5 test files, CLI entry point, workflows, configs)
 
 ---
@@ -42,9 +42,14 @@
 - **S1** - Command injection in `external-sync.js` (`execSync` → `spawnSync`) - FIXED
 - **S2** - Command injection in `sync-manager.js` (`execSync` → `spawnSync`) - FIXED
 - **S3** - Command injection in `secret-manager.js` `fetchSecretsFromBitwarden` (`execSync` → `spawnSync`) - FIXED
+- **S4** - Password visible in process list (use `--passwordenv` instead of positional arg) - FIXED (v2.7.1)
+- **S5** - Secrets stored in plain text (add `chmod 0o600` on MCP config files) - FIXED (v2.7.1)
+- **A7** - Duplicate `disabledTools` array in `postinstall.js` (extracted to constant) - FIXED (v2.7.1)
 - **B9** - `migrateConfig` discards repository settings - FIXED (now preserves url, branch, local, lastSync, autoSync)
 - **B10** - `importConfig` merge creates duplicate sources - FIXED (dedup by source name)
 - **Dead code** - `oldSync()` function, `COMMANDS` object - REMOVED
+- **S6** - Auto-modify config on npm install - FIXED (added AI_AGENT_NO_AUTOCONFIG opt-out, v2.7.2)
+- **A5** - Hardcoded version "2.3" in multiple places - FIXED (use package.json version directly, synchronized versioning, v2.7.2)
 
 ---
 

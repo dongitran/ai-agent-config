@@ -59,6 +59,12 @@ function main() {
   console.log("📦 Repository: https://github.com/dongitran/ai-agent-config\n");
 
   // Auto-install Bitwarden MCP server to Antigravity
+  // Skip if AI_AGENT_NO_AUTOCONFIG is set (opt-out for security/trust)
+  if (process.env.AI_AGENT_NO_AUTOCONFIG === "1" || process.env.AI_AGENT_NO_AUTOCONFIG === "true") {
+    console.log("⏭️  Skipping auto-config (AI_AGENT_NO_AUTOCONFIG is set)\n");
+    return;
+  }
+
   const fs = require("fs");
   const path = require("path");
   const os = require("os");

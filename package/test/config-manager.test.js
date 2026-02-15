@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const { setupTestHome, freshRequire } = require("./helpers");
 
+const EXPECTED_VERSION = require("../package.json").version;
+
 describe("config-manager module", () => {
   let env, configManager;
 
@@ -69,7 +71,7 @@ describe("config-manager module", () => {
   describe("createDefaultConfig", () => {
     it("should return config with all required fields", () => {
       const config = configManager.createDefaultConfig();
-      assert.strictEqual(config.version, "2.3");
+      assert.strictEqual(config.version, EXPECTED_VERSION);
       assert.ok(config.repository);
       assert.strictEqual(config.repository.branch, "main");
       assert.strictEqual(config.repository.autoSync, true);
@@ -105,12 +107,12 @@ describe("config-manager module", () => {
     it("should migrate preserving sources", () => {
       const old = { version: "2.0", sources: { official: [], custom: [{ name: "x" }] } };
       const r = configManager.migrateConfig(old);
-      assert.strictEqual(r.version, "2.3");
+      assert.strictEqual(r.version, EXPECTED_VERSION);
       assert.deepStrictEqual(r.sources.custom, [{ name: "x" }]);
     });
     it("should use defaults for missing fields", () => {
       const r = configManager.migrateConfig({ version: "2.0" });
-      assert.strictEqual(r.version, "2.3");
+      assert.strictEqual(r.version, EXPECTED_VERSION);
       assert.ok(r.sources);
       assert.ok(r.preferences);
     });
@@ -144,12 +146,12 @@ describe("config-manager module", () => {
   describe("loadConfig", () => {
     it("should auto-init if no config", () => {
       const config = configManager.loadConfig();
-      assert.strictEqual(config.version, "2.3");
+      assert.strictEqual(config.version, EXPECTED_VERSION);
       assert.ok(fs.existsSync(configManager.getConfigPath()));
     });
     it("should read existing config", () => {
       configManager.initConfig();
-      assert.strictEqual(configManager.loadConfig().version, "2.3");
+      assert.strictEqual(configManager.loadConfig().version, EXPECTED_VERSION);
     });
     it("should auto-migrate old version", () => {
       fs.mkdirSync(configManager.getConfigDir(), { recursive: true });
@@ -157,7 +159,7 @@ describe("config-manager module", () => {
         version: "2.0", sources: { official: [], custom: [] },
         preferences: { autoUpdate: true, updateInterval: "weekly" },
       }), "utf-8");
-      assert.strictEqual(configManager.loadConfig().version, "2.3");
+      assert.strictEqual(configManager.loadConfig().version, EXPECTED_VERSION);
     });
   });
 
@@ -187,33 +189,33 @@ describe("config-manager module", () => {
       assert.ok(!configManager.validateConfig({}).valid);
     });
     it("should detect missing sources", () => {
-      assert.ok(!configManager.validateConfig({ version: "2.3" }).valid);
+      assert.ok(!configManager.validateConfig({ version: EXPECTED_VERSION }).valid);
     });
     it("should detect invalid sources.official", () => {
-      assert.ok(!configManager.validateConfig({ version: "2.3", sources: { official: "x", custom: [] } }).valid);
+      assert.ok(!configManager.validateConfig({ version: EXPECTED_VERSION, sources: { official: "x", custom: [] } }).valid);
     });
     it("should detect invalid sources.custom", () => {
-      assert.ok(!configManager.validateConfig({ version: "2.3", sources: { official: [], custom: "x" } }).valid);
+      assert.ok(!configManager.validateConfig({ version: EXPECTED_VERSION, sources: { official: [], custom: "x" } }).valid);
     });
-    it("should require repository for v2.3", () => {
-      const r = configManager.validateConfig({ version: "2.3", sources: { official: [], custom: [] } });
+    it("should require repository", () => {
+      const r = configManager.validateConfig({ version: EXPECTED_VERSION, sources: { official: [], custom: [] } });
       assert.ok(!r.valid);
     });
     it("should detect invalid repository.url type", () => {
       assert.ok(!configManager.validateConfig({
-        version: "2.3", sources: { official: [], custom: [] },
+        version: EXPECTED_VERSION, sources: { official: [], custom: [] },
         repository: { url: 123, branch: "main", autoSync: true },
       }).valid);
     });
     it("should detect invalid repository.branch type", () => {
       assert.ok(!configManager.validateConfig({
-        version: "2.3", sources: { official: [], custom: [] },
+        version: EXPECTED_VERSION, sources: { official: [], custom: [] },
         repository: { url: null, branch: 123 },
       }).valid);
     });
     it("should detect invalid repository.autoSync type", () => {
       assert.ok(!configManager.validateConfig({
-        version: "2.3", sources: { official: [], custom: [] },
+        version: EXPECTED_VERSION, sources: { official: [], custom: [] },
         repository: { url: null, branch: "main", autoSync: "yes" },
       }).valid);
     });
@@ -379,7 +381,7 @@ describe("config-manager module", () => {
     });
     it("should get top-level value", () => {
       configManager.initConfig();
-      assert.strictEqual(configManager.getConfigValue("version").value, "2.3");
+      assert.strictEqual(configManager.getConfigValue("version").value, EXPECTED_VERSION);
     });
     it("should return not found", () => {
       configManager.initConfig();
