@@ -67,14 +67,13 @@ function main() {
 
   const fs = require("fs");
   const path = require("path");
-  const os = require("os");
 
-  const antigravityMcpPath = path.join(
-    os.homedir(),
-    ".gemini",
-    "antigravity",
-    "mcp_config.json"
-  );
+  // Use platforms.js to get Antigravity MCP config path (avoid hardcoding)
+  const antigravityPlatform = platforms.getByName("antigravity");
+  if (!antigravityPlatform) {
+    return; // Antigravity platform not available
+  }
+  const antigravityMcpPath = antigravityPlatform.mcpConfigPath;
 
   if (fs.existsSync(path.dirname(antigravityMcpPath))) {
     try {

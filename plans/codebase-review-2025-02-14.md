@@ -50,6 +50,9 @@
 - **Dead code** - `oldSync()` function, `COMMANDS` object - REMOVED
 - **S6** - Auto-modify config on npm install - FIXED (added AI_AGENT_NO_AUTOCONFIG opt-out, v2.7.2)
 - **A5** - Hardcoded version "2.3" in multiple places - FIXED (use package.json version directly, synchronized versioning, v2.7.2)
+- **A8** - Hardcoded Antigravity paths in postinstall.js - FIXED (now uses platforms.getByName("antigravity").mcpConfigPath)
+- **B11** - Copilot false positive detection - FIXED (checks for copilot-instructions.md file instead of .github dir)
+- **A9** - Dead code `addAttribution()` function - REMOVED (function and commented-out call removed from external-sync.js)
 
 ---
 

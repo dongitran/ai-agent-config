@@ -151,10 +151,20 @@ describe("Platforms Module", () => {
       const cp = platforms.getByName("copilot");
       assert.ok(cp.instructionsPath.includes("copilot-instructions.md"));
     });
-    it("should detect based on .github dir", () => {
+    it("should detect based on copilot-instructions.md file", () => {
       const cp = platforms.getByName("copilot");
       fs.mkdirSync(cp.configPath, { recursive: true });
+      fs.writeFileSync(cp.instructionsPath, "# Copilot Instructions");
       assert.strictEqual(cp.detect(), true);
+    });
+    it("should NOT detect when only .github dir exists (no false positive)", () => {
+      const cp = platforms.getByName("copilot");
+      // Clean up any existing instructions file from previous tests
+      if (fs.existsSync(cp.instructionsPath)) {
+        fs.unlinkSync(cp.instructionsPath);
+      }
+      fs.mkdirSync(cp.configPath, { recursive: true });
+      assert.strictEqual(cp.detect(), false);
     });
   });
 

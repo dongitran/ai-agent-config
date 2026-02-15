@@ -141,8 +141,9 @@ const SUPPORTED = [
       return path.join(HOME, this.configDir, this.instructionsFile);
     },
     detect() {
-      // Copilot is usually detected via VS Code extensions
-      return fs.existsSync(this.configPath);
+      // Check for actual Copilot instructions file, not just ~/.github directory
+      // (which is created by gh CLI for auth tokens, causing false positives)
+      return fs.existsSync(this.instructionsPath);
     },
   },
 ];

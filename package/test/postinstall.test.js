@@ -48,7 +48,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -72,7 +82,15 @@ describe("Postinstall Module", () => {
                         detectAll: () => [
                             { displayName: "Claude Code" },
                             { displayName: "Antigravity" }
-                        ]
+                        ],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
                     };
                 }
                 return originalRequire.apply(this, arguments);
@@ -96,7 +114,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -134,7 +162,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -174,7 +212,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -214,7 +262,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -240,7 +298,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };
@@ -260,7 +328,17 @@ describe("Postinstall Module", () => {
             const originalRequire = Module.prototype.require;
             Module.prototype.require = function (id) {
                 if (id === "./platforms") {
-                    return { detectAll: () => [] };
+                    return {
+                        detectAll: () => [],
+                        getByName: (name) => {
+                            if (name === "antigravity") {
+                                return {
+                                    mcpConfigPath: path.join(tmpHome, ".gemini", "antigravity", "mcp_config.json")
+                                };
+                            }
+                            return null;
+                        }
+                    };
                 }
                 return originalRequire.apply(this, arguments);
             };

@@ -120,30 +120,6 @@ function copyDirRecursive(src, dest, excludePaths = []) {
 }
 
 /**
- * Add attribution to SKILL.md file
- */
-function addAttribution(skillPath, attribution) {
-  const skillFile = path.join(skillPath, "SKILL.md");
-
-  if (!fs.existsSync(skillFile)) {
-    return;
-  }
-
-  let content = fs.readFileSync(skillFile, "utf-8");
-
-  // Check if attribution already exists
-  if (content.includes(attribution)) {
-    return;
-  }
-
-  // Add attribution at the top
-  const attributionBlock = `---\nsource: external\nattribution: ${attribution}\n---\n\n`;
-  content = attributionBlock + content;
-
-  fs.writeFileSync(skillFile, content, "utf-8");
-}
-
-/**
  * Sync all external skills
  */
 function syncAll(options = {}) {
@@ -203,8 +179,6 @@ function syncAll(options = {}) {
       const result = copySkill(sourcePath, targetPath, true, excludePaths);
 
       if (result.copied) {
-        // Skip attribution to save tokens - attribution is already in external-skills.json
-        // addAttribution(targetPath, src.attribution);
         console.log(`   ✓ ${skillDef.name}`);
         results.copied++;
       } else {
