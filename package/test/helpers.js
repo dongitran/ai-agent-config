@@ -106,6 +106,98 @@ function requireWithMockedChildProcess(modulePath, extraClear = []) {
   };
 }
 
+/**
+ * Execute CLI command and return { stdout, stderr, exitCode }
+ * Use for E2E testing
+ */
+function runCLI(args, options = {}) {
+  const { spawnSync } = require("child_process");
+  const cliPath = path.join(__dirname, "..", "bin", "cli.js");
+
+  const result = spawnSync("node", [cliPath, ...args], {
+    env: { ...process.env, ...options.env },
+    cwd: options.cwd || process.cwd(),
+    encoding: "utf-8",
+    timeout: options.timeout || 30000,
+  });
+
+  return {
+    stdout: result.stdout || "",
+    stderr: result.stderr || "",
+    exitCode: result.status,
+    error: result.error,
+  };
+}
+
+/**
+ * Create a mock git repository for testing
+ * Returns the repo path
+ */
+function createMockGitRepo(options = {}) {
+  const { execSync } = require("child_process");
+  const repoDir = createTempDir();
+
+  // Initialize git repo
+  execSync("git init", { cwd: repoDir, stdio: "ignore" });
+  execSync('git config user.email "test@example.com"', { cwd: repoDir, stdio: "ignore" });
+  execSync('git config user.name "Test User"', { cwd: repoDir, stdio: "ignore" });
+
+  // Create initial structure
+  const skillsDir = path.join(repoDir, "skills");
+  const workflowsDir = path.join(repoDir, "workflows");
+  fs.mkdirSync(skillsDir, { recursive: true });
+  fs.mkdirSync(workflowsDir, { recursive: true });
+
+  // Add sample skill if requested
+  if (options.withSampleSkill) {
+    const sampleSkillDir = path.join(skillsDir, "sample-skill");
+    fs.mkdirSync(sampleSkillDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(sampleSkillDir, "SKILL.md"),
+      "# Sample Skill\n\ndescription: A sample skill for testing\n"
+    );
+  }
+
+  // Add sample workflow if requested
+  if (options.withSampleWorkflow) {
+    fs.writeFileSync(
+      path.join(workflowsDir, "sample.yml"),
+      "name: sample\non: push\n"
+    );
+  }
+
+  // Initial commit
+  execSync("git add .", { cwd: repoDir, stdio: "ignore" });
+  execSync('git commit -m "Initial commit" --allow-empty', { cwd: repoDir, stdio: "ignore" });
+
+  return repoDir;
+}
+
+/**
+ * Setup isolated E2E test environment
+ * Returns { home, cleanup, runCLI }
+ */
+function setupE2ETestEnv() {
+  const testHome = createTempDir();
+  const originalHome = process.env.HOME;
+
+  const customRunCLI = (args, options = {}) => {
+    return runCLI(args, {
+      ...options,
+      env: { ...options.env, HOME: testHome },
+    });
+  };
+
+  return {
+    home: testHome,
+    runCLI: customRunCLI,
+    cleanup: () => {
+      process.env.HOME = originalHome;
+      cleanTempDir(testHome);
+    },
+  };
+}
+
 module.exports = {
   createTempDir,
   cleanTempDir,
@@ -113,4 +205,7 @@ module.exports = {
   clearModuleCache,
   freshRequire,
   requireWithMockedChildProcess,
+  runCLI,
+  createMockGitRepo,
+  setupE2ETestEnv,
 };
