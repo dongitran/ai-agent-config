@@ -124,13 +124,14 @@ async function promptPassword() {
 /**
  * Unlock Bitwarden vault with password
  * Returns session key or null if failed
- * Uses spawnSync to avoid shell injection
+ * Uses --passwordenv to pass password securely (not visible in process list)
  */
 function unlockBitwarden(password) {
     try {
-        // Use positional password argument for compatibility with older Bitwarden CLI versions
-        // Since we use spawnSync without shell: true, the password doesn't leak into shell history
-        const result = spawnSync("bw", ["unlock", password, "--raw"], {
+        // Use --passwordenv to avoid leaking password in /proc/<pid>/cmdline
+        // Set password in env only for this child process
+        const result = spawnSync("bw", ["unlock", "--passwordenv", "BW_UNLOCK_PASSWORD", "--raw"], {
+            env: { ...process.env, BW_UNLOCK_PASSWORD: password },
             encoding: "utf-8",
         });
 

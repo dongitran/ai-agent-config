@@ -167,6 +167,15 @@ function writeMcpToPlatformConfig(configPath, servers, options = {}) {
             fs.mkdirSync(configDir, { recursive: true });
         }
         fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+        // Set restrictive permissions (owner read/write only) to protect secrets
+        // Only on Unix-like systems (macOS, Linux) - Windows uses ACL instead
+        if (process.platform !== "win32") {
+            try {
+                fs.chmodSync(configPath, 0o600);
+            } catch (e) {
+                console.warn(`⚠️  Warning: Could not set file permissions on ${configPath}: ${e.message}`);
+            }
+        }
     }
 
     return { added, skipped };
@@ -291,6 +300,15 @@ function writeMcpWithSecretsToPlatformConfig(configPath, servers, resolvedSecret
             fs.mkdirSync(configDir, { recursive: true });
         }
         fs.writeFileSync(configPath, JSON.stringify(config, null, 2) + "\n", "utf-8");
+        // Set restrictive permissions (owner read/write only) to protect secrets
+        // Only on Unix-like systems (macOS, Linux) - Windows uses ACL instead
+        if (process.platform !== "win32") {
+            try {
+                fs.chmodSync(configPath, 0o600);
+            } catch (e) {
+                console.warn(`⚠️  Warning: Could not set file permissions on ${configPath}: ${e.message}`);
+            }
+        }
     }
 
     return { installed, servers: serverResults };

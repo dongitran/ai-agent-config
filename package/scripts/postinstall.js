@@ -7,6 +7,26 @@
 
 const platforms = require("./platforms");
 
+// Bitwarden MCP: Tools to disable (org management, device approval, sends, etc.)
+const BITWARDEN_DISABLED_TOOLS = [
+  "lock", "sync", "status", "confirm",
+  "create_org_collection", "edit_org_collection", "edit_item_collections", "move",
+  "device_approval_list", "device_approval_approve", "device_approval_approve_all",
+  "device_approval_deny", "device_approval_deny_all",
+  "create_text_send", "create_file_send", "list_send", "get_send",
+  "edit_send", "delete_send", "remove_send_password",
+  "create_attachment",
+  "list_org_collections", "get_org_collection", "update_org_collection", "delete_org_collection",
+  "list_org_members", "get_org_member", "get_org_member_groups",
+  "invite_org_member", "update_org_member", "update_org_member_groups",
+  "remove_org_member", "reinvite_org_member",
+  "list_org_groups", "get_org_group", "get_org_group_members",
+  "create_org_group", "update_org_group", "delete_org_group", "update_org_group_members",
+  "list_org_policies", "get_org_policy", "update_org_policy",
+  "get_org_events", "get_org_subscription", "update_org_subscription",
+  "import_org_users_and_groups"
+];
+
 function main() {
   console.log("\n╔═══════════════════════════════════════════════════════════════╗");
   console.log("║               AI Agent Config Installed!                      ║");
@@ -73,24 +93,7 @@ function main() {
             BW_CLIENT_ID: "${BW_CLIENT_ID}",
             BW_CLIENT_SECRET: "${BW_CLIENT_SECRET}",
           },
-          disabledTools: [
-            "lock", "sync", "status", "confirm",
-            "create_org_collection", "edit_org_collection", "edit_item_collections", "move",
-            "device_approval_list", "device_approval_approve", "device_approval_approve_all",
-            "device_approval_deny", "device_approval_deny_all",
-            "create_text_send", "create_file_send", "list_send", "get_send",
-            "edit_send", "delete_send", "remove_send_password",
-            "create_attachment",
-            "list_org_collections", "get_org_collection", "update_org_collection", "delete_org_collection",
-            "list_org_members", "get_org_member", "get_org_member_groups",
-            "invite_org_member", "update_org_member", "update_org_member_groups",
-            "remove_org_member", "reinvite_org_member",
-            "list_org_groups", "get_org_group", "get_org_group_members",
-            "create_org_group", "update_org_group", "delete_org_group", "update_org_group_members",
-            "list_org_policies", "get_org_policy", "update_org_policy",
-            "get_org_events", "get_org_subscription", "update_org_subscription",
-            "import_org_users_and_groups"
-          ],
+          disabledTools: BITWARDEN_DISABLED_TOOLS,
         };
         changed = true;
         console.log("🔐 Bitwarden MCP server added to Antigravity (✓ enabled)");
@@ -110,24 +113,7 @@ function main() {
 
         // Phase 4: Add disabledTools if not present (don't override if user customized)
         if (!bw.disabledTools) {
-          bw.disabledTools = [
-            "lock", "sync", "status", "confirm",
-            "create_org_collection", "edit_org_collection", "edit_item_collections", "move",
-            "device_approval_list", "device_approval_approve", "device_approval_approve_all",
-            "device_approval_deny", "device_approval_deny_all",
-            "create_text_send", "create_file_send", "list_send", "get_send",
-            "edit_send", "delete_send", "remove_send_password",
-            "create_attachment",
-            "list_org_collections", "get_org_collection", "update_org_collection", "delete_org_collection",
-            "list_org_members", "get_org_member", "get_org_member_groups",
-            "invite_org_member", "update_org_member", "update_org_member_groups",
-            "remove_org_member", "reinvite_org_member",
-            "list_org_groups", "get_org_group", "get_org_group_members",
-            "create_org_group", "update_org_group", "delete_org_group", "update_org_group_members",
-            "list_org_policies", "get_org_policy", "update_org_policy",
-            "get_org_events", "get_org_subscription", "update_org_subscription",
-            "import_org_users_and_groups"
-          ];
+          bw.disabledTools = BITWARDEN_DISABLED_TOOLS;
           changed = true;
           console.log("🎛️  Bitwarden MCP: Added tool filters (disabled org-management tools)");
         }
