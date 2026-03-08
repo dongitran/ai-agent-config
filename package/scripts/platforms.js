@@ -50,7 +50,7 @@ const SUPPORTED = [
     displayName: "Antigravity IDE",
     configDir: ".gemini/antigravity",
     skillsDir: "skills",
-    workflowsDir: "workflows",
+    workflowsDir: "global_workflows",
     mcpConfigFile: "mcp_config.json",
     get configPath() {
       return path.join(HOME, this.configDir);
