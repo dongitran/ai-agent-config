@@ -80,8 +80,8 @@ describe("Platforms Module", () => {
   describe("Antigravity platform", () => {
     it("should have workflowsDir and workflowsPath", () => {
       const ag = platforms.getByName("antigravity");
-      assert.strictEqual(ag.workflowsDir, "workflows");
-      assert.ok(ag.workflowsPath.includes("workflows"));
+      assert.strictEqual(ag.workflowsDir, "global_workflows");
+      assert.ok(ag.workflowsPath.includes("global_workflows"));
     });
     it("should have mcpConfigPath", () => {
       const ag = platforms.getByName("antigravity");
