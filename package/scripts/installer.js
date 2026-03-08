@@ -251,8 +251,8 @@ function installToPlatform(platform, options = {}) {
 function install(options = {}) {
   const { force = false, skill = null, sync = true } = options;
 
-  // Sync repo first if needed (always sync when force=true to get latest)
-  if (sync && (!isRepoCached() || force)) {
+  // Always sync repo to get latest
+  if (sync) {
     console.log("\n📦 Syncing skills from repository...");
     if (!syncRepo()) {
       throw new Error("Failed to sync repository. Check your internet connection.");
