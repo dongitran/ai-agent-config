@@ -57,10 +57,9 @@ ai-agent-config/
 
 | Command | Description |
 |---------|-------------|
-| `init --repo <url>` | Initialize config and clone repo |
-| `push` / `pull` | Git push/pull with sync-repo |
-| `update` | Pull -> sync external skills -> push |
-| `install` | Copy skills to platform directories |
+| `init --repo <url>` | Initialize config, clone repo, and install |
+| `push` / `pull` | Git push/pull with sync-repo (`pull` auto-installs) |
+| `update` | Pull -> sync external skills -> push -> auto-install |
 | `list` | List installed skills |
 | `platforms` | Show detected platforms |
 | `uninstall` | Remove installed skills |
@@ -152,7 +151,6 @@ ai-agent --version
 ```bash
 ai-agent init
 ai-agent update
-ai-agent install
 ai-agent list
 ai-agent platforms
 ```
@@ -206,4 +204,5 @@ The `update` command flow:
 2. Clone/update external source repos to cache
 3. Copy skills from cache to sync-repo
 4. Commit and push sync-repo
+5. Auto-install skills to IDE platforms
  

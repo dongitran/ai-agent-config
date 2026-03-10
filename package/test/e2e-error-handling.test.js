@@ -108,7 +108,10 @@ test("E2E Error: update without initialized config should error", () => {
     // Should either fail or create default config
     // Check for reasonable behavior (not crash)
     assert.ok(
-      result.exitCode === 0 || result.stdout.includes("not initialized") || result.stdout.includes("No repository"),
+      result.exitCode === 0 ||
+      result.stdout.includes("Config not found") ||
+      result.stdout.includes("No repository") ||
+      result.stderr.includes("No repository"),
       "Should handle uninitialized state"
     );
   } finally {

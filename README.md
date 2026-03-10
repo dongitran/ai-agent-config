@@ -32,9 +32,8 @@ ai-agent source add https://github.com/vercel-labs/agent-skills.git \
 ai-agent source add https://github.com/affaan-m/everything-claude-code.git \
   --name everything-claude-code --path skills
 
-# Sync and install
+# Sync and auto-install to IDEs
 ai-agent update
-ai-agent install
 ```
 
 ## CLI Commands
@@ -66,8 +65,7 @@ ai-agent config reset --yes             # Reset to defaults
 
 ### Installation
 ```bash
-ai-agent update                         # Update from all sources (pull -> sync -> push)
-ai-agent install                        # Install skills to platforms
+ai-agent update                         # Update from all sources (pull -> sync -> push -> install)
 ai-agent list                           # List installed skills
 ai-agent platforms                      # Show detected platforms
 ai-agent uninstall                      # Remove installed skills

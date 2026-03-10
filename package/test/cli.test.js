@@ -16,7 +16,7 @@ describe("CLI Module", () => {
     });
     it("should define all main commands", () => {
       const content = fs.readFileSync(cliPath, "utf-8");
-      ["init", "pull", "push", "update", "install", "list", "platforms", "uninstall", "list-external", "sync-external", "migrate"].forEach(cmd => {
+      ["init", "pull", "push", "update", "list", "platforms", "uninstall", "list-external", "sync-external", "migrate"].forEach(cmd => {
         assert.ok(content.includes(`case "${cmd}":`), `Missing ${cmd}`);
       });
     });
