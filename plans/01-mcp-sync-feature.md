@@ -45,7 +45,7 @@ Mở rộng `ai-agent-config` để sync MCP (Model Context Protocol) servers, k
 
 ```
 my-ai-skills/                   # GitHub repo
-├── .agent/
+├── .agents/
 │   ├── skills/                 # Existing
 │   ├── workflows/              # Existing
 │   └── mcp-servers/            # ✨ NEW
@@ -99,12 +99,12 @@ Package sẽ generate/update `mcp_config.json` với các servers từ repo.
 **Create `package/scripts/mcp-manager.js`:**
 
 Key functions:
-- `getAvailableMcpServers()` - Scan `.agent/mcp-servers/`, parse configs
+- `getAvailableMcpServers()` - Scan `.agents/mcp-servers/`, parse configs
 - `validateMcpConfig(config)` - Validate required fields (name, command, args type, etc.)
 - `installMcpServers(platform, options)` - Install servers to `mcp_config.json`
 
 Logic:
-- Read all folders in `.agent/mcp-servers/`
+- Read all folders in `.agents/mcp-servers/`
 - Parse `config.json` in each folder
 - Validate structure
 - Filter by `enabled` field only (no platform check)
@@ -131,7 +131,7 @@ Logic:
 
 ## 📝 Usage Flow
 
-1. User tạo MCP server configs trong `.agent/mcp-servers/` của repo
+1. User tạo MCP server configs trong `.agents/mcp-servers/` của repo
 2. `ai-agent pull` để sync repo
 3. `ai-agent install` để install skills, workflows, và MCP servers
 4. Package copy configs vào `~/.gemini/antigravity/mcp_config.json`
@@ -183,7 +183,7 @@ Logic:
 
 ## 🎯 Success Criteria
 
-1. ✅ MCP servers từ `.agent/mcp-servers/` được discover correctly
+1. ✅ MCP servers từ `.agents/mcp-servers/` được discover correctly
 2. ✅ `ai-agent install` tạo/update `~/.gemini/antigravity/mcp_config.json`
 3. ✅ Support `enabled: false` để skip servers
 4. ✅ `ai-agent list` hiển thị available MCP servers

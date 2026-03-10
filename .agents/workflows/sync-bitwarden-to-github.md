@@ -1,12 +1,12 @@
 ---
-description: Sync secrets from Bitwarden vault to GitHub repository secrets/variables based on .agent/config/secret.yml
+description: Sync secrets from Bitwarden vault to GitHub repository secrets/variables based on .agents/config/secret.yml
 ---
 
 # Sync Bitwarden Secrets to GitHub Workflow
 
 // turbo-all
 
-Read `.agent/config/secret.yml`, fetch values from Bitwarden using **MCP Bitwarden**, and sync to GitHub repo secrets/variables.
+Read `.agents/config/secret.yml`, fetch values from Bitwarden using **MCP Bitwarden**, and sync to GitHub repo secrets/variables.
 
 ## Secret Config Format
 
@@ -24,7 +24,7 @@ secrets:
 
 ### 1. Read and parse config
 
-Read `.agent/config/secret.yml` and extract:
+Read `.agents/config/secret.yml` and extract:
 - `repo` - target GitHub repository
 - `environment` - GitHub environment (null = repo-level)
 - `type` - "secret" or "variable"

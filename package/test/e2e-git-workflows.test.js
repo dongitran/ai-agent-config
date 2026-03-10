@@ -42,7 +42,7 @@ test("E2E Git: ai-agent push should commit and push changes", () => {
 
     // Make changes to skills
     const syncRepoPath = path.join(env.home, ".ai-agent", "sync-repo");
-    const newSkillDir = path.join(syncRepoPath, "skills", "new-skill");
+    const newSkillDir = path.join(syncRepoPath, ".agents", "skills", "new-skill");
     fs.mkdirSync(newSkillDir, { recursive: true });
     fs.writeFileSync(
       path.join(newSkillDir, "SKILL.md"),
@@ -59,7 +59,7 @@ test("E2E Git: ai-agent push should commit and push changes", () => {
     );
 
     // Verify changes in remote repo (if push actually happened)
-    const remoteSkillPath = path.join(remoteRepo, "skills", "new-skill", "SKILL.md");
+    const remoteSkillPath = path.join(remoteRepo, ".agents", "skills", "new-skill", "SKILL.md");
     const changesExist = fs.existsSync(remoteSkillPath);
 
     // If changes exist, verify commit message
@@ -83,7 +83,7 @@ test("E2E Git: ai-agent pull should fetch latest changes", () => {
     env.runCLI(["init", "--repo", remoteRepo]);
 
     // Simulate remote changes (someone else pushed)
-    const remoteNewSkill = path.join(remoteRepo, "skills", "remote-skill");
+    const remoteNewSkill = path.join(remoteRepo, ".agents", "skills", "remote-skill");
     fs.mkdirSync(remoteNewSkill, { recursive: true });
     fs.writeFileSync(
       path.join(remoteNewSkill, "SKILL.md"),
@@ -100,7 +100,7 @@ test("E2E Git: ai-agent pull should fetch latest changes", () => {
 
     // Verify changes pulled to local
     const syncRepoPath = path.join(env.home, ".ai-agent", "sync-repo");
-    const localNewSkill = path.join(syncRepoPath, "skills", "remote-skill", "SKILL.md");
+    const localNewSkill = path.join(syncRepoPath, ".agents", "skills", "remote-skill", "SKILL.md");
     assert.ok(fs.existsSync(localNewSkill), "Remote changes should be pulled");
   } finally {
     env.cleanup();
@@ -160,6 +160,10 @@ test("E2E Git: ai-agent pull should auto-install by default", () => {
 
     // Verify SOME skills were installed
     const skillsInstalled = fs.readdirSync(skillsDir).length > 0;
+    if (!skillsInstalled) {
+      console.log("PULL STDOUT:", pullResult.stdout);
+      console.log("PULL STDERR:", pullResult.stderr);
+    }
     assert.ok(skillsInstalled, "Skills should be auto-installed");
   } finally {
     env.cleanup();
@@ -178,7 +182,7 @@ test("E2E Git: push with auto-sync should pull before push", () => {
     env.runCLI(["config", "set", "autoSync", "true"]);
 
     // Simulate remote changes
-    const remoteNewSkill = path.join(remoteRepo, "skills", "remote-change");
+    const remoteNewSkill = path.join(remoteRepo, ".agents", "skills", "remote-change");
     fs.mkdirSync(remoteNewSkill, { recursive: true });
     fs.writeFileSync(path.join(remoteNewSkill, "SKILL.md"), "# Remote\n");
     execSync("git add .", { cwd: remoteRepo, stdio: "ignore" });
@@ -186,7 +190,7 @@ test("E2E Git: push with auto-sync should pull before push", () => {
 
     // Make local changes
     const syncRepoPath = path.join(env.home, ".ai-agent", "sync-repo");
-    const localNewSkill = path.join(syncRepoPath, "skills", "local-change");
+    const localNewSkill = path.join(syncRepoPath, ".agents", "skills", "local-change");
     fs.mkdirSync(localNewSkill, { recursive: true });
     fs.writeFileSync(path.join(localNewSkill, "SKILL.md"), "# Local\n");
 
@@ -215,7 +219,7 @@ test("E2E Git: update command should sync external sources", () => {
 
     // Add an external source (another git repo with skills)
     const externalSource = createMockGitRepo({ withSampleSkill: true });
-    const externalSkillPath = path.join(externalSource, "skills", "external-skill");
+    const externalSkillPath = path.join(externalSource, ".agents", "skills", "external-skill");
     fs.mkdirSync(externalSkillPath, { recursive: true });
     fs.writeFileSync(
       path.join(externalSkillPath, "SKILL.md"),
@@ -255,10 +259,10 @@ test("E2E Git: conflicting changes should be detected and reported", () => {
     env.runCLI(["init", "--repo", remoteRepo]);
 
     const syncRepoPath = path.join(env.home, ".ai-agent", "sync-repo");
-    const conflictFile = path.join(syncRepoPath, "skills", "sample-skill", "SKILL.md");
+    const conflictFile = path.join(syncRepoPath, ".agents", "skills", "sample-skill", "SKILL.md");
 
     // Make conflicting remote change
-    const remoteConflictFile = path.join(remoteRepo, "skills", "sample-skill", "SKILL.md");
+    const remoteConflictFile = path.join(remoteRepo, ".agents", "skills", "sample-skill", "SKILL.md");
     fs.writeFileSync(remoteConflictFile, "# Remote Version\n\ndescription: Remote edit");
     execSync("git add .", { cwd: remoteRepo, stdio: "ignore" });
     execSync('git commit -m "Remote edit"', { cwd: remoteRepo, stdio: "ignore" });

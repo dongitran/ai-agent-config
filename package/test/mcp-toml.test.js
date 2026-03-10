@@ -291,7 +291,7 @@ describe("MCP TOML Support", () => {
     function setupMcpServer(name, config) {
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      const mcpDir = path.join(expanded, ".agent", "mcp-servers", name);
+      const mcpDir = path.join(expanded, ".agents", "mcp-servers", name);
       fs.mkdirSync(mcpDir, { recursive: true });
       fs.writeFileSync(path.join(mcpDir, "config.json"), JSON.stringify(config), "utf-8");
     }

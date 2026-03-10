@@ -57,7 +57,7 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          if [ -n "$(git status --porcelain .agent/skills)" ]; then
+          if [ -n "$(git status --porcelain .agents/skills)" ]; then
             echo "has_changes=true" >> $GITHUB_OUTPUT
           else
             echo "has_changes=false" >> $GITHUB_OUTPUT
@@ -77,7 +77,7 @@ jobs:
 
             **Changes:**
             - Updated skills from external repositories
-            - Synced from configured sources in `.agent/external-skills.json`
+            - Synced from configured sources in `.agents/external-skills.json`
 
             **Sources:**
             ${{ inputs.source || 'All configured sources' }}

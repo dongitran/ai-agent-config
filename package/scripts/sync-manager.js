@@ -166,24 +166,24 @@ class SyncManager {
      */
     gitCommit(message) {
         try {
-            // Add all .agent/ files except bundled package skills
-            execSync("git add .agent/workflows/", { cwd: this.repoPath, stdio: "pipe" });
+            // Add all .agents/ files except bundled package skills
+            execSync("git add .agents/workflows/", { cwd: this.repoPath, stdio: "pipe" });
 
             // Add MCP servers
-            const mcpServersDir = path.join(this.repoPath, ".agent/mcp-servers");
+            const mcpServersDir = path.join(this.repoPath, ".agents/mcp-servers");
             if (fs.existsSync(mcpServersDir)) {
-                execSync("git add .agent/mcp-servers/", { cwd: this.repoPath, stdio: "pipe" });
+                execSync("git add .agents/mcp-servers/", { cwd: this.repoPath, stdio: "pipe" });
             }
 
             // Add skills individually, excluding bundled ones
-            const skillsDir = path.join(this.repoPath, ".agent/skills");
+            const skillsDir = path.join(this.repoPath, ".agents/skills");
             const bundledSkills = ["ai-agent-config", "config-manager"];
 
             if (fs.existsSync(skillsDir)) {
                 const skills = fs.readdirSync(skillsDir);
                 skills.forEach(skill => {
                     if (!bundledSkills.includes(skill)) {
-                        spawnSync("git", ["add", `.agent/skills/${skill}`], {
+                        spawnSync("git", ["add", `.agents/skills/${skill}`], {
                             cwd: this.repoPath,
                             stdio: "pipe"
                         });

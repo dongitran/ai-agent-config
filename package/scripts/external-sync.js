@@ -22,7 +22,7 @@ function loadConfig() {
 
     // Target directory is the user's configured repository
     const targetDir = config.repository && config.repository.local
-      ? path.join(config.repository.local, ".agent/skills")
+      ? path.join(config.repository.local, ".agents/skills")
       : path.join(require("os").homedir(), ".ai-agent/skills");
 
     return { sources, targetDir };

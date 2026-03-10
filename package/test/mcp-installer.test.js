@@ -24,7 +24,7 @@ describe("MCP Installer Module", () => {
   function setupMcpServer(name, config) {
     const repoLocal = configManager.loadConfig().repository.local;
     const expanded = repoLocal.replace(/^~/, env.tmpDir);
-    const mcpDir = path.join(expanded, ".agent", "mcp-servers", name);
+    const mcpDir = path.join(expanded, ".agents", "mcp-servers", name);
     fs.mkdirSync(mcpDir, { recursive: true });
     fs.writeFileSync(path.join(mcpDir, "config.json"), JSON.stringify(config), "utf-8");
     return mcpDir;
@@ -97,7 +97,7 @@ describe("MCP Installer Module", () => {
     it("should return path when mcp-servers exists", () => {
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      fs.mkdirSync(path.join(expanded, ".agent", "mcp-servers"), { recursive: true });
+      fs.mkdirSync(path.join(expanded, ".agents", "mcp-servers"), { recursive: true });
       const result = mcpInstaller.getMcpServersDir();
       assert.ok(result);
       assert.ok(result.includes("mcp-servers"));
@@ -133,7 +133,7 @@ describe("MCP Installer Module", () => {
     it("should skip non-directory entries", () => {
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      const mcpDir = path.join(expanded, ".agent", "mcp-servers");
+      const mcpDir = path.join(expanded, ".agents", "mcp-servers");
       fs.mkdirSync(mcpDir, { recursive: true });
       fs.writeFileSync(path.join(mcpDir, "README.md"), "# Info");
       assert.deepStrictEqual(mcpInstaller.getAvailableMcpServers(), []);
@@ -142,7 +142,7 @@ describe("MCP Installer Module", () => {
     it("should skip dirs without config.json", () => {
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      const mcpDir = path.join(expanded, ".agent", "mcp-servers", "no-config");
+      const mcpDir = path.join(expanded, ".agents", "mcp-servers", "no-config");
       fs.mkdirSync(mcpDir, { recursive: true });
       assert.deepStrictEqual(mcpInstaller.getAvailableMcpServers(), []);
     });
@@ -150,7 +150,7 @@ describe("MCP Installer Module", () => {
     it("should handle malformed JSON gracefully", () => {
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      const mcpDir = path.join(expanded, ".agent", "mcp-servers", "bad-json");
+      const mcpDir = path.join(expanded, ".agents", "mcp-servers", "bad-json");
       fs.mkdirSync(mcpDir, { recursive: true });
       fs.writeFileSync(path.join(mcpDir, "config.json"), "not json", "utf-8");
       assert.deepStrictEqual(mcpInstaller.getAvailableMcpServers(), []);

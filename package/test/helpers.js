@@ -143,8 +143,9 @@ function createMockGitRepo(options = {}) {
   execSync('git config user.name "Test User"', { cwd: repoDir, stdio: "ignore" });
 
   // Create initial structure
-  const skillsDir = path.join(repoDir, "skills");
-  const workflowsDir = path.join(repoDir, "workflows");
+  const agentsDir = path.join(repoDir, ".agents");
+  const skillsDir = path.join(agentsDir, "skills");
+  const workflowsDir = path.join(agentsDir, "workflows");
   fs.mkdirSync(skillsDir, { recursive: true });
   fs.mkdirSync(workflowsDir, { recursive: true });
 

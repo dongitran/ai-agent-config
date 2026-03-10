@@ -16,7 +16,7 @@
 ~/.ai-agent/
 ├── config.json                 # Config với repo duy nhất
 └── sync-repo/                  # Local git clone của repo
-    └── .agent/                 # Chỉ có folder này
+    └── .agents/                 # Chỉ có folder này
         ├── skills/
         └── workflows/
 ```
@@ -41,7 +41,7 @@
 
 ```
 my-ai-skills/                   # GitHub repo
-├── .agent/
+├── .agents/
 │   ├── skills/
 │   └── workflows/
 ├── .gitignore
@@ -117,7 +117,7 @@ flowchart TB
 ### First-Time Setup
 ```bash
 ai-agent init --repo https://github.com/yourname/my-ai-skills.git
-# Edit skills in ~/.ai-agent/sync-repo/.agent/skills/
+# Edit skills in ~/.ai-agent/sync-repo/.agents/skills/
 ai-agent push
 ```
 
@@ -171,7 +171,7 @@ $ ai-agent push
 ### Integration Tests
 
 **Flow tests:**
-1. **First-time init** - Clone repo → verify `.agent/` structure
+1. **First-time init** - Clone repo → verify `.agents/` structure
 2. **Push without conflicts** - Commit & push OK → verify remote updated
 3. **Push with remote changes** - Auto-pull → merge → push OK
 4. **Push with conflicts** - Auto-pull → show conflicts → abort
@@ -213,7 +213,7 @@ $ ai-agent push
 2. ✅ `ai-agent push` đơn giản để push changes
 3. ✅ Detect conflicts và require pull first
 4. ✅ Auto-sync option available
-5. ✅ Repo structure chỉ chứa `.agent/`
+5. ✅ Repo structure chỉ chứa `.agents/`
 6. ✅ Backward compatible với v2.2
 
 ---

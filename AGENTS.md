@@ -30,7 +30,7 @@ ai-agent-config/
 │   ├── config/
 │   │   └── official-sources.json  # Empty (zero defaults)
 │   └── package.json            # v2.8.0
-├── .agent/
+├── .agents/
 │   ├── skills/                 # 15 bundled skills (synced from external sources)
 │   ├── workflows/              # 5 workflows (brainstorm, create-pr, release-notes, sync-bitwarden-to-github, update-skills)
 │   ├── mcp-servers/            # MCP server configs (config.json per server)
@@ -47,7 +47,7 @@ ai-agent-config/
 ## Key Concepts
 
 - **Skills**: Folders with `SKILL.md` that AI platforms auto-discover
-- **MCP Servers**: Configs in `.agent/mcp-servers/<name>/config.json` with `bitwardenEnv` for secret resolution
+- **MCP Servers**: Configs in `.agents/mcp-servers/<name>/config.json` with `bitwardenEnv` for secret resolution
 - **Sync-repo**: Local clone at `~/.ai-agent/sync-repo` used for git push/pull
 - **External cache**: `~/.ai-agent-external-cache/` stores cloned external repos
 - **Config**: `~/.ai-agent/config.json` stores user settings and sources
@@ -197,7 +197,7 @@ EOF
 **File:** `.github/workflows/sync-external.yml`
 **Triggers:** Weekly (Sunday 00:00 UTC) or manual
 
-Sources defined in `.agent/external-skills.json` (4 sources, 15 skills total).
+Sources defined in `.agents/external-skills.json` (4 sources, 15 skills total).
 
 The `update` command flow:
 1. Pull sync-repo from GitHub

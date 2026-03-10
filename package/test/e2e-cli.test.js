@@ -92,10 +92,11 @@ test("E2E: ai-agent init --repo <url> should clone repository", () => {
     assert.strictEqual(config.repository.url, mockRepo, "Config should store repo URL");
 
     // Verify repo cloned
-    const repoPath = path.join(env.home, ".ai-agent", "sync-repo");
-    assert.ok(fs.existsSync(repoPath), "Repo should be cloned");
-    assert.ok(fs.existsSync(path.join(repoPath, ".git")), "Cloned repo should have .git");
-    assert.ok(fs.existsSync(path.join(repoPath, "skills")), "Cloned repo should have skills/");
+    const clonedRepo = path.join(env.home, ".ai-agent", "sync-repo");
+    assert.ok(fs.existsSync(clonedRepo), "Repo should be cloned");
+    assert.ok(fs.existsSync(path.join(clonedRepo, ".git")), "Cloned repo should have .git");
+    const skillsDir = path.join(clonedRepo, ".agents", "skills");
+    assert.ok(fs.existsSync(skillsDir), "Cloned repo should have .agents/skills/");
   } finally {
     env.cleanup();
     cleanTempDir(mockRepo);
@@ -106,7 +107,8 @@ test("E2E: ai-agent init --repo <invalid-url> should fail gracefully", () => {
   const env = setupE2ETestEnv();
 
   try {
-    const result = env.runCLI(["init", "--repo", "https://invalid-url-that-does-not-exist.com/repo.git"]);
+    // Use an unresolvable local domain to fail fast instead of hitting a public domain which might timeout
+    const result = env.runCLI(["init", "--repo", "https://localhost:9999/invalid/repo.git"]);
 
     // May complete init but fail during clone - just verify it doesn't crash
     assert.ok(

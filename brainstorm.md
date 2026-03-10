@@ -17,9 +17,9 @@
 ### 1.1 Current Architecture Analysis
 
 **Cách hiện tại hoạt động:**
-- Package có **hard-coded** `.agent/external-skills.json` với 4 nguồn cố định
+- Package có **hard-coded** `.agents/external-skills.json` với 4 nguồn cố định
 - File này nằm TRONG package, user không thể tùy chỉnh
-- `external-sync.js:10` đọc từ `CONFIG_FILE = path.join(__dirname, "../../.agent/external-skills.json")`
+- `external-sync.js:10` đọc từ `CONFIG_FILE = path.join(__dirname, "../../.agents/external-skills.json")`
 - Sync từ 4 repos: Vercel Labs, Everything Claude Code, Playwright, NestJS
 
 **Vấn đề:**
@@ -428,7 +428,7 @@ sequenceDiagram
 **BEFORE (v1.x):**
 ```
 package/
-├── .agent/
+├── .agents/
 │   ├── external-skills.json  ❌ Hard-coded in package
 │   └── skills/               ❌ Bundled with package
 └── scripts/
@@ -472,7 +472,7 @@ package/
 
 ```
 ai-agent-config/
-├── .agent/
+├── .agents/
 │   ├── skills/
 │   │   ├── config-manager/          ✨ NEW SKILL
 │   │   │   ├── SKILL.md

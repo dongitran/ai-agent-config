@@ -14,7 +14,7 @@
 
 ### Hiện trạng
 
-Plan 01 đã define cấu trúc `.agent/mcp-servers/` và Plan 02 đã implement `secrets sync` để lấy secrets từ Bitwarden. Nhưng **kiến trúc hiện tại bị couple chặt với platform**:
+Plan 01 đã define cấu trúc `.agents/mcp-servers/` và Plan 02 đã implement `secrets sync` để lấy secrets từ Bitwarden. Nhưng **kiến trúc hiện tại bị couple chặt với platform**:
 
 1. **`secrets sync` scan trực tiếp `mcp_config.json` của Antigravity** để tìm `${VAR}` placeholder
 2. → Phải install MCP vào Antigravity trước, rồi mới sync secrets được
@@ -50,7 +50,7 @@ Plan 03 - Source of truth = Repo đã clone về local:
   secrets sync
        ↓
   Scan USER REPO (clone về khi chạy `ai-agent init --repo`):
-       ~/.ai-agent/sync-repo/.agent/mcp-servers/*/config.json
+       ~/.ai-agent/sync-repo/.agents/mcp-servers/*/config.json
        ↑
        User repo, clone/update bởi SyncManager khi pull/push
        1 format duy nhất, KHÔNG phụ thuộc platform nào
@@ -82,7 +82,7 @@ Plan 03 - Source of truth = Repo đã clone về local:
 
 ### 1. MCP Server Config Format (Updated)
 
-**File**: `.agent/mcp-servers/<name>/config.json`
+**File**: `.agents/mcp-servers/<name>/config.json`
 
 ```jsonc
 {
@@ -120,7 +120,7 @@ Plan 03 - Source of truth = Repo đã clone về local:
 
 ### 2. Ví dụ
 
-**`.agent/mcp-servers/github/config.json`**:
+**`.agents/mcp-servers/github/config.json`**:
 ```json
 {
   "name": "github",
@@ -136,12 +136,12 @@ Plan 03 - Source of truth = Repo đã clone về local:
 
 ### 3. Lưu ý: Bỏ qua folder `bitwarden`
 
-Folder `.agent/mcp-servers/bitwarden/` đã tồn tại trong repo nhưng **Bitwarden MCP server được quản lý riêng bởi `postinstall.js`** (auto-setup khi `npm install`). Khi scan `.agent/mcp-servers/`, **bỏ qua folder `bitwarden`** để tránh conflict với logic cài đặt hiện tại.
+Folder `.agents/mcp-servers/bitwarden/` đã tồn tại trong repo nhưng **Bitwarden MCP server được quản lý riêng bởi `postinstall.js`** (auto-setup khi `npm install`). Khi scan `.agents/mcp-servers/`, **bỏ qua folder `bitwarden`** để tránh conflict với logic cài đặt hiện tại.
 
 ### 4. Flow tổng thể
 
 ```
-                    .agent/mcp-servers/
+                    .agents/mcp-servers/
                     ├── github/config.json      (bitwardenEnv: {GITHUB_TOKEN: "GITHUB_TOKEN"})
                     ├── bitwarden/              ← SKIP (quản lý bởi postinstall.js)
                     └── .../config.json
@@ -183,7 +183,7 @@ ai-agent pull
   ├── Auto-install skills (existing)
   ├── Auto-install workflows (existing)
   └── Auto-install MCP servers (NEW)
-        ├── Đọc .agent/mcp-servers/*/config.json từ cache
+        ├── Đọc .agents/mcp-servers/*/config.json từ cache
         ├── Filter enabled servers
         └── Merge vào mcp_config.json
               ├── Server mới → thêm (với bitwardenEnv chưa resolve, dùng placeholder)
@@ -198,7 +198,7 @@ ai-agent pull
 ```
 ai-agent secrets sync
   │
-  ├── 1. Discover: Đọc .agent/mcp-servers/*/config.json
+  ├── 1. Discover: Đọc .agents/mcp-servers/*/config.json
   │     └── Thu thập tất cả bitwardenEnv entries
   │         { "GITHUB_TOKEN": "GITHUB_TOKEN", "BW_SESSION": "BW_SESSION", ... }
   │
@@ -237,9 +237,9 @@ NEW:    package/scripts/mcp-installer.js    # Core MCP install + merge logic
 EDIT:   package/scripts/installer.js        # Gọi mcp-installer trong install flow
 EDIT:   package/scripts/platforms.js        # Thêm mcpConfigPath cho antigravity
 EDIT:   package/scripts/secret-manager.js   # Update secrets sync để đọc bitwardenEnv
-EDIT:   package/scripts/sync-manager.js     # git add .agent/mcp-servers/
+EDIT:   package/scripts/sync-manager.js     # git add .agents/mcp-servers/
 EDIT:   package/bin/cli.js                  # Update list + install + pull output
-NEW:    .agent/mcp-servers/notion/config.json      # Example MCP server config
+NEW:    .agents/mcp-servers/notion/config.json      # Example MCP server config
 ```
 
 ### Phase 1: Foundation
@@ -248,7 +248,7 @@ NEW:    .agent/mcp-servers/notion/config.json      # Example MCP server config
 
 ### Phase 2: Installer Integration
 - `installer.js` - gọi `mcp-installer` trong `installToPlatform()` (Antigravity only)
-- `sync-manager.js` - thêm `git add .agent/mcp-servers/` vào `gitCommit()`
+- `sync-manager.js` - thêm `git add .agents/mcp-servers/` vào `gitCommit()`
 
 ### Phase 3: Secrets Sync Integration
 - `secret-manager.js` - `discoverRequiredSecrets()` đọc `bitwardenEnv` từ repo thay vì scan `${VAR}` từ platform config
@@ -298,11 +298,11 @@ NEW:    .agent/mcp-servers/notion/config.json      # Example MCP server config
 ### Phase 1: Foundation
 - [x] Update `platforms.js` - thêm `mcpConfigPath` cho Antigravity
 - [x] Create `mcp-installer.js` - getAvailableMcpServers, validateMcpConfig, installMcpServers
-- [x] ~~Update `.agent/mcp-servers/bitwarden/config.json`~~ - bitwarden folder đã xoá, quản lý riêng bởi postinstall.js
+- [x] ~~Update `.agents/mcp-servers/bitwarden/config.json`~~ - bitwarden folder đã xoá, quản lý riêng bởi postinstall.js
 
 ### Phase 2: Install Integration
 - [x] Update `installer.js` - gọi mcp-installer trong installToPlatform
-- [x] Update `sync-manager.js` - git add .agent/mcp-servers/
+- [x] Update `sync-manager.js` - git add .agents/mcp-servers/
 - [x] Update `installer.js` - import mcp-installer module
 
 ### Phase 3: Secrets Sync Integration

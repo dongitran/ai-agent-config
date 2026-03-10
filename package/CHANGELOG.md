@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MCP server configuration with `bitwardenEnv` field
 
 ### Changed
-- MCP servers scanned from repo `.agent/mcp-servers/` instead of platform files
+- MCP servers scanned from repo `.agents/mcp-servers/` instead of platform files
 - Platform-agnostic MCP installation flow
 
 ## Earlier Versions

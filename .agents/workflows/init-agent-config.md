@@ -1,27 +1,27 @@
 ---
-description: Initialize .agent/config folder with AGENTS.md and secrets.yml for a new project
+description: Initialize .agents/config folder with AGENTS.md and secrets.yml for a new project
 ---
 
 # Init Agent Config Workflow
 
 // turbo-all
 
-Set up the `.agent/config/` folder structure for a new project, including documentation and secret mapping config for Bitwarden → GitHub Actions sync.
+Set up the `.agents/config/` folder structure for a new project, including documentation and secret mapping config for Bitwarden → GitHub Actions sync.
 
 ## Steps
 
 ### 1. Create folder structure
 
 ```bash
-mkdir -p .agent/config
+mkdir -p .agents/config
 ```
 
 ### 2. Create AGENTS.md
 
-Create `.agent/config/AGENTS.md` with the following content:
+Create `.agents/config/AGENTS.md` with the following content:
 
 ```markdown
-# .agent/config
+# .agents/config
 
 ## secrets.yml
 
@@ -43,7 +43,7 @@ secrets:
 
 ### 3. Create secrets.yml
 
-Create `.agent/config/secrets.yml` with the following content — update `repo` field with the actual GitHub repo:
+Create `.agents/config/secrets.yml` with the following content — update `repo` field with the actual GitHub repo:
 
 ```yaml
 repo: owner/repo-name
@@ -64,7 +64,7 @@ secrets:
 ### 4. Verify
 
 ```bash
-ls -la .agent/config/
+ls -la .agents/config/
 ```
 
 Expected output:

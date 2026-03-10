@@ -197,7 +197,7 @@ function tryReuseAntigravitySession() {
 
 /**
  * Discover required secrets from MCP server configs in the repo
- * Scans .agent/mcp-servers/{name}/config.json for bitwardenEnv fields
+ * Scans .agents/mcp-servers/{name}/config.json for bitwardenEnv fields
  */
 function discoverRequiredSecrets() {
     const mcpInstaller = require("./mcp-installer");

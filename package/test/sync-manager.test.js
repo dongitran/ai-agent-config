@@ -132,8 +132,8 @@ describe("SyncManager Module", () => {
         if (cmd.includes("status")) return "M file.txt\n";
         return "";
       });
-      // Create .agent/workflows dir so gitCommit can add it
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      // Create .agents/workflows dir so gitCommit can add it
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       const r = sm.push({ message: "test commit" });
       assert.strictEqual(r.pushed, true);
     });
@@ -146,7 +146,7 @@ describe("SyncManager Module", () => {
         if (cmd.includes("git pull")) return "Already up to date.";
         return "";
       });
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       const r = sm.push();
       assert.strictEqual(r.pushed, true);
     });
@@ -174,7 +174,7 @@ describe("SyncManager Module", () => {
         }
         return { status: 0, stdout: "", stderr: "" };
       });
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       const r = sm.push();
       assert.strictEqual(r.pushed, false);
       assert.ok(r.reason.includes("git push failed"));
@@ -236,7 +236,7 @@ describe("SyncManager Module", () => {
         if (cmd.includes("pull")) return "Already up to date.";
         return "";
       });
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       const r = sm.sync({ message: "sync" });
       assert.strictEqual(r.synced, true);
     });
@@ -290,7 +290,7 @@ describe("SyncManager Module", () => {
 
     it("should ignore nothing-to-commit errors", () => {
       const sm = createManager();
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       mocks.execSync.mockImplementation(() => "");
       mocks.spawnSync.mockImplementation((cmd, args) => {
         if (args && args.includes("commit")) {
@@ -304,7 +304,7 @@ describe("SyncManager Module", () => {
 
     it("should throw on other git errors", () => {
       const sm = createManager();
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       mocks.execSync.mockImplementation(() => "");
       mocks.spawnSync.mockImplementation((cmd, args) => {
         if (args && args.includes("commit")) {
@@ -317,16 +317,16 @@ describe("SyncManager Module", () => {
 
     it("should add skills excluding bundled ones", () => {
       const sm = createManager();
-      const skillsDir = path.join(sm.repoPath, ".agent", "skills");
+      const skillsDir = path.join(sm.repoPath, ".agents", "skills");
       fs.mkdirSync(skillsDir, { recursive: true });
       fs.mkdirSync(path.join(skillsDir, "custom-skill"));
       fs.mkdirSync(path.join(skillsDir, "ai-agent-config"));
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
       mocks.execSync.mockImplementation(() => "");
       sm.gitCommit("test");
       // Skills are now added via spawnSync
       const addCalls = mocks.spawnSync.calls.filter(c =>
-        c[1] && c[1][0] === "add" && c[1][1]?.includes(".agent/skills/")
+        c[1] && c[1][0] === "add" && c[1][1]?.includes(".agents/skills/")
       );
       assert.ok(addCalls.some(c => c[1][1].includes("custom-skill")));
       assert.ok(!addCalls.some(c => c[1][1].includes("ai-agent-config")));
@@ -334,8 +334,8 @@ describe("SyncManager Module", () => {
 
     it("should add mcp-servers if dir exists", () => {
       const sm = createManager();
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "workflows"), { recursive: true });
-      fs.mkdirSync(path.join(sm.repoPath, ".agent", "mcp-servers"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "workflows"), { recursive: true });
+      fs.mkdirSync(path.join(sm.repoPath, ".agents", "mcp-servers"), { recursive: true });
       mocks.execSync.mockImplementation(() => "");
       sm.gitCommit("test");
       const addCalls = mocks.execSync.calls.filter(c => c[0].includes("mcp-servers"));

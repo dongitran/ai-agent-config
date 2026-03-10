@@ -206,7 +206,7 @@ Use this structure for new plans:
 **Create `package/scripts/mcp-manager.js`:**
 
 Functions:
-- `getAvailableMcpServers()` - Scan `.agent/mcp-servers/` folders
+- `getAvailableMcpServers()` - Scan `.agents/mcp-servers/` folders
 - `validateMcpConfig(config)` - Validate name, command, args types
 - `installMcpServers(platform, options)` - Install to mcp_config.json
 

@@ -1177,7 +1177,7 @@ Git-based team workspace with automatic sync, conflict resolution, role-based ac
 
 ```
 github.com/company/ai-config/  (Team repository)
-├── .agent/
+├── .agents/
 │   ├── skills/           # Team skills
 │   ├── workflows/        # Team workflows
 │   └── mcp-servers/      # Team MCP configs
@@ -1618,7 +1618,7 @@ ai-agent init-skill my-skill --template typescript
 
 **Solution:**
 ```yaml
-# .agent/workflows/code-review.yml
+# .agents/workflows/code-review.yml
 workflow:
   agents:
     - security-agent: [security-review]
@@ -2018,7 +2018,7 @@ Implementation will primarily touch these files:
    - Extend with dashboard server
    - Add MCP testing and validation
 
-5. **[/Users/dongtran/Code/Working/ai-agent-config/.agent/external-skills.json](../.agent/external-skills.json)**
+5. **[/Users/dongtran/Code/Working/ai-agent-config/.agents/external-skills.json](../.agents/external-skills.json)**
    - Extend schema with versioning, dependencies, metadata
 
 6. **NEW FILES TO CREATE:**

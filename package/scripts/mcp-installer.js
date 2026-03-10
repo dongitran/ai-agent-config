@@ -19,7 +19,7 @@ const JSON_MCP_KEY = "mcpServers";   // CamelCase
 
 /**
  * Get the MCP servers directory from the user's sync repo
- * @returns {string|null} Path to .agent/mcp-servers/ or null
+ * @returns {string|null} Path to .agents/mcp-servers/ or null
  */
 function getMcpServersDir() {
     const config = configManager.loadConfig();
@@ -27,7 +27,7 @@ function getMcpServersDir() {
     if (!repoLocal) return null;
 
     const expanded = repoLocal.replace(/^~/, process.env.HOME || process.env.USERPROFILE);
-    const mcpDir = path.join(expanded, ".agent", "mcp-servers");
+    const mcpDir = path.join(expanded, ".agents", "mcp-servers");
     return fs.existsSync(mcpDir) ? mcpDir : null;
 }
 

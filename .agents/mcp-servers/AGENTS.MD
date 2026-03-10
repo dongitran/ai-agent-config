@@ -3,7 +3,7 @@
 ## Structure
 
 ```
-.agent/mcp-servers/
+.agents/mcp-servers/
 ├── AGENTS.MD
 ├── <server-name>/
 │   └── config.json
@@ -43,7 +43,7 @@ Each MCP server is a folder containing a `config.json` file.
 
 ## Steps
 
-1. Create folder: `.agent/mcp-servers/<name>/`
+1. Create folder: `.agents/mcp-servers/<name>/`
 2. Create `config.json` inside that folder
 
 ## Example

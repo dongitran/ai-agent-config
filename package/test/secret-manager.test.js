@@ -119,7 +119,7 @@ describe("Secret Manager Module", () => {
       // Setup MCP server with bitwardenEnv
       const repoLocal = configManager.loadConfig().repository.local;
       const expanded = repoLocal.replace(/^~/, env.tmpDir);
-      const mcpDir = path.join(expanded, ".agent", "mcp-servers", "test-srv");
+      const mcpDir = path.join(expanded, ".agents", "mcp-servers", "test-srv");
       fs.mkdirSync(mcpDir, { recursive: true });
       fs.writeFileSync(path.join(mcpDir, "config.json"), JSON.stringify({
         name: "test-srv", command: "cmd", args: [],
@@ -380,7 +380,7 @@ describe("Secret Manager Module", () => {
 
       // Create the MCP servers directory that getMcpServersDir() expects
       const repoPath = path.join(tmpDir, ".ai-agent", "repo");
-      const mcpServersDir = path.join(repoPath, ".agent", "mcp-servers");
+      const mcpServersDir = path.join(repoPath, ".agents", "mcp-servers");
       fs.mkdirSync(mcpServersDir, { recursive: true });
 
       const platforms = require("../scripts/platforms");

@@ -12,9 +12,9 @@ const mcpInstaller = require("./mcp-installer");
 
 const REPO_URL = "https://github.com/dongitran/ai-agent-config.git";
 const CACHE_DIR = path.join(platforms.HOME, ".ai-agent-config-cache");
-const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agent", "skills");
-const REPO_WORKFLOWS_DIR = path.join(CACHE_DIR, ".agent", "workflows");
-const PACKAGE_SKILLS_DIR = path.join(__dirname, "..", ".agent", "skills");
+const REPO_SKILLS_DIR = path.join(CACHE_DIR, ".agents", "skills");
+const REPO_WORKFLOWS_DIR = path.join(CACHE_DIR, ".agents", "workflows");
+const PACKAGE_SKILLS_DIR = path.join(__dirname, "..", ".agents", "skills");
 
 /**
  * Copy directory recursively
@@ -88,7 +88,7 @@ function isRepoCached() {
 function getAvailableSkills() {
   const skills = new Set();
 
-  // Add package bundled skills first (.agent/skills/)
+  // Add package bundled skills first (.agents/skills/)
   if (fs.existsSync(PACKAGE_SKILLS_DIR)) {
     const packageSkills = fs.readdirSync(PACKAGE_SKILLS_DIR);
     packageSkills.forEach((name) => {
@@ -259,8 +259,10 @@ function install(options = {}) {
     }
   }
 
-  if (!isRepoCached()) {
-    console.log("\n⚠️  Skills repository not cached. Run 'ai-agent update' first.");
+  // Check if we have any skills to install
+  console.log("DEBUG: PACKAGE_SKILLS_DIR =", PACKAGE_SKILLS_DIR, "- EXISTS:", fs.existsSync(PACKAGE_SKILLS_DIR));
+  if (!isRepoCached() && !fs.existsSync(PACKAGE_SKILLS_DIR)) {
+    console.log("⚠️  Skills repository not cached. Run 'ai-agent update' first.");
     return { skillsCount: 0, platformsCount: 0, workflowsCount: 0, details: [] };
   }
 
