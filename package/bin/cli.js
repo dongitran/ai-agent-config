@@ -39,8 +39,7 @@ Usage: ai-agent <command> [options]
   config reset                Reset to default config
 
 🔧 Installation & Sync:
-  install [opts]              Install skills to platforms
-  update [opts]               Update allskills from sources  
+  update [opts]               Update all skills from sources
   list                        List installed skills
   uninstall [opts]            Uninstall skills from platforms
 
@@ -74,9 +73,6 @@ Usage: ai-agent <command> [options]
 
   # Update all skills
   ai-agent update
-
-  # Force reinstall all skills
-  ai-agent install --force
 
   # Export your config to share with team
   ai-agent config export my-config.json
@@ -232,6 +228,10 @@ function init(args) {
     configManager.setConfigValue("repository.url", repoUrl);
     configManager.setConfigValue("repository.local", localPath);
     console.log("✅ Repository configured!\n");
+
+    // Auto-install after initial clone
+    console.log("📥 Auto-installing skills + MCP servers...\n");
+    install(["--force", "--no-sync"]);
   }
 
   const detected = platforms.detectAll();
@@ -245,9 +245,8 @@ function init(args) {
     console.log("  1. ai-agent push            # Push skills to repository");
     console.log("  2. ai-agent pull            # Pull skills from repository");
   } else {
-    console.log("  1. ai-agent update          # Update skills from sources");
-    console.log("  2. ai-agent install         # Install to platforms");
-    console.log("  3. ai-agent source add ...  # Add custom sources");
+    console.log("  1. ai-agent source add ...  # Add custom sources");
+    console.log("  2. ai-agent update          # Update from sources");
   }
   console.log("");
 }
@@ -736,6 +735,10 @@ function update(args) {
       }
     }
 
+    // 4. Auto-install
+    console.log("\n📥 Auto-installing skills + MCP servers...\n");
+    install(["--force", "--no-sync"]);
+
     console.log("");
   } catch (error) {
     console.error(`\n❌ Update failed: ${error.message}`);
@@ -976,9 +979,6 @@ async function secretsSync() {
         break;
       case "pull":
         pull(args.slice(1));
-        break;
-      case "install":
-        install(args.slice(1));
         break;
       case "update":
         update(args.slice(1));

@@ -32,11 +32,10 @@ ai-agent update
 
 | Command | Description |
 |---------|-------------|
-| `init --repo <url>` | Initialize config and clone repo |
+| `init --repo <url>` | Initialize config, clone repo, and install |
 | `push [--message "msg"]` | Git push to your skills repo |
 | `pull` | Git pull from repo + auto-install |
-| `update` | Pull → sync external skills → push |
-| `install` | Copy skills to platform directories |
+| `update` | Pull → sync external skills → push → install |
 | `list` | List installed skills |
 | `platforms` | Show detected platforms |
 | `uninstall` | Remove installed skills |

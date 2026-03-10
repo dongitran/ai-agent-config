@@ -98,17 +98,17 @@ test("E2E Error: permission denied when creating config should fail gracefully",
   }
 });
 
-test("E2E Error: install without initialized config should error", () => {
+test("E2E Error: update without initialized config should error", () => {
   const env = setupE2ETestEnv();
 
   try {
-    // Try to install without init
-    const result = env.runCLI(["install"]);
+    // Try to update without init
+    const result = env.runCLI(["update"]);
 
     // Should either fail or create default config
     // Check for reasonable behavior (not crash)
     assert.ok(
-      result.exitCode === 0 || result.stdout.includes("not initialized") || result.stdout.includes("No skills"),
+      result.exitCode === 0 || result.stdout.includes("not initialized") || result.stdout.includes("No repository"),
       "Should handle uninitialized state"
     );
   } finally {
@@ -241,36 +241,6 @@ test("E2E Error: config import invalid JSON should fail", () => {
   } finally {
     env.cleanup();
     if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
-  }
-});
-
-test("E2E Error: install --skill with non-existent skill should warn", () => {
-  const env = setupE2ETestEnv();
-  const mockRepo = createMockGitRepo({ withSampleSkill: true });
-
-  try {
-    env.runCLI(["init", "--repo", mockRepo]);
-
-    // Create mock platform
-    const claudeDir = path.join(env.home, ".claude");
-    fs.mkdirSync(path.join(claudeDir, "skills"), { recursive: true });
-    fs.writeFileSync(
-      path.join(claudeDir, "claude_desktop_config.json"),
-      JSON.stringify({ mcpServers: {} })
-    );
-
-    const result = env.runCLI(["install", "--skill", "non-existent-skill"]);
-
-    // Should complete but warn or show no skills installed
-    assert.ok(
-      result.stdout.includes("not found") ||
-      result.stdout.includes("No skills") ||
-      result.stdout.includes("0 skill"),
-      "Should warn about non-existent skill"
-    );
-  } finally {
-    env.cleanup();
-    cleanTempDir(mockRepo);
   }
 });
 
@@ -409,11 +379,11 @@ test("E2E Error: malformed skill directory (missing SKILL.md) should skip gracef
       JSON.stringify({ mcpServers: {} })
     );
 
-    // Install should skip malformed skill
-    const installResult = env.runCLI(["install"]);
+    // Update should skip malformed skill
+    const updateResult = env.runCLI(["update"]);
 
     // Should succeed but not install malformed skill
-    assert.strictEqual(installResult.exitCode, 0, "Should succeed");
+    assert.strictEqual(updateResult.exitCode, 0, "Should succeed");
 
     // Malformed skill should not be installed
     const installedMalformed = path.join(claudeDir, "skills", "malformed-skill");

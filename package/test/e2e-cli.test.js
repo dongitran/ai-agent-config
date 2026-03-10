@@ -29,7 +29,6 @@ test("E2E: ai-agent --help should display help text", () => {
     assert.ok(result.stdout.includes("init"), "Should list init command");
     assert.ok(result.stdout.includes("push"), "Should list push command");
     assert.ok(result.stdout.includes("pull"), "Should list pull command");
-    assert.ok(result.stdout.includes("install"), "Should list install command");
   } finally {
     env.cleanup();
   }
@@ -119,90 +118,6 @@ test("E2E: ai-agent init --repo <invalid-url> should fail gracefully", () => {
     );
   } finally {
     env.cleanup();
-  }
-});
-
-test("E2E: ai-agent install should detect platforms and install skills", () => {
-  const env = setupE2ETestEnv();
-  const mockRepo = createMockGitRepo({ withSampleSkill: true, withSampleWorkflow: true });
-
-  try {
-    // Setup: Init with repo first
-    env.runCLI(["init", "--repo", mockRepo]);
-
-    // Create mock platform directory (Claude Code)
-    const claudeDir = path.join(env.home, ".claude");
-    const claudeSkillsDir = path.join(claudeDir, "skills");
-    fs.mkdirSync(claudeSkillsDir, { recursive: true });
-
-    // Create config file to make platform detectable
-    fs.writeFileSync(
-      path.join(claudeDir, "claude_desktop_config.json"),
-      JSON.stringify({ mcpServers: {} }, null, 2)
-    );
-
-    // Run install
-    const result = env.runCLI(["install", "--force"]);
-
-    assert.strictEqual(result.exitCode, 0, "Should exit with code 0");
-    assert.ok(result.stdout.includes("Installed") || result.stdout.includes("skill"), "Should confirm installation");
-
-    // Verify SOME skills were copied to platform (not checking specific skill name)
-    const skillsInstalled = fs.existsSync(claudeSkillsDir) && fs.readdirSync(claudeSkillsDir).length > 0;
-    assert.ok(skillsInstalled, "Skills should be installed to Claude Code");
-  } finally {
-    env.cleanup();
-    cleanTempDir(mockRepo);
-  }
-});
-
-test("E2E: ai-agent install --no-sync should skip repo sync", () => {
-  const env = setupE2ETestEnv();
-  const mockRepo = createMockGitRepo({ withSampleSkill: true });
-
-  try {
-    // Setup
-    env.runCLI(["init", "--repo", mockRepo]);
-
-    // Create mock platform
-    const claudeDir = path.join(env.home, ".claude");
-    fs.mkdirSync(path.join(claudeDir, "skills"), { recursive: true });
-    fs.writeFileSync(
-      path.join(claudeDir, "claude_desktop_config.json"),
-      JSON.stringify({ mcpServers: {} })
-    );
-
-    // Run install with --no-sync
-    const result = env.runCLI(["install", "--no-sync"]);
-
-    assert.strictEqual(result.exitCode, 0, "Should exit with code 0");
-    // Should not attempt git operations (no "Pulling" messages)
-    assert.ok(!result.stdout.includes("Pulling from repository"), "Should skip git sync");
-  } finally {
-    env.cleanup();
-    cleanTempDir(mockRepo);
-  }
-});
-
-test("E2E: ai-agent install when no platforms detected should warn", () => {
-  const env = setupE2ETestEnv();
-  const mockRepo = createMockGitRepo({ withSampleSkill: true });
-
-  try {
-    // Setup repo but NO platforms
-    env.runCLI(["init", "--repo", mockRepo]);
-
-    const result = env.runCLI(["install"]);
-
-    // Should complete but indicate platforms count
-    assert.strictEqual(result.exitCode, 0, "Should exit with code 0");
-    assert.ok(
-      result.stdout.includes("0 platform") || result.stdout.includes("No skills") || result.stdout.includes("platform(s)"),
-      "Should indicate platforms count"
-    );
-  } finally {
-    env.cleanup();
-    cleanTempDir(mockRepo);
   }
 });
 
